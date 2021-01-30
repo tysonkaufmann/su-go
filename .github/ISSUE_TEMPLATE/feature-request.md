@@ -11,5 +11,5 @@ assignees: ''
 A clear and concise description of what you want to happen.
 
 **Related User Stories**
-- List of user stories
-- Go here
+- List of related user story issues
+- Referenced here
