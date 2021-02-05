@@ -7,10 +7,11 @@
 ### Project Proposal
 - [Please see our project proposal on the wiki!](https://github.com/tysonkaufmann/su-go/wiki/Project-Proposal)
 
+
 ### CrazyEights Team:
 | Name | GitHub Handle | Role
 | --- | --- | --- |
 | Tyson Kaufmann | tysonkaufmann | TBD
 | Cheng Li | chucklee9693 | TBD
-| Harsh Patel | Harsh071 | TBD 
+| Harsh Patel | Harsh071 | TBD
 | Mitul Patel | mitul264 | TBD
