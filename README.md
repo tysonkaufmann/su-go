@@ -8,7 +8,6 @@
 - [Please see our project proposal on the wiki!](https://github.com/tysonkaufmann/su-go/wiki/Project-Proposal)
 
 
-
 ### CrazyEights Team:
 | Name | GitHub Handle | Role
 | --- | --- | --- |
