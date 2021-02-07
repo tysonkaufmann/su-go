@@ -1,3 +1,4 @@
+// Boilerplate https://github.com/Intro-to-SE-Spring-2020/Chirpr/blob/master/backend/models/user.js
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
@@ -10,9 +11,21 @@ const userSchema = new Schema({
         trim: true,
         minlength: 3
     },
+    password: {
+        type: String,
+        required: true
+    },
 }, {
     timestamps: true,
 });
+
+// methods
+userSchema.methods = {
+  authenticate: function (password) {
+    return password === this.password
+  }
+}
+
 // Makes the user model.
 const User = mongoose.model('User', userSchema);
 
