@@ -6,6 +6,19 @@ require('dotenv').config()
 exports.auth = (req, res, next) => {
   // get token from header
   const token = req.header('x-auth-token')
+  const username = req.header('x-auth-username')
+
+  // check if token isn't present
+  if (!username) {
+    // return 401 unauthorized response
+    return res.status(401).json({ msg: 'No username, authorization denied' })
+  }
+
+  // check if token isn't present
+  if (!token) {
+    // return 401 unauthorized response
+    return res.status(401).json({ msg: 'No token, authorization denied' })
+  }
 
   // check if token isn't present
   if (!token) {
@@ -15,7 +28,7 @@ exports.auth = (req, res, next) => {
   // verify token
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    req.username = decoded.username // decoded.user is from our payload that
+    username = decoded.username // decoded.user is from our payload that
     next()
   } catch (err) {
     res.status(401).json({ msg: 'Token is invalid' })
