@@ -3,8 +3,8 @@
 #### How to start the backend - [``install node.js``](https://nodejs.org/en/download/) [``clone repo``](https://github.com/tysonkaufmann/su-go.git)
 #### install the dependencies - ``npm install``
 #### install nodemon - ``npm install nodemon``
-#### install nodemon - ``npm install express-validator``
-#### install nodemon - ``npm install jsonwebtoken``
+#### install Validator - ``npm install express-validator``
+#### install JWT - ``npm install jsonwebtoken``
 #### To run the server - ``` npm run start```
 #### Mongoose  
 Schemas (models folder) can be added using mongoose that will directly interact with MongoDB.
