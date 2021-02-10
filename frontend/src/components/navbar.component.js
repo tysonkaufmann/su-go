@@ -1,34 +1,36 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from "../assets/images/logo.png";
+import {Navbar } from 'react-bootstrap/'
+import {Form} from 'react-bootstrap/'
+import {FormControl} from 'react-bootstrap/'
+import {Button} from 'react-bootstrap/'
+import Nav from 'react-bootstrap/Nav'
 
-export default class Navbar extends Component {
-
+export default class NavbarComponent extends Component {
   render() {
     return (
-      <nav className="navbar navbar-expand-md navbar-light">
-        <div className="navbar-collapse collapse ">
-            <ul className="navbar-nav ms-auto">
-                <li className="nav-item active">
-                  <Link to="/" className="nav-link">Home</Link>
-                </li>
-            </ul>
-        </div>
-        <div className="mx-auto">
-          <img src={Logo} width="40" height="40" alt="" />
-          <Link to="/" className="navbar-brand mx-auto">&nbsp;Su;Go</Link>
-        </div>
-        <div className="navbar-collapse collapse">
-            <ul className="navbar-nav ml-auto">
-              <li className="navbar-item">
-                <Link to="/login" className="nav-link">Log In</Link>
-              </li>
-              <li className="navbar-item">
-                <Link to="/signup" className="nav-link">Sign Up</Link>
-              </li>
-            </ul>
-        </div>
-      </nav>
+        <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+                <Nav className="mr-auto">
+                    <Nav.Link href="#features">Routes</Nav.Link>
+                    <Nav.Link href="#features">Map</Nav.Link>
+                </Nav>
+                <Nav className={"center"} style={{marginRight:"auto"}}>
+                    <Navbar.Brand >
+                        <img src={Logo} width="40" height="40" alt="" />
+                        <Link to="/" className="navbar-brand mx-auto">&nbsp;Su;Go</Link>
+                    </Navbar.Brand>
+                </Nav>
+                <Nav>
+                    <Nav.Link href="login">Log In</Nav.Link>
+                    <Nav.Link eventKey={2} href="signup">
+                        Sign Up
+                    </Nav.Link>
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
     );
   }
 }
