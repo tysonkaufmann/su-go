@@ -20,7 +20,9 @@ export default class NavbarComponent extends Component {
                 <Nav className={"center"} style={{marginRight:"auto"}}>
                     <Navbar.Brand >
                         <img src={Logo} width="40" height="40" alt="" />
-                        <Link to="/" className="navbar-brand mx-auto">&nbsp;Su;Go</Link>
+                        <Link to="/" className="navbar-brand mx-auto">
+                            <div style={{color:"#ed6622",fontWeight:"bold",margin:"2px 10px",fontSize:"21px"}}> SU;GO</div>
+                        </Link>
                     </Navbar.Brand>
                 </Nav>
                 <Nav>
