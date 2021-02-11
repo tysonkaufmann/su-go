@@ -93,13 +93,15 @@ const PasswordInput = styled(UsernameInput).attrs({
           border: 2px solid #ed6622;
           margin-bottom: 10px;
 `;
+
 /********************************/
 
 class Login extends Component {
     constructor() {
         super();
-        this.state = {username: "", password: "", showForgotPasswordModal:false};
+        this.state = {username: "", password: "", showForgotPasswordModal: false};
     }
+
     //Username handler
     handleUsername = (event) => {
         this.setState({username: event.target.value})
@@ -118,37 +120,46 @@ class Login extends Component {
         // If successful login update redux state username. (user profile)
         this.props.updateUsername(this.state.username)
     }
+    //Handle modal close.
     handleClose = () => {
-        this.setState({showForgotPasswordModal:false})
+        this.setState({showForgotPasswordModal: false})
     }
-
+    // handling forgotten password. ( TODO: update endpoint )
     handleForgotPassword = (username) => {
-
         window.alert(`Please check your email ${username} for your password.`)
     }
+
     render() {
+        let isInputValid = this.state.username.trim() === "" || this.state.password.trim() === ""
         return (
             <>
                 <BackgroundDiv style={{display: "flex", flexDirection: "column"}}>
-                <Title>STAND UP; GET OUT</Title>
-                <LoginContainer>
-                    <LoginText>Log In</LoginText>
-                    Your Account
-                    <UsernameInput value={this.state.username} onChange={this.handleUsername.bind(this)} placeholder={"Enter Username or Email"}/>
-                    Password
-                    <PasswordInput placeholder={"Enter Password"} onChange={this.handlePassword.bind(this)}/>
-                    <ForgotPasswordButton onClick={()=>{this.setState({showForgotPasswordModal:true})}}>Forgot your password?</ForgotPasswordButton>
-                    <ForgotPassword show={this.state.showForgotPasswordModal} handleForgotPassword={this.handleForgotPassword}  handleClose={this.handleClose}/>
+                    <Title>STAND UP; GET OUT</Title>
+                    <LoginContainer>
+                        <LoginText>Log In</LoginText>
+                        Your Account
+                        <UsernameInput value={this.state.username} onChange={this.handleUsername.bind(this)}
+                                       placeholder={"Enter Username or Email"}/>
+                        Password
+                        <PasswordInput placeholder={"Enter Password"} onChange={this.handlePassword.bind(this)}/>
+                        <ForgotPasswordButton onClick={() => {
+                            this.setState({showForgotPasswordModal: true})
+                        }}>Forgot your password?</ForgotPasswordButton>
+                        <ForgotPassword show={this.state.showForgotPasswordModal}
+                                        handleForgotPassword={this.handleForgotPassword}
+                                        handleClose={this.handleClose}/>
 
-                    <Button onClick={this.handleSubmit.bind(this)}>Log In</Button>
-                    <div style={{margin: "20px", display: "flex", justifyContent: "center", alignContent: "center"}}>
-                        <Line/>
-                        <div style={{color: "#659699", fontWeight: "bold"}}>OR</div>
-                        <Line/>
-                    </div>
-                    <Button href={"/signup"}>Sign Up</Button>
-                </LoginContainer>
-            </BackgroundDiv>
+                        <Button style={{background: isInputValid ? "#89b6b9" : "#00cddb"}}
+                                disabled={isInputValid} onClick={this.handleSubmit.bind(this)}>Log In</Button>
+                        <div
+                            style={{margin: "20px", display: "flex", justifyContent: "center", alignContent: "center"}}>
+                            <Line/>
+                            <div style={{color: "#659699", fontWeight: "bold"}}>OR</div>
+                            <Line/>
+                        </div>
+                        <Button href={"/signup"}>Sign Up</Button>
+                    </LoginContainer>
+                </BackgroundDiv>
             </>
         );
     }

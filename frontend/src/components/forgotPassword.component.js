@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Modal from "react-bootstrap/Modal";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimesCircle} from '@fortawesome/free-solid-svg-icons'
@@ -34,33 +34,50 @@ const Button = styled.button`
         background: #89b6b9;
       }
 `;
+
 function ForgotPassword(props) {
     const [username, setUsername] = useState("");
+    const [submitted, setSubmitted] = useState(false);
     //usernameInput handler
     const handleUsername = (event) => {
         setUsername(event.target.value);
     }
     //Submit forgot password.
     const handleSubmit = () => {
+        setSubmitted(true)
         props.handleForgotPassword(username);
-        props.handleClose();
     }
+    // mount and unmount hooks. 
+    useEffect(() => {
+        setUsername("")
+        setSubmitted(false)
+        return () => {
+            setUsername("")
+            setSubmitted(false)
+        }
+    }, [])
     return (
-            <Modal show={props.show} onHide={props.handleClose} centered>
-                <Modal.Header>
-                    <Modal.Title style={{cursor: "pointer"}} onClick={props.handleClose}>
-                        <FontAwesomeIcon icon={faTimesCircle} size="lg"/>
-                    </Modal.Title>
-                    <Modal.Title style={{marginRight: "auto", marginLeft: "auto"}}>Forgot Password</Modal.Title>
-                </Modal.Header>
-                <Modal.Body style={{display:"flex",flexDirection:"column"}}>
-                    <UsernameInput value={username} onChange={(event)=>{handleUsername(event)}} placeholder={"Enter Username or Email"}/>
-                    <Button style={{background:username.trim()==="" ? "#89b6b9" : "#00cddb"}} disabled={username.trim()===""} onClick={handleSubmit}>SUBMIT</Button>
-                </Modal.Body>
-                <Modal.Footer>
+        <Modal show={props.show} onHide={props.handleClose} centered>
+            <Modal.Header>
+                <Modal.Title style={{cursor: "pointer"}} onClick={props.handleClose}>
+                    <FontAwesomeIcon icon={faTimesCircle} size="lg"/>
+                </Modal.Title>
+                <Modal.Title style={{marginRight: "auto", marginLeft: "auto"}}>Forgot Password</Modal.Title>
+            </Modal.Header>
+            {!submitted ? <Modal.Body style={{display: "flex", flexDirection: "column"}}>
+                    <UsernameInput value={username} onChange={(event) => {
+                        handleUsername(event)
+                    }} placeholder={"Enter Username or Email"}/>
+                    <Button style={{background: username.trim() === "" ? "#89b6b9" : "#00cddb"}}
+                            disabled={username.trim() === ""} onClick={handleSubmit}>SUBMIT</Button>
+                </Modal.Body> :
+                <Modal.Body style={{display: "flex", flexDirection: "column"}}>
+                    Please check your email: {username}
+                </Modal.Body>}
+            <Modal.Footer>
 
-                </Modal.Footer>
-            </Modal>
+            </Modal.Footer>
+        </Modal>
     );
 }
 
