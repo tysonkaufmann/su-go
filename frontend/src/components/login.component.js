@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import styled from 'styled-components'
 import background3 from "../assets/images/background1.png";
-
+import {connect} from "react-redux";
+import {updateUsername} from "../actions/userProfile"
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const LoginContainer = styled.div`
       display: flex;
@@ -91,7 +92,7 @@ const PasswordInput = styled(UsernameInput).attrs({
           margin-bottom: 10px;
 `;
 
-export default class Login extends Component {
+class Login extends Component {
     constructor() {
         super();
         this.state = {username: "", password: ""};
@@ -103,7 +104,9 @@ export default class Login extends Component {
     handleSubmit = () => {
         //Axios call to verify username and password
         //Setting user token
-        console.log(this.props.setToken("Test123"))
+        console.log(this.props)
+        this.props.setToken("Test123");
+        this.props.updateUsername(this.state.username)
     }
     render() {
         return (
@@ -128,3 +131,21 @@ export default class Login extends Component {
         );
     }
 }
+
+
+function mapDispatchToProps(dispatch) {
+    return {
+        updateUsername: (item) => {
+            dispatch(updateUsername(item))
+        },
+
+    }
+}
+
+function mapStateToProps(state) {
+    return {
+        username: state,
+    }
+}
+
+export default connect(mapStateToProps ,mapDispatchToProps)(Login);
