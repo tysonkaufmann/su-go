@@ -1,27 +1,31 @@
-import React, { Component } from 'react';
+import React, { useState,useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/styles.css";
-import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
-
+import {Route, Switch} from "react-router-dom";
 import NavbarComponent from "./components/navbar.component"
 import Home from "./components/home.component"
 import Login from "./components/login.component"
 import SignUp from "./components/signup.component"
+import useToken from "./components/useToken";
 
-export default class App extends Component {
-  render() {
+function App() {
+    const { token, setToken } = useToken();
+
+  if(!token) {
+    return <>
+        <Login setToken={setToken} />
+        </>
+  }
+
     return (
-      <Router>
         <div className="fill-window">
           <NavbarComponent />
-          {/* <br/> */}
           <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/login" component={Login} />
+          <Route path="/" component={Home} />
           <Route path="/signup" component={SignUp} />
           </Switch>
         </div>
-      </Router>
     );
-  }
 }
+
+export default App;

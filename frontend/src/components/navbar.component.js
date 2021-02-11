@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useLocation} from 'react-router-dom';
 import Logo from "../assets/images/logo.png";
 import {Navbar } from 'react-bootstrap/'
 import {Form} from 'react-bootstrap/'
 import {FormControl} from 'react-bootstrap/'
 import {Button} from 'react-bootstrap/'
 import Nav from 'react-bootstrap/Nav'
+export default function NavbarComponent(props){
 
-export default class NavbarComponent extends Component {
-  render() {
     return (
         <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -25,14 +24,14 @@ export default class NavbarComponent extends Component {
                         </Link>
                     </Navbar.Brand>
                 </Nav>
-                <Nav>
-                    <Nav.Link href="login">Log In</Nav.Link>
+                {< Nav >
+                < Nav.Link href="login">Log In</Nav.Link>
                     <Nav.Link eventKey={2} href="signup">
-                        Sign Up
+                    Sign Up
                     </Nav.Link>
-                </Nav>
+                    </Nav>}
             </Navbar.Collapse>
         </Navbar>
     );
-  }
+
 }
