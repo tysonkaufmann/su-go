@@ -4,6 +4,7 @@ import background3 from "../assets/images/background1.png";
 import {connect} from "react-redux";
 import {updateUsername} from "../actions/userProfile"
 import ForgotPassword from "./forgotPassword.component";
+import SignUp from "./signup.component";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const LoginContainer = styled.div`
@@ -99,7 +100,7 @@ const PasswordInput = styled(UsernameInput).attrs({
 class Login extends Component {
     constructor() {
         super();
-        this.state = {username: "", password: "", showForgotPasswordModal: false};
+        this.state = {username: "", password: "", showForgotPasswordModal: false, showSignUp:false};
     }
 
     //Username handler
@@ -121,8 +122,12 @@ class Login extends Component {
         this.props.updateUsername(this.state.username)
     }
     //Handle modal close.
-    handleClose = () => {
+    handleForgotPasswordClose = () => {
         this.setState({showForgotPasswordModal: false})
+    }
+
+    handleSignUpClose = () => {
+        this.setState({showSignUp: false})
     }
     // handling forgotten password. ( TODO: update endpoint )
     handleForgotPassword = (username) => {
@@ -147,7 +152,7 @@ class Login extends Component {
                         }}>Forgot your password?</ForgotPasswordButton>
                         <ForgotPassword show={this.state.showForgotPasswordModal}
                                         handleForgotPassword={this.handleForgotPassword}
-                                        handleClose={this.handleClose}/>
+                                        handleClose={this.handleForgotPasswordClose}/>
 
                         <Button style={{background: isInputValid ? "#89b6b9" : "#00cddb"}}
                                 disabled={isInputValid} onClick={this.handleSubmit.bind(this)}>Log In</Button>
@@ -157,7 +162,8 @@ class Login extends Component {
                             <div style={{color: "#659699", fontWeight: "bold"}}>OR</div>
                             <Line/>
                         </div>
-                        <Button href={"/signup"}>Sign Up</Button>
+                        <Button onClick={()=>this.setState({showSignUp:true})}>Sign Up</Button>
+                        <SignUp  show={this.state.showSignUp}  handleClose={this.handleSignUpClose}/>
                     </LoginContainer>
                 </BackgroundDiv>
             </>

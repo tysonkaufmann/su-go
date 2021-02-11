@@ -47,7 +47,7 @@ function ForgotPassword(props) {
         setSubmitted(true)
         props.handleForgotPassword(username);
     }
-    // mount and unmount hooks. 
+    // mount and unmount hooks.
     useEffect(() => {
         setUsername("")
         setSubmitted(false)
