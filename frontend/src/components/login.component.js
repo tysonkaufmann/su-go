@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import background3 from "../assets/images/background1.png";
 import {connect} from "react-redux";
 import {updateUsername} from "../actions/userProfile"
+import ForgotPassword from "./forgotPassword.component";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const LoginContainer = styled.div`
@@ -33,7 +34,7 @@ const LoginText = styled.p`
         font-size: 26px;
         color: #89b6b9
     `
-const ForgotPassword = styled.button`
+const ForgotPasswordButton = styled.button`
       color: #00cddb;
       background: white;
       border: 0;
@@ -97,7 +98,7 @@ const PasswordInput = styled(UsernameInput).attrs({
 class Login extends Component {
     constructor() {
         super();
-        this.state = {username: "", password: ""};
+        this.state = {username: "", password: "", showForgotPasswordModal:false};
     }
     //Username handler
     handleUsername = (event) => {
@@ -117,10 +118,18 @@ class Login extends Component {
         // If successful login update redux state username. (user profile)
         this.props.updateUsername(this.state.username)
     }
+    handleClose = () => {
+        this.setState({showForgotPasswordModal:false})
+    }
 
+    handleForgotPassword = (username) => {
+
+        window.alert(`Please check your email ${username} for your password.`)
+    }
     render() {
         return (
-            <BackgroundDiv style={{display: "flex", flexDirection: "column"}}>
+            <>
+                <BackgroundDiv style={{display: "flex", flexDirection: "column"}}>
                 <Title>STAND UP; GET OUT</Title>
                 <LoginContainer>
                     <LoginText>Log In</LoginText>
@@ -128,7 +137,9 @@ class Login extends Component {
                     <UsernameInput value={this.state.username} onChange={this.handleUsername.bind(this)} placeholder={"Enter Username or Email"}/>
                     Password
                     <PasswordInput placeholder={"Enter Password"} onChange={this.handlePassword.bind(this)}/>
-                    <ForgotPassword>Forgot your password?</ForgotPassword>
+                    <ForgotPasswordButton onClick={()=>{this.setState({showForgotPasswordModal:true})}}>Forgot your password?</ForgotPasswordButton>
+                    <ForgotPassword show={this.state.showForgotPasswordModal} handleForgotPassword={this.handleForgotPassword}  handleClose={this.handleClose}/>
+
                     <Button onClick={this.handleSubmit.bind(this)}>Log In</Button>
                     <div style={{margin: "20px", display: "flex", justifyContent: "center", alignContent: "center"}}>
                         <Line/>
@@ -138,6 +149,7 @@ class Login extends Component {
                     <Button href={"/signup"}>Sign Up</Button>
                 </LoginContainer>
             </BackgroundDiv>
+            </>
         );
     }
 }
