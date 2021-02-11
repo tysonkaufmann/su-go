@@ -18,8 +18,8 @@ function App() {
   }
 
     return (
-        <div className="fill-window">
-          <NavbarComponent />
+        <div className="fill-window" style={{display:"flex",flexDirection:"column"}}>
+          <div><NavbarComponent /></div>
           <Switch>
           <Route path="/" component={Home} />
           <Route path="/signup" component={SignUp} />
