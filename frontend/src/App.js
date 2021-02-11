@@ -10,7 +10,7 @@ import useToken from "./components/useToken";
 
 function App() {
     const { token, setToken } = useToken();
-
+    //The user needs to login to access the application.
   if(!token) {
     return <>
         <Login setToken={setToken} />

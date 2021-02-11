@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import background3 from "../assets/images/background1.png";
 import {connect} from "react-redux";
 import {updateUsername} from "../actions/userProfile"
+
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const LoginContainer = styled.div`
       display: flex;
@@ -91,22 +92,32 @@ const PasswordInput = styled(UsernameInput).attrs({
           border: 2px solid #ed6622;
           margin-bottom: 10px;
 `;
+/********************************/
 
 class Login extends Component {
     constructor() {
         super();
         this.state = {username: "", password: ""};
     }
-
+    //Username handler
     handleUsername = (event) => {
-        this.setState({password:event.target.value})
+        this.setState({username: event.target.value})
     }
+    //Password handler
+    handlePassword = (event) => {
+        this.setState({password: event.target.value})
+    }
+
+    // Validation of username and password ( mocked for now. )
     handleSubmit = () => {
         //Axios call to verify username and password
         //Setting mock user token
         this.props.setToken("Test123");
+
+        // If successful login update redux state username. (user profile)
         this.props.updateUsername(this.state.username)
     }
+
     render() {
         return (
             <BackgroundDiv style={{display: "flex", flexDirection: "column"}}>
@@ -114,9 +125,9 @@ class Login extends Component {
                 <LoginContainer>
                     <LoginText>Log In</LoginText>
                     Your Account
-                    <UsernameInput value={this.state.username} onChange={(event)=>{this.setState({username:event.target.value})}} placeholder={"Enter Username or Email"}/>
+                    <UsernameInput value={this.state.username} onChange={this.handleUsername.bind(this)} placeholder={"Enter Username or Email"}/>
                     Password
-                    <PasswordInput placeholder={"Enter Password"} onChange={this.handleUsername.bind(this)}/>
+                    <PasswordInput placeholder={"Enter Password"} onChange={this.handlePassword.bind(this)}/>
                     <ForgotPassword>Forgot your password?</ForgotPassword>
                     <Button onClick={this.handleSubmit.bind(this)}>Log In</Button>
                     <div style={{margin: "20px", display: "flex", justifyContent: "center", alignContent: "center"}}>
@@ -147,4 +158,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps ,mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
