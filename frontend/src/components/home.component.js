@@ -1,13 +1,33 @@
 import React, { Component } from 'react';
+import {updateUsername} from "../actions/userProfile";
+import {connect} from "react-redux";
 
-export default class Home extends Component {
+class Home extends Component {
   render() {
     return (
       <div>
         <h3 className="text-center">
-            This is the Home page.
+            Hello, {this.props.username}. Welcome to Su;Go
         </h3>
       </div>
     );
   }
 }
+
+
+function mapDispatchToProps(dispatch) {
+    return {
+        updateUsername: (item) => {
+            dispatch(updateUsername(item))
+        },
+
+    }
+}
+
+function mapStateToProps(state) {
+    return {
+        username: state.userProfile.username,
+    }
+}
+
+export default connect(mapStateToProps ,mapDispatchToProps)(Home);
