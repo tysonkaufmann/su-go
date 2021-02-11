@@ -103,8 +103,7 @@ class Login extends Component {
     }
     handleSubmit = () => {
         //Axios call to verify username and password
-        //Setting user token
-        console.log(this.props)
+        //Setting mock user token
         this.props.setToken("Test123");
         this.props.updateUsername(this.state.username)
     }
