@@ -13,11 +13,13 @@ exports.signup = async (req, res) => {
     // 2: check to see if username is in use
     const user = await User.findOne({ username })
     if (user) {
-      return res.status(200).json({
+      res.status(200);
+      res.json({
         status: '200',
         success: 'false',
         msg: 'Username is already in use'
       })
+      return res
     }
 
     // 3: create new user
@@ -27,13 +29,16 @@ exports.signup = async (req, res) => {
     // 4: save user to DB
     newUser.save((err, success) => {
       if (err) {
-        return res.status(200).json({
+        res.status(200);
+        res.json({
           status: '200',
           success: 'false',
           msg: err
         })
+        return res
       }
-      res.json({
+      res.status(200);
+      return res.json({
         status: '200',
         success: 'true',
         msg: 'Registration success! Please sign in'
@@ -41,11 +46,13 @@ exports.signup = async (req, res) => {
     })
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
+    res.status(500);
+    res.json({
       status: '500',
       success: 'false',
       msg: 'Internal Server error'
     })
+    return res
   }
 }
 
@@ -57,13 +64,14 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ username })
     // 3: authenticate user
     if (!user || !user.authenticate(encrypt(password))) { // authenticate with user schema method
-      return res.status(200).json({
+      res.status(200);
+      res.json({
         status: '200',
         success: 'false',
         msg: 'Username and password do not match'
       })
+      return res
     }
-
     // create payload
     const payload = {
         username: username
@@ -77,12 +85,15 @@ exports.login = async (req, res) => {
       (err, token) => {
         if (err){
           console.error(err)
+          res.status(500);
           res.json({
             status: '500',
             success: 'false',
             err: 'Internal Server error'
           })
+          return res
         }
+        res.status(200);
         res.json({
           status: '200',
           success: 'true',
@@ -90,15 +101,18 @@ exports.login = async (req, res) => {
           expiresin: '10h',
           msg: 'Login successful'
         })
+        return res
       }
     )
   } catch (err) {
     console.error(err)
-    return res.status(500).json({
+    res.status(200);
+    res.json({
       status: '500',
       success: 'false',
       msg: 'Internal Server error'
     })
+    return res
   }
 }
 
@@ -112,3 +126,4 @@ function encrypt(password)
       return ''
     }
 }
+exports.encrypt = encrypt;

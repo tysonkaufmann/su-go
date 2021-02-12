@@ -7,6 +7,12 @@
     "test": "jest",
     "start": "nodemon server"
   },
+  "jest": {
+    "setupFiles": [
+      "./.jest.env.js"
+    ],
+    "verbose": true
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -23,6 +29,8 @@
     "sha1": "^1.1.1"
   },
   "devDependencies": {
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "jest-mock-req-res": "^1.0.2",
+    "mock-req-res": "^1.2.0"
   }
 }

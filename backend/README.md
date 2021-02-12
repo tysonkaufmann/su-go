@@ -4,7 +4,8 @@
 #### install the dependencies - ``npm install``
 #### install nodemon - ``npm install nodemon``
 #### install Validator - ``npm install express-validator``
-#### install Validator - ``npm install jest --save-dev``
+#### install Jest - ``npm install jest --save-dev``
+#### install Req and Res Mocker - ``npm i -D jest-mock-req-res``
 #### install JWT - ``npm install jsonwebtoken``
 #### To run the server - ``` npm run start```
 #### Mongoose  
