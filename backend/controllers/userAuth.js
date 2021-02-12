@@ -13,8 +13,10 @@ exports.signup = async (req, res) => {
     // 2: check to see if username is in use
     const user = await User.findOne({ username })
     if (user) {
-      return res.status(400).json({
-        error: 'Username is already in use'
+      return res.status(200).json({
+        status: '200',
+        success: 'false',
+        msg: 'Username is already in use'
       })
     }
 
@@ -25,17 +27,25 @@ exports.signup = async (req, res) => {
     // 4: save user to DB
     newUser.save((err, success) => {
       if (err) {
-        return res.status(400).json({
-          error: err
+        return res.status(200).json({
+          status: '200',
+          success: 'false',
+          msg: err
         })
       }
       res.json({
+        status: '200',
+        success: 'true',
         msg: 'Registration success! Please sign in'
       })
     })
   } catch (err) {
     console.error(err);
-    res.status(500).send('Internal Server error');
+    return res.status(500).json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
   }
 }
 
@@ -45,15 +55,12 @@ exports.login = async (req, res) => {
   try {
     // 2: check if user exists
     const user = await User.findOne({ username })
-    if (!user) { // no user or error
-      return res.status(400).json({
-        error: 'User with that username does not exist. Please register'
-      })
-    }
     // 3: authenticate user
-    if (!user.authenticate(encrypt(password))) { // authenticate with user schema method
-      return res.status(400).json({
-        error: 'Username and password do not match'
+    if (!user || !user.authenticate(encrypt(password))) { // authenticate with user schema method
+      return res.status(200).json({
+        status: '200',
+        success: 'false',
+        msg: 'Username and password do not match'
       })
     }
 
@@ -68,13 +75,30 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '10h' },
       (err, token) => {
-        if (err) throw err
-        res.json({ token, user })
+        if (err){
+          console.error(err)
+          res.json({
+            status: '500',
+            success: 'false',
+            err: 'Internal Server error'
+          })
+        }
+        res.json({
+          status: '200',
+          success: 'true',
+          token,
+          expiresin: '10h',
+          msg: 'Login successful'
+        })
       }
     )
   } catch (err) {
     console.error(err)
-    res.status(500).send('Internal Server error')
+    return res.status(500).json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
   }
 }
 
