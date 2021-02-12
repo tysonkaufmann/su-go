@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
-import testReducer from "./testReducer";
+import { routerReducer } from 'react-router-redux';
+import userProfileReducer from "./userProfileReducer";
 
 export default combineReducers({
-    test: testReducer
+    userProfile: userProfileReducer,
+    reducer: routerReducer
 })

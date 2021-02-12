@@ -1,34 +1,60 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import {Link} from 'react-router-dom';
 import Logo from "../assets/images/logo.png";
+import {Navbar } from 'react-bootstrap/'
+import {Form} from 'react-bootstrap/'
+import {FormControl} from 'react-bootstrap/'
+import {Button} from 'react-bootstrap/'
+import Nav from 'react-bootstrap/Nav'
+import {faUser} from "@fortawesome/free-solid-svg-icons/";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {updateUsername} from "../actions/userProfile";
+import {connect} from "react-redux";
 
-export default class Navbar extends Component {
-
-  render() {
+function NavbarComponent(props){
     return (
-      <nav className="navbar navbar-expand-md navbar-light">
-        <div className="navbar-collapse collapse ">
-            <ul className="navbar-nav ms-auto">
-                <li className="nav-item active">
-                  <Link to="/" className="nav-link">Home</Link>
-                </li>
-            </ul>
-        </div>
-        <div className="mx-auto">
-          <img src={Logo} width="40" height="40" alt="" />
-          <Link to="/" className="navbar-brand mx-auto">&nbsp;Su;Go</Link>
-        </div>
-        <div className="navbar-collapse collapse">
-            <ul className="navbar-nav ml-auto">
-              <li className="navbar-item">
-                <Link to="/login" className="nav-link">Log In</Link>
-              </li>
-              <li className="navbar-item">
-                <Link to="/signup" className="nav-link">Sign Up</Link>
-              </li>
-            </ul>
-        </div>
-      </nav>
+        <Navbar collapseOnSelect expand="lg" variant="light">
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+                <Nav className="mr-auto">
+                    <Nav.Link href="#features">Routes</Nav.Link>
+                    <Nav.Link href="#features">Map</Nav.Link>
+                </Nav>
+                <Nav className={"center"} style={{marginRight:"auto",marginLeft:"auto"}}>
+                    <Navbar.Brand >
+                        <img src={Logo} width="40" height="40" alt="" />
+                        <Link to="/" className="navbar-brand mx-auto">
+                            <div style={{color:"#ed6622",fontWeight:"bold",margin:"2px 10px",fontSize:"21px"}}> SU;GO</div>
+                        </Link>
+                    </Navbar.Brand>
+                </Nav>
+                <Nav>
+                    <Form inline>
+                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+                        <Button variant="outline-info">Search</Button>
+                    </Form>
+                    <><FontAwesomeIcon icon={faUser} size="2x" style={{margin: "5px 15px"}}/><div>{props.username}</div></>
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
     );
-  }
+
 }
+
+
+function mapDispatchToProps(dispatch) {
+    return {
+        updateUsername: (item) => {
+            dispatch(updateUsername(item))
+        },
+
+    }
+}
+
+function mapStateToProps(state) {
+    return {
+        username: state.userProfile.username,
+    }
+}
+
+export default connect(mapStateToProps ,mapDispatchToProps)(NavbarComponent);
