@@ -9,6 +9,7 @@ lerna-debug.log*
 # Env
 frontend/.env
 backend/.env
+backend/.jest.env.js
 
 #WEBSTORM FILES
 .idea
