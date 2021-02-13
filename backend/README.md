@@ -4,7 +4,10 @@
 #### install the dependencies - ``npm install``
 #### install nodemon - ``npm install nodemon``
 #### install Validator - ``npm install express-validator``
+#### install Jest - ``npm install jest --save-dev``
+#### install Req and Res Mocker - ``npm i -D jest-mock-req-res``
 #### install JWT - ``npm install jsonwebtoken``
+#### install Supertest - ``npm install supertest --save-dev``
 #### To run the server - ``` npm run start```
 #### Mongoose  
 Schemas (models folder) can be added using mongoose that will directly interact with MongoDB.
