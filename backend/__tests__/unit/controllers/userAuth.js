@@ -79,36 +79,6 @@ describe("Login", () => {
 
     });
 
-    // test("Successful Login - Correct Credentials", () => {
-    //   jest.setTimeout(30000);
-    //
-    //   const req = mockRequest({ body: {
-    //     username : "Mitul",
-    //     password : "test"
-    //   } });
-    //   var res = mockResponse({ hostname: 'tester',
-    //     status : function(statusCode) {
-    //       this.status = statusCode
-    //     },
-    //     json : function(body) {
-    //       this.json = body
-    //     },
-    //   });
-    //
-    //   var expectedResponse = {
-    //     "status": "200",
-    //     "success": "true",
-    //     "msg": "Login successful"
-    //   }
-    //
-    //   return login(req, res).then(data => {
-    //     expect(data.json.status).toBe(expectedResponse.status);
-    //     expect(data.json.success).toBe(expectedResponse.success);
-    //     expect(data.json.msg).toBe(expectedResponse.msg);
-    //   });
-    //
-    // });
-
 });
 
 afterAll(() => {
