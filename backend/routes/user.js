@@ -6,17 +6,15 @@ let User = require('../models/user');
 // import controller
 const { signup, login } = require('../controllers/userAuth');
 
-// import validators
-const {userAuthValidator} = require('../validators/userAuth');
 
 // @route   POST /api/users/signup
 // @desc    Register user
 // @access  Public
-router.post('/signup', userAuthValidator, signup);
+router.post('/signup', signup);
 
 // @route   POST /api/users/signin
 // @desc    Signin user
 // @access  Public
-router.post('/login', userAuthValidator, login);
+router.post('/login', login);
 
 module.exports = router;

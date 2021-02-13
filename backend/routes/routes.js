@@ -5,9 +5,6 @@ const router = require('express').Router();
 // import controller
 const { createRoute } = require('../controllers/routes');
 
-// import validators
-const {routeValidator} = require('../validators/routes');
-
 // import middleware
 const { auth } = require('../middleware/auth')
 
@@ -15,6 +12,6 @@ const { auth } = require('../middleware/auth')
 // @route   POST /api/routes/createroute
 // @desc    creates a route
 // @access  Public
-router.post('/createroute', routeValidator, auth, createRoute);
+router.post('/createroute', auth, createRoute);
 
 module.exports = router;

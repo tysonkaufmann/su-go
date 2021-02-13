@@ -59,6 +59,18 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   // 1: destruct email and password
   const { username, password } = req.body
+
+  if(!username || !password)
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
   try {
     // 2: check if user exists
     const user = await User.findOne({ username })
