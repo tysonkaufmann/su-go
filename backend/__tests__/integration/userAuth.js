@@ -45,6 +45,32 @@ it('Login Endpoint Test - Password Incorrect', async done => {
   done()
 })
 
+it('Login Endpoint Test - No Username in Payload', async done => {
+  // Sends POST Request to /test endpoint
+  jest.setTimeout(30000);
+  payload = {
+    password : "fakepass"
+  }
+  const response = await request.post('/api/user/login').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+  done()
+})
+
+it('Login Endpoint Test - No Password in Payload', async done => {
+  // Sends POST Request to /test endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username : "fakename"
+  }
+  const response = await request.post('/api/user/login').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+  done()
+})
+
 afterAll(() => {
   mongoose.connection.close()
 });
