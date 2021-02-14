@@ -1,7 +1,7 @@
 // Boilerplate https://github.com/Intro-to-SE-Spring-2020/Chirpr/blob/master/backend/controllers/auth.js
 const jwt = require('jsonwebtoken');
 const sha1 = require('sha1');
-
+const {Email} = require('../services/email')
 // import models
 const User = require('../models/user')
 
