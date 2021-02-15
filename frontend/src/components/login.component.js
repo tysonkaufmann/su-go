@@ -80,7 +80,7 @@ const UsernameInput = styled.input`
 
   color: black;
   font-size: 1em;
-  border: 2px solid #ed6622;
+  border: 2px solid black;
   border-radius: 5px;
   
   /* here we use the dynamically computed prop */
@@ -91,7 +91,7 @@ const UsernameInput = styled.input`
 const PasswordInput = styled(UsernameInput).attrs({
     type: "password",
 })`
-          border: 2px solid #ed6622;
+          border: 2px solid black;
           margin-bottom: 10px;
 `;
 
