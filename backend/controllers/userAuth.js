@@ -8,11 +8,11 @@ const UserAuth = require('../models/userAuth')
 const Verification = require('../models/verification')
 
 exports.signup = async (req, res) => {
-  // 1: destruct name, username, password
+  // destruct name, username, password
   var { username, password } = req.body
 
   try {
-    // 2: check to see if username is in use
+    // check to see if username is in use
     const user = await UserAuth.findOne({ username })
     if (user) {
       res.status(200);
@@ -27,6 +27,8 @@ exports.signup = async (req, res) => {
     // 3: create new user
     password = encrypt(password);
     const newUserAuth = new UserAuth({ username, password });
+    // *********** For CHENG - add additional fields in the userInfo not userAuth
+    // *********** Add those fields in backend/models/userInfo.js too
     const newUserInfo = new User({ username, email });
     // 4: save userAuth and UserInfo to DB
     newUserAuth.save((err, success) => {
