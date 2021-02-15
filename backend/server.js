@@ -22,7 +22,7 @@ connection.once('open', () => {
 })
 
 // USER ROUTE
-const usersRouter = require('./routes/user');
+const usersRouter = require('./routes/userAuth');
 app.use('/api/user', usersRouter);
 // ROUTES ROUTE
 const routesRouter = require('./routes/routes');

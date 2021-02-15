@@ -27,6 +27,6 @@ userSchema.methods = {
 }
 
 // Makes the user model.
-const User = mongoose.model('User', userSchema);
+const UserAuth = mongoose.model('UserAuth', userSchema);
 
-module.exports = User;
+module.exports = UserAuth;

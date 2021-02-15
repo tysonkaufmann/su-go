@@ -8,7 +8,7 @@ describe("EmailService", () => {
     jest.setTimeout(30000);
     var emailService = new Email();
     const response = await emailService.send("mitul0011@gmail.com")
-    expect(response).toBe(true);
+    expect(typeof response).toBe('string');
     done()
   })
 

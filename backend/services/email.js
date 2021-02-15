@@ -27,9 +27,9 @@ class Email {
 
     if (info.accepted[0] == emailAddress)
     {
-        return true;
+        return verificationCode;
     }else {
-        return false;
+        return null;
     }
 
   }

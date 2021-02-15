@@ -1,9 +1,10 @@
 // Boilerplate https://github.com/Intro-to-SE-Spring-2020/Chirpr/blob/master/backend/controllers/auth.js
 const jwt = require('jsonwebtoken');
 const sha1 = require('sha1');
-const {Email} = require('../services/email')
+const Email = require('../services/email')
 // import models
-const User = require('../models/user')
+const UserAuth = require('../models/userAuth')
+const Verification = require('../models/verification')
 
 exports.signup = async (req, res) => {
   // 1: destruct name, username, password
@@ -11,7 +12,7 @@ exports.signup = async (req, res) => {
 
   try {
     // 2: check to see if username is in use
-    const user = await User.findOne({ username })
+    const user = await UserAuth.findOne({ username })
     if (user) {
       res.status(200);
       res.json({
@@ -24,7 +25,7 @@ exports.signup = async (req, res) => {
 
     // 3: create new user
     password = encrypt(password);
-    const newUser = new User({ username, password });
+    const newUser = new UserAuth({ username, password });
 
     // 4: save user to DB
     newUser.save((err, success) => {
@@ -56,6 +57,8 @@ exports.signup = async (req, res) => {
   }
 }
 
+
+// Handles the /login endpoint
 exports.login = async (req, res) => {
   // 1: destruct email and password
   const { username, password } = req.body
@@ -73,7 +76,7 @@ exports.login = async (req, res) => {
 
   try {
     // 2: check if user exists
-    const user = await User.findOne({ username })
+    const user = await UserAuth.findOne({ username })
     // 3: authenticate user
     if (!user || !user.authenticate(encrypt(password))) { // authenticate with user schema method
       res.status(200);
@@ -116,6 +119,63 @@ exports.login = async (req, res) => {
         return res
       }
     )
+  } catch (err) {
+    console.error(err)
+    res.status(200);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
+
+// Handles the /resetpassword endpoint
+exports.resetpassword = async (req, res) => {
+  // 1: destruct email and password
+  const { username } = req.body
+
+  if(!username || !password)
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  try {
+    // check if user exists
+    const user = await UserAuth.findOne({ username })
+
+    if (user) {
+      // check if a previous verification exists
+      const userVerify = await Verification.findOne({ username })
+
+      if(userVerify){
+        // delete the current verification code
+
+      }
+      // generate a new verification code and send it
+      var emailService = new Email();
+      const response = await emailService.send(user.email)
+      // respond using the verificaion code
+    }else {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'Username does not exist'
+      })
+      return res
+    }
+
+
+
   } catch (err) {
     console.error(err)
     res.status(200);
