@@ -1,7 +1,7 @@
 // Boilerplate https://github.com/Intro-to-SE-Spring-2020/Chirpr/blob/master/backend/controllers/auth.js
 const jwt = require('jsonwebtoken');
 const sha1 = require('sha1');
-const Email = require('../services/email')
+const {Email} = require('../services/email')
 // import models
 const User = require('../models/userInfo')
 const UserAuth = require('../models/userAuth')
@@ -36,10 +36,10 @@ exports.signup = async (req, res) => {
     // 3: create new user
     password = encrypt(password);
     const newUserAuth = new UserAuth({ username, password});
-    // *********** For CHENG - add additional fields in the userInfo not userAuth
+    // *********** For CHENG - add additional fields in the userInfo not userAuth (please see diagram)
     // *********** Add those fields in backend/models/userInfo.js too
     const newUserInfo = new User({ username, email });
-    // 4: save userAuth and UserInfo to DB
+    // save userAuth and UserInfo to DB
     newUserAuth.save((err, success) => {
       if (err) {
         res.status(200);
@@ -84,7 +84,7 @@ exports.signup = async (req, res) => {
 
 // Handles the /login endpoint
 exports.login = async (req, res) => {
-  // 1: destruct email and password
+  // destruct email and password
   const { username, password } = req.body
 
   if(!username || !password)
@@ -99,9 +99,9 @@ exports.login = async (req, res) => {
   }
 
   try {
-    // 2: check if user exists
+    // check if user exists
     const user = await UserAuth.findOne({ username })
-    // 3: authenticate user
+    // authenticate user
     if (!user || !user.authenticate(encrypt(password))) { // authenticate with user schema method
       res.status(200);
       res.json({
@@ -145,7 +145,7 @@ exports.login = async (req, res) => {
     )
   } catch (err) {
     console.error(err)
-    res.status(200);
+    res.status(500);
     res.json({
       status: '500',
       success: 'false',
@@ -158,10 +158,10 @@ exports.login = async (req, res) => {
 
 // Handles the /resetpassword endpoint
 exports.resetpassword = async (req, res) => {
-  // 1: destruct email and password
-  const { username } = req.body
+  // destruct email and password
+  const { username } = req.body;
 
-  if(!username || !password)
+  if(!username)
   {
     res.status(400);
     res.json({
@@ -169,40 +169,95 @@ exports.resetpassword = async (req, res) => {
       success: 'false',
       msg: 'Bad Request'
     })
-    return res
+    return res;
   }
 
   try {
     // check if user exists
-    const user = await UserAuth.findOne({ username })
+    const user = await User.findOne({ username });
 
     if (user) {
-      // check if a previous verification exists
-      const userVerify = await Verification.findOne({ username })
+        // check if a previous verification exists
+        const userVerify = await Verification.findOne({ username });
 
-      if(userVerify){
-        // delete the current verification code
+        if(userVerify){
+          // delete the current verification code
+          userVerify.deleteOne({ username: username }, function (err) {
+            if(err){
+              console.error(err);
+              res.status(200);
+              res.json({
+                status: '200',
+                success: 'false',
+                msg: "User already has a verification code, request to try again in 5 mins"
+              })
+              return res;
+            }
+          });
+        }
 
-      }
-      // generate a new verification code and send it
-      var emailService = new Email();
-      const response = await emailService.send(user.email)
-      // respond using the verificaion code
+
+        // generate a new verification code and send it
+        try {
+          var emailService = new Email();
+          var code = await emailService.send(user.email)
+        } catch (e) {
+          console.error(e);
+          res.status(200);
+          res.json({
+            status: '200',
+            success: 'false',
+            msg: "Error sending email, user might have an invalid email on file"
+          })
+          return res;
+        }
+
+        // this error has been logged in email service already
+        if(code == null)
+        {
+          res.status(200);
+          res.json({
+            status: '200',
+            success: 'false',
+            msg: 'An error occured with the email service unable to send email'
+          })
+        }
+
+        // save verification code and respond to API request
+        const newUserVerification = new Verification({ username, code });
+        newUserVerification.save((err, success) => {
+          if (err) {
+            console.error(err);
+            res.status(200);
+            res.json({
+              status: '200',
+              success: 'false',
+              msg: err
+            })
+            return res
+          }
+          res.status(200);
+          res.json({
+            status: '200',
+            success: 'true',
+            msg: 'Verification email sent successfully'
+          })
+          return res
+        })
+
     }else {
       res.status(200);
       res.json({
         status: '200',
         success: 'false',
-        msg: 'Username does not exist'
+        msg: 'User does not exist'
       })
       return res
     }
 
-
-
   } catch (err) {
     console.error(err)
-    res.status(200);
+    res.status(500);
     res.json({
       status: '500',
       success: 'false',

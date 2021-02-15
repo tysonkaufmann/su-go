@@ -9,12 +9,14 @@ beforeAll(() => {
   connection.once('open', () => {
       // connection successful
   })
+  // to suppress errors on edge test cases that are meant to throw errors for produciton teams
+  console.error = function() {}
 });
 
 describe("Verification", () => {
   test('Verification Code Equals', async () => {
     jest.setTimeout(30000);
-    username = "Mitul"
+    username = "Mitul2"
     code = '378974'
     const newVerification = new Verification({ username, code });
     newVerification.verify(code)

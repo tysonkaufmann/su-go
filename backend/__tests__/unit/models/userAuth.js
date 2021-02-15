@@ -10,12 +10,14 @@ beforeAll(() => {
   connection.once('open', () => {
       // connection successful
   })
+  // to suppress errors on edge test cases that are meant to throw errors for produciton teams
+  console.error = function() {}
 });
 
 describe("Authenticate", () => {
   test('Username and Password Match', async () => {
     jest.setTimeout(30000);
-    username = "Mitul"
+    username = "Mitul2"
     password = "test"
     const user = await UserAuth.findOne({ username })
     const encryptedPassword = encrypt(password)

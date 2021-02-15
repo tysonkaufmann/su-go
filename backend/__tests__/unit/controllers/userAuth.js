@@ -1,5 +1,5 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const {login, encrypt} = require('../../../controllers/userAuth.js')
+const {login, encrypt, resetpassword} = require('../../../controllers/userAuth.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
 
@@ -10,6 +10,8 @@ beforeAll(() => {
   connection.once('open', () => {
       // connection successful
   })
+  // to suppress errors on edge test cases that are meant to throw errors for produciton teams
+  console.error = function() {}
 });
 
 describe("Login", () => {
@@ -53,7 +55,7 @@ describe("Login", () => {
       jest.setTimeout(30000);
 
       const req = mockRequest({ body: {
-        username : "Mitul",
+        username : "Mitul2",
         password : "fakepass"
       } });
       var res = mockResponse({ hostname: 'tester',
@@ -78,6 +80,68 @@ describe("Login", () => {
       });
 
     });
+    // Successful login has been covered in integration tests
+
+});
+
+describe("Reset Password", () => {
+
+  it('Email Sending Failed User Does Not Exists', async() => {
+    // Sends email
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username : "fake",
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "200",
+        "success": "false",
+        "msg": "User does not exist"
+      }
+    var response = await resetpassword(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+
+  })
+
+  it('Email Sending Failed Bad Email Address', async() => {
+    // Sends email
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username : "Mitul",
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "200",
+        "success": "false",
+        "msg": "Error sending email, user might have an invalid email on file"
+    }
+    var response = await resetpassword(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+
+  })
+
+  // Successful email sending has been covered in integration tests
+
 
 });
 
