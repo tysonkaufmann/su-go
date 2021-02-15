@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const sha1 = require('sha1');
 const Email = require('../services/email')
 // import models
+const User = require('../models/userInfo')
 const UserAuth = require('../models/userAuth')
 const Verification = require('../models/verification')
 
@@ -25,10 +26,10 @@ exports.signup = async (req, res) => {
 
     // 3: create new user
     password = encrypt(password);
-    const newUser = new UserAuth({ username, password });
-
-    // 4: save user to DB
-    newUser.save((err, success) => {
+    const newUserAuth = new UserAuth({ username, password });
+    const newUserInfo = new User({ username, email });
+    // 4: save userAuth and UserInfo to DB
+    newUserAuth.save((err, success) => {
       if (err) {
         res.status(200);
         res.json({
@@ -38,12 +39,24 @@ exports.signup = async (req, res) => {
         })
         return res
       }
-      res.status(200);
-      return res.json({
-        status: '200',
-        success: 'true',
-        msg: 'Registration success! Please sign in'
-      })
+    })
+    newUserInfo.save((err, success) => {
+      if (err) {
+        res.status(200);
+        res.json({
+          status: '200',
+          success: 'false',
+          msg: err
+        })
+        return res
+      }
+    })
+
+    res.status(200);
+    return res.json({
+      status: '200',
+      success: 'true',
+      msg: 'Registration success! Please sign in'
     })
   } catch (err) {
     console.error(err);
