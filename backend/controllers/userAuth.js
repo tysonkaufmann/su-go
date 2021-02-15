@@ -267,6 +267,98 @@ exports.resetpassword = async (req, res) => {
   }
 }
 
+
+
+// Handles the /changepassword endpoint
+exports.changepassword = async (req, res) => {
+  // destruct email and password
+  const { username, verificationcode ,newpassword } = req.body;
+
+  if(!username || !verificationcode || !newpassword)
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res;
+  }
+
+  try {
+    // check if user exists
+    const user = await UserAuth.findOne({ username });
+
+    if (user) {
+        // check if a previous verification exists
+        const userVerify = await Verification.findOne({ username });
+
+        if(!userVerify || verificationcode != userVerify.code){
+          res.status(200);
+          res.json({
+            status: '200',
+            success: 'false',
+            msg: "Verification Code is incorrect, expired or already used"
+          })
+          return res;
+        }
+
+        // change the users password
+        user.changepassword(encrypt(newpassword));
+
+        user.save((err, success) => {
+          if (err) {
+            console.error(err);
+            res.status(200);
+            res.json({
+              status: '200',
+              success: 'false',
+              msg: 'An error occured while changing the password'
+            })
+            return res
+          }
+        })
+
+        // lets try to delete the verification code so user cannot use it again incase it has not expired
+        userVerify.deleteOne({ username: username }, function (err) {
+          if(err){
+            console.error(err);
+            // verificaiton code was possibly autodeleted as it expired
+            // no need to respond with an error message as password already changed
+          }
+        })
+
+        res.status(200);
+        res.json({
+          status: '200',
+          success: 'true',
+          msg: 'Password Changed Successfully, please log in'
+        })
+        return res
+
+
+    }else {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'User does not exist'
+      })
+      return res
+    }
+
+  } catch (err) {
+    console.error(err)
+    res.status(500);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
 function encrypt(password)
 {
     if (!password) return ''

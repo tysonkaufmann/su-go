@@ -1,7 +1,8 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const {login, encrypt, resetpassword} = require('../../../controllers/userAuth.js')
+const {login, encrypt, resetpassword, changepassword} = require('../../../controllers/userAuth.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
+const Verification = require('../../../models/verification')
 
 beforeAll(() => {
   const uri = process.env.ATLAS_URI;
@@ -134,6 +135,119 @@ describe("Reset Password", () => {
         "msg": "Error sending email, user might have an invalid email on file"
     }
     var response = await resetpassword(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+
+  })
+
+  it('Change Password No Verification Code Provided', async() => {
+    // Sends email
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username : "Mitul2",
+      newpassword : "hello",
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+    }
+    var response = await changepassword(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+
+  })
+
+  it('Change Password No Username Provided', async() => {
+    // Sends email
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      newpassword : "hello",
+      verificationcode: "234343"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+    }
+    var response = await changepassword(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+
+  })
+
+  it('Change Password No Password Provided', async() => {
+    // Sends email
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username : "Mitul2",
+      verificationcode: "234343"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+    }
+    var response = await changepassword(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+
+  })
+
+  it('Change Password Incorrect Verification Code', async() => {
+    // Sends email
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+    	username:"Mitul2",
+      verificationcode:"07571",
+    	newpassword:"helo"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "200",
+        "success": "false",
+        "msg": "Verification Code is incorrect, expired or already used"
+    }
+    var response = await changepassword(req, res)
     expect(response.json.status).toBe(expectedResponse.status);
     expect(response.json.success).toBe(expectedResponse.success);
     expect(response.json.msg).toBe(expectedResponse.msg);

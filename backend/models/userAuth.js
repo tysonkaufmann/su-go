@@ -23,6 +23,9 @@ const userSchema = new Schema({
 userSchema.methods = {
   authenticate: function (password) {
     return password === this.password
+  },
+  changepassword: function (password) {
+    this.password = password
   }
 }
 

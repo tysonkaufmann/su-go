@@ -1,5 +1,6 @@
 const mongoose = require('mongoose'); // Connects to mongodb
 const app = require('./../../server.js') // Link to your server file
+const Verification = require('./../../models/verification')
 const supertest = require('supertest')
 const request = supertest(app)
 
@@ -113,7 +114,7 @@ it('Reset Password Request Endpoint Test - Unregistered Username in Payload', as
   done()
 })
 
-it('Reset Password Request Endpoint Test - Bad Email Address of user', async done => {
+it('Reset Password Endpoint Test - Bad Email Address of user', async done => {
   // Sends POST Request to /resetpassword endpoint
   jest.setTimeout(30000);
   payload = {
@@ -125,6 +126,180 @@ it('Reset Password Request Endpoint Test - Bad Email Address of user', async don
   expect(response.body.msg).toBe("Error sending email, user might have an invalid email on file")
   done()
 })
+
+
+it('Change Password Endpoint Test - No Username', async done => {
+  // Sends POST Request to /resetpassword endpoint
+  jest.setTimeout(30000);
+  payload = {
+    newpassword : "test",
+    verificationcode : "355455"
+  }
+  const response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+  done()
+})
+
+it('Change Password Endpoint Test - No New Password', async done => {
+  // Sends POST Request to /resetpassword endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username : "Mitul",
+    verificationcode : "355455"
+  }
+  const response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+  done()
+})
+
+
+it('Change Password Endpoint Test - No Verification Code', async done => {
+  // Sends POST Request to /resetpassword endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username : "Mitul",
+    newpassword : "test",
+  }
+  const response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+  done()
+})
+
+
+it('Change Password Endpoint Test - No Username and New Password', async done => {
+  // Sends POST Request to /resetpassword endpoint
+  jest.setTimeout(30000);
+  payload = {
+    verificationcode : "355455"
+  }
+  const response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+  done()
+})
+
+
+it('Change Password Endpoint Test - No Username and Verification Code', async done => {
+  // Sends POST Request to /resetpassword endpoint
+  jest.setTimeout(30000);
+  payload = {
+    newpassword : "test"
+  }
+  const response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+  done()
+})
+
+
+it('Change Password Endpoint Test - No New Password and Verification Code', async done => {
+  // Sends POST Request to /resetpassword endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username : "Mitul",
+  }
+  const response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+  done()
+})
+
+
+it('Change Password Endpoint Test - Incorrect Verification Code', async done => {
+  // Sends POST Request to /resetpassword endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username : "Mitul2",
+    newpassword : "test",
+    verificationcode : "355455"
+  }
+  const response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Verification Code is incorrect, expired or already used")
+  done()
+})
+
+it('Change Password Endpoint Test - Successful Password Change', async done => {
+  // Sends POST Request to /resetpassword endpoint
+  jest.setTimeout(30000);
+  const username = "Mitul2"
+
+  // send email
+  payload = {
+    username : username
+  }
+  var response = await request.post('/api/user/resetpassword').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("true")
+  expect(response.body.msg).toBe("Verification email sent successfully")
+
+  // get verificaiton code
+  const userVerify = await Verification.findOne({ username });
+  const newpassword = "test"
+  // try to reset password
+  payload = {
+    username : username,
+    newpassword : newpassword,
+    verificationcode : userVerify.code
+  }
+  response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("true")
+  expect(response.body.msg).toBe("Password Changed Successfully, please log in")
+  done()
+})
+
+it('Change Password Endpoint Test - Block Re-use of verificaiton code', async done => {
+  // Sends POST Request to /resetpassword endpoint
+  jest.setTimeout(30000);
+  const username = "Mitul2"
+
+  // send email
+  payload = {
+    username : username
+  }
+  var response = await request.post('/api/user/resetpassword').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("true")
+  expect(response.body.msg).toBe("Verification email sent successfully")
+
+  // get verificaiton code
+  const userVerify = await Verification.findOne({ username });
+  const newpassword = "test"
+  // try to reset password
+  payload = {
+    username : username,
+    newpassword : newpassword,
+    verificationcode : userVerify.code
+  }
+  response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("true")
+  expect(response.body.msg).toBe("Password Changed Successfully, please log in")
+
+  // try to reset password
+  payload = {
+    username : username,
+    newpassword : newpassword,
+    verificationcode : userVerify.code
+  }
+  response = await request.post('/api/user/changepassword').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Verification Code is incorrect, expired or already used")
+  done()
+})
+
 
 
 afterAll(() => {

@@ -3,7 +3,7 @@
 const router = require('express').Router();
 
 // import controller
-const { signup, login, resetpassword } = require('../controllers/userAuth');
+const { signup, login, resetpassword, changepassword } = require('../controllers/userAuth');
 
 
 // @route   POST /api/users/signup
@@ -20,5 +20,10 @@ router.post('/login', login);
 // @desc    Reset password request
 // @access  Public
 router.post('/resetpassword', resetpassword);
+
+// @route   POST /api/users/changepassword
+// @desc    Reset password request
+// @access  Public
+router.post('/changepassword', changepassword);
 
 module.exports = router;
