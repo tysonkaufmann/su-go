@@ -11,7 +11,7 @@ const userSchema = new Schema({
         trim: true,
         minlength: 3
     },
-    password: {
+    email: {
         type: String,
         required: true
     },
@@ -20,11 +20,7 @@ const userSchema = new Schema({
 });
 
 // methods
-userSchema.methods = {
-  authenticate: function (password) {
-    return password === this.password
-  }
-}
+userSchema.methods = {}
 
 // Makes the user model.
 const User = mongoose.model('User', userSchema);
