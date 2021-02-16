@@ -7,6 +7,7 @@ import {connect} from "react-redux";
 import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
+/* COMPONENTS USED FOR THE FORGOT PASSWORD UI*/
 const UsernameInput = styled.input`
     // we can define static props
     type: "text",

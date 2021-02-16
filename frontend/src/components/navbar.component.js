@@ -30,37 +30,29 @@ const useStyles = makeStyles((theme) => ({
 
 function NavbarComponent(props) {
 
-    const classes = useStyles();
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = React.useState(null); // Used for the dropdown
     const open = Boolean(anchorEl);
 
-    const handleChange = (event) => {
-    };
 
     const handleMenu = (event) => {
-        setAnchorEl(event.currentTarget);
+        setAnchorEl(event.currentTarget); // when menu button clicked.
     };
 
     const handleClose = () => {
-        setAnchorEl(null);
+        setAnchorEl(null); //Closing menu
     };
 
+    // Clearing all local storage.
     const handleLogOut = () => {
         localStorage.clear();
         window.location.reload();
     };
 
-
     const Icon = styled.img`
         border-radius: 50%;
         margin: 2px 2px 2px 15px;
 `;
-    const ProfileDropdown = styled.div`
-        display:flex;
-        flex-direction:row;
-        color:black;
-        background:transparent;
-    `
+
     const UsernameText = styled.div`
         margin: 0px;
     `
@@ -103,6 +95,7 @@ function NavbarComponent(props) {
                         <UsernameText>{props.username}</UsernameText>
                     </Button>
                     <Menu
+                        style={{marginTop:"20px"}}
                         id="menu-appbar"
                         anchorEl={anchorEl}
                         anchorOrigin={{
@@ -117,8 +110,8 @@ function NavbarComponent(props) {
                         open={open}
                         onClose={handleClose}
                     >
-                        <Link to="/userprofile"><MenuItem>Profile</MenuItem></Link>
-                        <Link to="/login"><MenuItem onClick={handleLogOut}>Log Out</MenuItem></Link>
+                        <Link to="/userprofile"><MenuItem style={{color:"black"}}>Profile</MenuItem></Link>
+                        <Link to="/login"><MenuItem style={{color:"black"}} onClick={handleLogOut}>Log Out</MenuItem></Link>
                     </Menu>
                 </div>
             </Navbar.Collapse>
@@ -133,7 +126,6 @@ function mapDispatchToProps(dispatch) {
         updateUsername: (item) => {
             dispatch(updateUsername(item))
         },
-
     }
 }
 
