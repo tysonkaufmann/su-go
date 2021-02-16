@@ -96,8 +96,10 @@ function ForgotPassword(props) {
             setTimeout(() => {
                 setSuccessful(true)
             }, 2000)
-            console.log("here")
+        }else{
+            // If the verification / email is not successful
         }
+
     }, [props.loginVerification ])
     return (
         <Modal show={props.show} onHide={props.handleClose} centered>
