@@ -100,7 +100,9 @@ const PasswordInput = styled(UsernameInput).attrs({
 class Login extends Component {
     constructor() {
         super();
-        this.state = {username: "", password: "", showForgotPasswordModal: false, showSignUp:false};
+        this.state = {username: "", password: "", showForgotPasswordModal: false, showSignUp:false,
+        loginVerification: false
+        };
     }
 
     //Username handler
@@ -131,7 +133,10 @@ class Login extends Component {
     }
     // handling forgotten password. ( TODO: update endpoint )
     handleForgotPassword = (username) => {
-        window.alert(`Please check your email ${username} for your password.`)
+        // window.alert(`Please check your email ${username} for your password.`)
+        // check if email sent is successful
+        // if true set Login Verification true
+        this.setState({loginVerification: true,})
     }
 
     render() {
@@ -152,7 +157,9 @@ class Login extends Component {
                         }}>Forgot your password?</ForgotPasswordButton>
                         <ForgotPassword show={this.state.showForgotPasswordModal}
                                         handleForgotPassword={this.handleForgotPassword}
-                                        handleClose={this.handleForgotPasswordClose}/>
+                                        handleClose={this.handleForgotPasswordClose}
+                                        loginVerification={this.state.loginVerification}
+                        />
 
                         <Button style={{background: isInputValid ? "#89b6b9" : "#00cddb"}}
                                 disabled={isInputValid} onClick={this.handleSubmit.bind(this)}>Log In</Button>

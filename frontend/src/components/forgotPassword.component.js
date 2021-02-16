@@ -5,6 +5,7 @@ import {faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 import {updateUsername} from "../actions/userProfile";
 import {connect} from "react-redux";
 import styled from "styled-components";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const UsernameInput = styled.input`
     // we can define static props
@@ -14,7 +15,7 @@ const UsernameInput = styled.input`
 
   color: black;
   font-size: 1em;
-  border: 2px solid #ed6622;
+  border: 2px solid black;
   border-radius: 5px;
   
   /* here we use the dynamically computed prop */
@@ -35,17 +36,50 @@ const Button = styled.button`
       }
 `;
 
+const PasswordInput = styled(UsernameInput).attrs({
+    type: "password",
+})`
+          border: 2px solid black;
+          margin-bottom: 10px;
+`;
+
+const VerificationInput = styled(UsernameInput).attrs({
+    type: "text",
+})`
+          border: 2px solid black;
+          margin-bottom: 10px;
+`;
+
+
 function ForgotPassword(props) {
     const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [verificationCode, setVerification] = useState("");
     const [submitted, setSubmitted] = useState(false);
-    //usernameInput handler
+    const [successful, setSuccessful] = useState(false);
+    //username input handler
     const handleUsername = (event) => {
         setUsername(event.target.value);
+    }
+    //password input handler
+    const handlePasswordInput = (event) => {
+        setPassword(event.target.value);
+    }
+    //Verification input handler
+    const handleVerificationInput = (event) => {
+        setVerification(event.target.value);
     }
     //Submit forgot password.
     const handleSubmit = () => {
         setSubmitted(true)
         props.handleForgotPassword(username);
+    }
+    //Submit forgot password.
+    const handleResetPassword = () => {
+        setSuccessful(true)
+        console.log(username,
+        password,
+        verificationCode)
     }
     // mount and unmount hooks.
     useEffect(() => {
@@ -56,6 +90,15 @@ function ForgotPassword(props) {
             setSubmitted(false)
         }
     }, [])
+    //
+    useEffect(() => {
+        if(props.loginVerification) {
+            setTimeout(() => {
+                setSuccessful(true)
+            }, 2000)
+            console.log("here")
+        }
+    }, [props.loginVerification ])
     return (
         <Modal show={props.show} onHide={props.handleClose} centered>
             <Modal.Header>
@@ -72,8 +115,22 @@ function ForgotPassword(props) {
                             disabled={username.trim() === ""} onClick={handleSubmit}>SUBMIT</Button>
                 </Modal.Body> :
                 <Modal.Body style={{display: "flex", flexDirection: "column"}}>
-                    Please check your email: {username}
+                    <div style={{fontWeight:"bold",margin:"auto",fontSize:"25px"}}>Please check your email</div>
+                    {successful ? <>
+                        Username
+                        <UsernameInput style={{marginBottom:"10px"}} value={username} onChange={(event) => {
+                            handleUsername(event)
+                        }} placeholder={"Enter Username or Email"}/>
+                        Password
+                        <PasswordInput value={password} onChange={handlePasswordInput} placeholder={"New Password"}/>
+                        Verification Code
+                        <VerificationInput value={verificationCode} onChange={handleVerificationInput} placeholder={"Enter Verification Code"}/>
+                        <Button onClick={handleResetPassword}>Reset Password</Button>
+
+                    </> : <div style={{margin:"auto"}} ><CircularProgress size={40} style={{color:"#00cddb"}} thickness={6}/></div>
+                    }
                 </Modal.Body>}
+
             <Modal.Footer>
 
             </Modal.Footer>
