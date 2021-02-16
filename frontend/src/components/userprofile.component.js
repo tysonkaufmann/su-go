@@ -4,10 +4,8 @@ import {connect} from "react-redux";
 
 class UserProfile extends Component {
     componentDidMount() {
-        console.log("here")
     }
     componentWillUnmount() {
-        console.log("Unmout")
     }
 
     render() {
