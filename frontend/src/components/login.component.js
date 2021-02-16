@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import {updateUsername} from "../actions/userProfile"
 import ForgotPassword from "./forgotPassword.component";
 import SignUp from "./signup.component";
+import {Link} from "react-router-dom";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const LoginContainer = styled.div`
@@ -162,7 +163,7 @@ class Login extends Component {
                         />
 
                         <Button style={{background: isInputValid ? "#89b6b9" : "#00cddb"}}
-                                disabled={isInputValid} onClick={this.handleSubmit.bind(this)}>Log In</Button>
+                                                   disabled={isInputValid} onClick={this.handleSubmit.bind(this)}><Link to={"/home"} style={{color:"white"}}>Log In</Link></Button>
                         <div
                             style={{margin: "20px", display: "flex", justifyContent: "center", alignContent: "center"}}>
                             <Line/>
