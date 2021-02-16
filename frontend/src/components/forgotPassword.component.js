@@ -123,7 +123,7 @@ function ForgotPassword(props) {
                         <UsernameInput style={{marginBottom:"10px"}} value={username} onChange={(event) => {
                             handleUsername(event)
                         }} placeholder={"Enter Username or Email"}/>
-                        Password
+                        Change Password
                         <PasswordInput value={password} onChange={handlePasswordInput} placeholder={"New Password"}/>
                         Verification Code
                         <VerificationInput value={verificationCode} onChange={handleVerificationInput} placeholder={"Enter Verification Code"}/>

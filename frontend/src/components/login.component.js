@@ -119,7 +119,7 @@ class Login extends Component {
         //Axios call to verify username and password
         //Setting mock user token
         this.props.setToken("Test123");
-
+        localStorage.setItem("Username",this.state.username)
         // If successful login update redux state username. (user profile)
         this.props.updateUsername(this.state.username)
     }

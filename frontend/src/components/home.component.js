@@ -3,7 +3,11 @@ import {updateUsername} from "../actions/userProfile";
 import {connect} from "react-redux";
 
 class Home extends Component {
-  render() {
+    componentDidMount() {
+        this.props.updateUsername(localStorage.getItem("Username"))
+    }
+
+    render() {
     return (
       <div>
         <h3 className="text-center">
