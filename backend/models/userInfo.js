@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
-// User schema with only a username for now.
+
 const userSchema = new Schema({
     username: {
         type: String,
@@ -11,10 +11,29 @@ const userSchema = new Schema({
         trim: true,
         minlength: 3
     },
+    fullname: {
+        type: String,
+        required: true
+    },
+    profilepic: {
+        type: String
+    },
     email: {
         type: String,
         required: true
     },
+    totalroutetime: {
+        type: String,
+        required: true
+    },
+    totaldistancecomplete: {
+        type: Number,
+        required: true
+    },
+    totalroutescomplete: {
+        type: Number,
+        required: true
+    }
 }, {
     timestamps: true,
 });
