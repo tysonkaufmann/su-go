@@ -5,7 +5,7 @@ describe("Validation Helpers", () => {
 
   /* Username validation tests */
   test('Valid Username', () => {
-    var username = 'User'
+    var username = 'user'
     expect(validateUsername(username)).toBeTruthy();
   })
 
@@ -83,6 +83,11 @@ describe("Validation Helpers", () => {
   test('Valid Email - Domain Name with Multiple Parts', () => {
     var email = 'Jon.Snow@Stark.co.uk'
     expect(validateEmail(email)).toBeTruthy();
+  })
+
+  test('Invalid Email - Invalid Domain Name', () => {
+    var email = 'Jon.Snow@Stark'
+    expect(validateEmail(email)).toBeFalsy();
   })
 
   test('Invalid Email - No At Sign', () => {
