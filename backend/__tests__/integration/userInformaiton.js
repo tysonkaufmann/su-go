@@ -1,12 +1,14 @@
+process.env.PORT=6000
 const mongoose = require('mongoose'); // Connects to mongodb
 const supertest = require('supertest');
 const User = require('../../models/userInfo.js');
 const app = require('./../../server.js') // Link to your server file
-const request = supertest(app)
+var request = supertest(app)
 
 beforeAll(() => {
   // to suppress errors on edge test cases that are meant to throw errors for produciton teams
   console.error = function() {}
+
 });
 
 it('Get User Information - No x-auth-username', async done => {
@@ -129,9 +131,7 @@ it('Get User Information - Successful', async done => {
 })
 
 
-
-
-
 afterAll(() => {
   mongoose.connection.close()
+  process.env.PORT=null
 });
