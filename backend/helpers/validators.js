@@ -38,8 +38,8 @@ function validatePassword(password) {
  * @param {String} email The email address to be validated.
  */
 function validateEmail(email) {
-  // regex from https://www.w3resource.com/javascript/form/email-validation.php
-  const regex = new RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
+  // Genral email regex - RFC 5322 Official Standard
+  const regex = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
   return regex.test(email);
 }
 
