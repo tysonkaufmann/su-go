@@ -18,7 +18,7 @@ describe("User Authenticate", () => {
   test('Successfully Authenticate Username and Password', async () => {
     jest.setTimeout(30000);
     username = "Mitul2"
-    password = "test"
+    password = "Test123"
     const user = await UserAuth.findOne({ username })
     const encryptedPassword = encrypt(password)
     expect(user.authenticate(encryptedPassword)).toBe(true);
@@ -27,8 +27,8 @@ describe("User Authenticate", () => {
   test('Successfully Change Password', async () => {
     jest.setTimeout(30000);
     username = "Mitul2"
-    oldpassword = "test"
-    newpassword = "newpassword"
+    oldpassword = "Test123"
+    newpassword = "NewPassword123"
     var user = await UserAuth.findOne({ username })
     var encryptedPassword = encrypt(newpassword)
     user.changepassword(encryptedPassword)
