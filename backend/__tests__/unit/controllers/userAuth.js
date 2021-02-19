@@ -274,7 +274,7 @@ describe("Sign Up", () => {
   it('Sign Up Failed - Invalid Password', async() => {
     jest.setTimeout(30000);
     const req = mockRequest({ body: {
-      username: "jonsnow",
+      username: "Cheng2",
       password: "WinterIsComing", 
       email: "Jon.Snow@Targaryen.com",
       fullname: "Jon Snow",
@@ -306,7 +306,7 @@ describe("Sign Up", () => {
   it('Sign Up Failed - Invalid Email', async() => {
     jest.setTimeout(30000);
     const req = mockRequest({ body: {
-      username: "jonsnow",
+      username: "Cheng2",
       password: "WinterIsComing123", 
       email: "Jon@Snow@stark",
       fullname: "Jon Snow",
@@ -341,7 +341,7 @@ describe("Sign Up", () => {
 
 
 
-/* describe("Reset Password", () => {
+describe("Reset Password", () => {
 
   it('Email Sending Failed User Does Not Exists', async() => {
     // Sends email
@@ -513,8 +513,8 @@ describe("Sign Up", () => {
   // Successful email sending has been covered in integration tests
 
 
-}); */
+});
 
-// afterAll(() => {
-//   mongoose.connection.close()
-// });
+afterAll(() => {
+  mongoose.connection.close()
+});
