@@ -14,7 +14,7 @@ it('Login Endpoint Test - Successful Login', async done => {
   jest.setTimeout(30000);
   payload = {
     username : "Mitul2",
-    password : "test"
+    password : "Test123"
   }
   const response = await request.post('/api/user/login').send(payload)
   expect(response.status).toBe(200)
@@ -42,7 +42,7 @@ it('Login Endpoint Test - Password Incorrect', async done => {
   jest.setTimeout(30000);
   payload = {
     username : "Mitul2",
-    password : "fakepass"
+    password : "Fakepass1"
   }
   const response = await request.post('/api/user/login').send(payload)
   expect(response.status).toBe(200)
@@ -219,7 +219,7 @@ it('Change Password Endpoint Test - Incorrect Verification Code', async done => 
   jest.setTimeout(30000);
   payload = {
     username : "Mitul2",
-    newpassword : "test",
+    newpassword : "Test123",
     verificationcode : "355455"
   }
   const response = await request.post('/api/user/changepassword').send(payload)
@@ -245,7 +245,7 @@ it('Change Password Endpoint Test - Successful Password Change', async done => {
 
   // get verificaiton code
   const userVerify = await Verification.findOne({ username });
-  const newpassword = "test"
+  const newpassword = "Test123"
   // try to reset password
   payload = {
     username : username,
@@ -275,7 +275,7 @@ it('Change Password Endpoint Test - Block Re-use of verificaiton code', async do
 
   // get verificaiton code
   const userVerify = await Verification.findOne({ username });
-  const newpassword = "test"
+  const newpassword = "Test123"
   // try to reset password
   payload = {
     username : username,

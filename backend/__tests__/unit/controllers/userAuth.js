@@ -57,7 +57,7 @@ describe("Login", () => {
 
       const req = mockRequest({ body: {
         username : "Mitul2",
-        password : "fakepass"
+        password : "Fakepass1"
       } });
       var res = mockResponse({ hostname: 'tester',
         status : function(statusCode) {
@@ -146,7 +146,7 @@ describe("Reset Password", () => {
     jest.setTimeout(30000);
     const req = mockRequest({ body: {
       username : "Mitul2",
-      newpassword : "hello",
+      newpassword : "Test123",
     } });
     var res = mockResponse({ hostname: 'tester',
       status : function(statusCode) {
@@ -231,7 +231,7 @@ describe("Reset Password", () => {
     const req = mockRequest({ body: {
     	username:"Mitul2",
       verificationcode:"07571",
-    	newpassword:"helo"
+    	newpassword:"Test123"
     } });
     var res = mockResponse({ hostname: 'tester',
       status : function(statusCode) {
