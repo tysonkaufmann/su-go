@@ -1,5 +1,5 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const {login, encrypt, resetpassword, changepassword} = require('../../../controllers/userAuth.js')
+const { signup, login, encrypt, resetpassword, changepassword } = require('../../../controllers/userAuth.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
 const Verification = require('../../../models/verification')
@@ -85,7 +85,263 @@ describe("Login", () => {
 
 });
 
-describe("Reset Password", () => {
+
+
+/* Sign Up */
+describe("Sign Up", () => {
+
+  it('Sign Up Failed - Missing Username', async() => {
+    // Sends email
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      password: "WinterIsComing123", 
+      email: "Jon.Snow@Targaryen.com",
+      fullname: "Jon Snow",
+      profilepic: "SOME BASE64 ENCODED IMAGE"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+    }
+    var response = await signup(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+  })
+
+
+  it('Sign Up Failed - Missing Password', async() => {
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username: "JonSnow",
+      email: "Jon.Snow@Targaryen.com",
+      fullname: "Jon Snow",
+      profilepic: "SOME BASE64 ENCODED IMAGE"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+    }
+    var response = await signup(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+  })
+
+
+  it('Sign Up Failed - Missing Email', async() => {
+    // Sends email
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username: "JonSnow",
+      password: "WinterIsComing123", 
+      fullname: "Jon Snow",
+      profilepic: "SOME BASE64 ENCODED IMAGE"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+    }
+    var response = await signup(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+  })
+
+
+  it('Sign Up Failed - Missing Fullname', async() => {
+    // Sends email
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username: "JonSnow",
+      password: "WinterIsComing123", 
+      email: "Jon.Snow@Targaryen.com",
+      profilepic: "SOME BASE64 ENCODED IMAGE"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+    }
+    var response = await changepassword(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+  })
+
+
+  it('Sign Up Failed - Invalid Username', async() => {
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username: "Jon Snow",
+      password: "WinterIsComing123", 
+      email: "Jon.Snow@Targaryen.com",
+      fullname: "Jon Snow",
+      profilepic: "SOME BASE64 ENCODED IMAGE"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "200",
+        "success": "false",
+        "msg": "Username is invalid"
+    }
+    var response = await signup(req, res)
+    expect(response.json.status).toBe(expectedResponse.status);
+    expect(response.json.success).toBe(expectedResponse.success);
+    expect(response.json.msg).toBe(expectedResponse.msg);
+  })
+
+
+  it('Sign Up Failed - User already exists', async() => {
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username: "Cheng",
+      password: "Test123", 
+      email: "test@test.com",
+      fullname: "C L",
+      profilepic: "SOME BASE64 ENCODED IMAGE"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "200",
+        "success": "false",
+        "msg": "Username is already in use"
+    }
+
+    return signup(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  })
+
+
+  it('Sign Up Failed - Invalid Password', async() => {
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username: "jonsnow",
+      password: "WinterIsComing", 
+      email: "Jon.Snow@Targaryen.com",
+      fullname: "Jon Snow",
+      profilepic: "SOME BASE64 ENCODED IMAGE"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "200",
+        "success": "false",
+        "msg": "Password is invalid"
+    }
+
+    return signup(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  })
+
+
+  it('Sign Up Failed - Invalid Email', async() => {
+    jest.setTimeout(30000);
+    const req = mockRequest({ body: {
+      username: "jonsnow",
+      password: "WinterIsComing123", 
+      email: "Jon@Snow@stark",
+      fullname: "Jon Snow",
+      profilepic: "SOME BASE64 ENCODED IMAGE"
+    } });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "200",
+        "success": "false",
+        "msg": "Email is invalid"
+    }
+
+    return signup(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  })
+
+  // Successful Sign Up has been covered in integration tests
+
+});
+
+
+
+
+/* describe("Reset Password", () => {
 
   it('Email Sending Failed User Does Not Exists', async() => {
     // Sends email
@@ -257,8 +513,8 @@ describe("Reset Password", () => {
   // Successful email sending has been covered in integration tests
 
 
-});
+}); */
 
-afterAll(() => {
-  mongoose.connection.close()
-});
+// afterAll(() => {
+//   mongoose.connection.close()
+// });

@@ -1,13 +1,186 @@
 const mongoose = require('mongoose'); // Connects to mongodb
 const app = require('./../../server.js') // Link to your server file
 const Verification = require('./../../models/verification')
-const supertest = require('supertest')
+const supertest = require('supertest');
+const UserAuth = require('../../models/userAuth.js');
+const User = require('../../models/userInfo.js');
 const request = supertest(app)
 
 beforeAll(() => {
   // to suppress errors on edge test cases that are meant to throw errors for produciton teams
   console.error = function() {}
 });
+
+it('Signup Endpoint Test - Successful Signup', async done => {
+  // Sends POST Request to /signup endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username: "jonsnow",
+    password: "WinterIsComing123", 
+    email: "Jon.Snow@stark.com",
+    fullname: "Jon Snow",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  const response = await request.post('/api/user/signup').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("true")
+  expect(response.body.msg).toBe("Registration success! Please sign in")
+
+  // remove the test user
+  await UserAuth.findOneAndDelete(
+    { "username": "jonsnow" },
+    { "sort": { "_id": -1 } }
+  )
+
+  await User.findOneAndDelete(
+    { "username": "jonsnow" },
+    { "sort": { "_id": -1 } }
+  )
+
+  done()
+})
+
+it('Signup Endpoint Test - Missing Username', async done => {
+  // Sends POST Request to /signup endpoint
+  jest.setTimeout(30000);
+  payload = {
+    password: "WinterIsComing123", 
+    email: "Jon.Snow@stark.com",
+    fullname: "Jon Snow",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  const response = await request.post('/api/user/signup').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+
+  done()
+})
+
+it('Signup Endpoint Test - Missing Password', async done => {
+  // Sends POST Request to /signup endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username: "jonsnow",
+    email: "Jon.Snow@stark.com",
+    fullname: "Jon Snow",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  const response = await request.post('/api/user/signup').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+
+  done()
+})
+
+it('Signup Endpoint Test - Missing Email', async done => {
+  // Sends POST Request to /signup endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username: "jonsnow",
+    password: "WinterIsComing123", 
+    fullname: "Jon Snow",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  const response = await request.post('/api/user/signup').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+
+  done()
+})
+
+it('Signup Endpoint Test - Missing Fullname', async done => {
+  // Sends POST Request to /signup endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username: "jonsnow",
+    password: "WinterIsComing123", 
+    email: "Jon.Snow@stark.com",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  const response = await request.post('/api/user/signup').send(payload)
+  expect(response.status).toBe(400)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Bad Request")
+
+  done()
+})
+
+it('Signup Endpoint Test - Invalid Username', async done => {
+  // Sends POST Request to /signup endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username: "Jon Snow",
+    password: "WinterIsComing123", 
+    email: "Jon.Snow@stark.com",
+    fullname: "Jon Snow",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  const response = await request.post('/api/user/signup').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Username is invalid")
+
+  done()
+})
+
+it('Signup Endpoint Test - User already exists', async done => {
+  // Sends POST Request to /signup endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username: "Cheng",
+    password: "Test123", 
+    email: "test@test.com",
+    fullname: "C L",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  const response = await request.post('/api/user/signup').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Username is already in use")
+
+  done()
+})
+
+it('Signup Endpoint Test - Invalid Password', async done => {
+  // Sends POST Request to /signup endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username: "jonsnow",
+    password: "WinterIsComing", 
+    email: "Jon.Snow@stark.com",
+    fullname: "Jon Snow",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  const response = await request.post('/api/user/signup').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Password is invalid")
+
+  done()
+})
+
+it('Signup Endpoint Test - Invalid Email', async done => {
+  // Sends POST Request to /signup endpoint
+  jest.setTimeout(30000);
+  payload = {
+    username: "jonsnow",
+    password: "WinterIsComing123", 
+    email: "Jon.Snow@stark",
+    fullname: "Jon Snow",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  const response = await request.post('/api/user/signup').send(payload)
+  expect(response.status).toBe(200)
+  expect(response.body.success).toBe("false")
+  expect(response.body.msg).toBe("Email is invalid")
+
+  done()
+})
+
+
 
 it('Login Endpoint Test - Successful Login', async done => {
   // Sends POST Request to /login endpoint
