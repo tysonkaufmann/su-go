@@ -6,11 +6,14 @@ const {Email} = require('../services/email')
 const User = require('../models/userInfo')
 const UserAuth = require('../models/userAuth')
 const Verification = require('../models/verification')
+//import validators
+const { validateUsername, validatePassword, validateEmail } = require('../helpers/validators')
 
 exports.signup = async (req, res) => {
-  // destruct name, username, password
-  var { username, password, email } = req.body
-  if(!username || !password || !email)
+
+  var { username, password, email, fullname, profilepic } = req.body
+
+  if(!username || !password || !email || !fullname)
   {
     res.status(400);
     res.json({
@@ -20,7 +23,19 @@ exports.signup = async (req, res) => {
     })
     return res
   }
+
   try {
+    // check to see if username is valid
+    if (!validateUsername(username)) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'Username is invalid'
+      })
+      return res
+    }
+
     // check to see if username is in use
     const user = await UserAuth.findOne({ username })
     if (user) {
@@ -33,35 +48,44 @@ exports.signup = async (req, res) => {
       return res
     }
 
-    // 3: create new user
+    // check to see if password is valid
+    if (!validatePassword(password)) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'Password is invalid'
+      })
+      return res
+    }
+
+    // check to see if email is valid
+    if (!validateEmail(email)) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'Email is invalid'
+      })
+      return res
+    }
+
+    // create new user
     password = encrypt(password);
     const newUserAuth = new UserAuth({ username, password});
-    // *********** For CHENG - add additional fields in the userInfo not userAuth (please see diagram)
-    // *********** Add those fields in backend/models/userInfo.js too
-    const newUserInfo = new User({ username, email });
+    const newUserInfo = new User({ username, fullname, email });
+    if (profilepic) {
+      newUserInfo.profilepic = profilepic
+    }
+
+    // initialize additional fields in User
+    newUserInfo.totalroutetime = "0";
+    newUserInfo.totaldistancecomplete = 0;
+    newUserInfo.totalroutescomplete = 0;
+
     // save userAuth and UserInfo to DB
-    newUserAuth.save((err, success) => {
-      if (err) {
-        res.status(200);
-        res.json({
-          status: '200',
-          success: 'false',
-          msg: err
-        })
-        return res
-      }
-    })
-    newUserInfo.save((err, success) => {
-      if (err) {
-        res.status(200);
-        res.json({
-          status: '200',
-          success: 'false',
-          msg: err
-        })
-        return res
-      }
-    })
+    await newUserAuth.save();
+    await newUserInfo.save();
 
     res.status(200);
     return res.json({
@@ -301,6 +325,17 @@ exports.changepassword = async (req, res) => {
             msg: "Verification Code is incorrect, expired or already used"
           })
           return res;
+        }
+
+        // check to see if the new password is valid
+        if (!validatePassword(newpassword)) {
+          res.status(200);
+          res.json({
+            status: '200',
+            success: 'false',
+            msg: 'New password is invalid'
+          })
+          return res
         }
 
         // change the users password
