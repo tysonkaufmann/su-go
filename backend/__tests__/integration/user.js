@@ -1,8 +1,9 @@
 const mongoose = require('mongoose'); // Connects to mongodb
-const app = require('./../../server.js') // Link to your server file
 const Verification = require('./../../models/verification')
-const supertest = require('supertest');
 const User = require('../../models/user.js');
+process.env.PORT=7000
+const supertest = require('supertest');
+const app = require('./../../server.js') // Link to your server file
 const request = supertest(app)
 
 beforeAll(() => {
@@ -142,7 +143,7 @@ it('Signup Endpoint Test - Invalid Password', async done => {
   // Sends POST Request to /signup endpoint
   jest.setTimeout(30000);
   payload = {
-    username: "jonsnow",
+    username: "tyrionlannister",
     password: "WinterIsComing",
     email: "Jon.Snow@stark.com",
     fullname: "Jon Snow",
@@ -590,4 +591,5 @@ it('Get User Information - Successful', async done => {
 
 afterAll(() => {
   mongoose.connection.close()
+  process.env.PORT=5000
 });
