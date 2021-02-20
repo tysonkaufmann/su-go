@@ -22,24 +22,23 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    totalroutetime: {
+    password: {
         type: String,
         required: true
     },
-    totaldistancecomplete: {
-        type: Number,
-        required: true
-    },
-    totalroutescomplete: {
-        type: Number,
-        required: true
-    }
 }, {
     timestamps: true,
 });
 
 // methods
-userSchema.methods = {}
+userSchema.methods = {
+  authenticate: function (password) {
+    return password === this.password
+  },
+  changepassword: function (password) {
+    this.password = password
+  }
+}
 
 // Makes the user model.
 const User = mongoose.model('User', userSchema);
