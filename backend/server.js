@@ -28,6 +28,10 @@ app.use('/api/user', usersRouter);
 const routesRouter = require('./routes/routes');
 app.use('/api/routes', routesRouter);
 
+// userInformation ROUTE
+const userInformationRouter = require('./routes/userInformation');
+app.use('/api/userprofile', userInformationRouter);
+
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });
