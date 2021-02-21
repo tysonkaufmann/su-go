@@ -3,107 +3,10 @@ const jwt = require('jsonwebtoken');
 const sha1 = require('sha1');
 const {Email} = require('../services/email')
 // import models
-const User = require('../models/userInfo')
-const UserAuth = require('../models/userAuth')
+const User = require('../models/user')
 const Verification = require('../models/verification')
 //import validators
 const { validateUsername, validatePassword, validateEmail } = require('../helpers/validators')
-
-exports.signup = async (req, res) => {
-
-  var { username, password, email, fullname, profilepic } = req.body
-
-  if(!username || !password || !email || !fullname)
-  {
-    res.status(400);
-    res.json({
-      status: '400',
-      success: 'false',
-      msg: 'Bad Request'
-    })
-    return res
-  }
-
-  try {
-    // check to see if username is valid
-    if (!validateUsername(username)) {
-      res.status(200);
-      res.json({
-        status: '200',
-        success: 'false',
-        msg: 'Username is invalid'
-      })
-      return res
-    }
-
-    // check to see if username is in use
-    const user = await UserAuth.findOne({ username })
-    if (user) {
-      res.status(200);
-      res.json({
-        status: '200',
-        success: 'false',
-        msg: 'Username is already in use'
-      })
-      return res
-    }
-
-    // check to see if password is valid
-    if (!validatePassword(password)) {
-      res.status(200);
-      res.json({
-        status: '200',
-        success: 'false',
-        msg: 'Password is invalid'
-      })
-      return res
-    }
-
-    // check to see if email is valid
-    if (!validateEmail(email)) {
-      res.status(200);
-      res.json({
-        status: '200',
-        success: 'false',
-        msg: 'Email is invalid'
-      })
-      return res
-    }
-
-    // create new user
-    password = encrypt(password);
-    const newUserAuth = new UserAuth({ username, password});
-    const newUserInfo = new User({ username, fullname, email });
-    if (profilepic) {
-      newUserInfo.profilepic = profilepic
-    }
-
-    // initialize additional fields in User
-    newUserInfo.totalroutetime = "0";
-    newUserInfo.totaldistancecomplete = 0;
-    newUserInfo.totalroutescomplete = 0;
-
-    // save userAuth and UserInfo to DB
-    await newUserAuth.save();
-    await newUserInfo.save();
-
-    res.status(200);
-    return res.json({
-      status: '200',
-      success: 'true',
-      msg: 'Registration success! Please sign in'
-    })
-  } catch (err) {
-    console.error(err);
-    res.status(500);
-    res.json({
-      status: '500',
-      success: 'false',
-      msg: 'Internal Server error'
-    })
-    return res
-  }
-}
 
 
 // Handles the /login endpoint
@@ -124,7 +27,7 @@ exports.login = async (req, res) => {
 
   try {
     // check if user exists
-    const user = await UserAuth.findOne({ username })
+    const user = await User.findOne({ username })
     // authenticate user
     if (!user || !user.authenticate(encrypt(password))) { // authenticate with user schema method
       res.status(200);
@@ -169,6 +72,95 @@ exports.login = async (req, res) => {
     )
   } catch (err) {
     console.error(err)
+    res.status(500);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
+exports.signup = async (req, res) => {
+
+  var { username, password, email, fullname, profilepic } = req.body
+
+  if(!username || !password || !email || !fullname)
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  try {
+    // check to see if username is valid
+    if (!validateUsername(username)) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'Username is invalid'
+      })
+      return res
+    }
+
+    // check to see if username is in use
+    const user = await User.findOne({ username })
+    if (user) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'Username is already in use'
+      })
+      return res
+    }
+
+    // check to see if password is valid
+    if (!validatePassword(password)) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'Password is invalid'
+      })
+      return res
+    }
+
+    // check to see if email is valid
+    if (!validateEmail(email)) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'Email is invalid'
+      })
+      return res
+    }
+
+    // create new user
+    password = encrypt(password);
+    const newUserInfo = new User({ username, fullname, email, password });
+    if (profilepic) {
+      newUserInfo.profilepic = profilepic
+    }
+
+    // save userAuth and UserInfo to DB
+    await newUserInfo.save();
+
+    res.status(200);
+    return res.json({
+      status: '200',
+      success: 'true',
+      msg: 'Registration success! Please sign in'
+    })
+  } catch (err) {
+    console.error(err);
     res.status(500);
     res.json({
       status: '500',
@@ -292,7 +284,6 @@ exports.resetpassword = async (req, res) => {
 }
 
 
-
 // Handles the /changepassword endpoint
 exports.changepassword = async (req, res) => {
   // destruct email and password
@@ -311,7 +302,7 @@ exports.changepassword = async (req, res) => {
 
   try {
     // check if user exists
-    const user = await UserAuth.findOne({ username });
+    const user = await User.findOne({ username });
 
     if (user) {
         // check if a previous verification exists
@@ -381,6 +372,85 @@ exports.changepassword = async (req, res) => {
       })
       return res
     }
+
+  } catch (err) {
+    console.error(err)
+    res.status(500);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
+
+
+
+
+
+// Handles the /login endpoint
+exports.getUserInformation = async (req, res) => {
+
+  // get the username from the URL
+  const { username } = req.params
+
+  // prevents bypassing auth with another usename
+  if(!username)
+  {
+    res.status(404);
+    res.json({
+      status: '404',
+      success: 'false',
+      msg: 'Resource Not Found'
+    })
+    return res
+  }
+
+  // prevents bypassing auth with another usename
+  if(username != req.header('x-auth-username'))
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  try {
+    // check if user exists
+    const user = await User.findOne({ username })
+    // find user
+    if (!user) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'Username does not exist'
+      })
+      return res
+    }
+
+    // userExists, return the data
+    res.status(200);
+    res.json({
+      status: '200',
+      success: 'true',
+      data: {
+        username : user.username,
+        fullname: user.fullname,
+        email: user.email,
+        totaldistancecomplete: user.totaldistancecomplete,
+        totalroutescomplete: user.totalroutescomplete,
+        totalroutetime: user.totalroutetime,
+        profilepic: user.profilepic,
+    },
+      msg: 'User information sent'
+    })
+    return res
 
   } catch (err) {
     console.error(err)

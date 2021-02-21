@@ -3,7 +3,13 @@
 const router = require('express').Router();
 
 // import controller
-const { signup, login, resetpassword, changepassword } = require('../controllers/userAuth');
+const { signup, login, resetpassword, changepassword, getUserInformation } = require('../controllers/user');
+const { auth } = require('../middleware/auth');
+
+// @route   GET /api/userprofile/userinformation/:username
+// @desc    Get user profile information
+// @access  Private - Auth needed
+router.get('/userinformation/:username',auth , getUserInformation);
 
 
 // @route   POST /api/users/signup
