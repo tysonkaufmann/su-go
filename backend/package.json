@@ -4,14 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --forceExit",
+    "test": "jest --coverage --forceExit --setupFiles dotenv/config",
     "start": "nodemon server"
-  },
-  "jest": {
-    "setupFiles": [
-      "./.jest.env.js"
-    ],
-    "verbose": true
   },
   "keywords": [],
   "author": "",
@@ -35,6 +29,7 @@
     "jest": "^26.6.3",
     "jest-mock-req-res": "^1.0.2",
     "mock-req-res": "^1.2.0",
+    "sinon": "^9.2.4",
     "supertest": "^6.1.3"
   }
 }
