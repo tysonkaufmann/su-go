@@ -1,4 +1,4 @@
-import React, {Component, useEffect} from 'react';
+import React, {Component, useEffect, useRef} from 'react';
 import {updateUsername} from "../actions/userProfile";
 import PropTypes from 'prop-types';
 import {connect} from "react-redux";
@@ -6,22 +6,18 @@ import styled from "styled-components";
 import background3 from "../assets/images/background3.png";
 import background2 from "../assets/images/background2.png";
 import {makeStyles} from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import TabContext from '@material-ui/lab/TabContext';
-import AppBar from "@material-ui/core/AppBar";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import EditProfile from "./editProfile.component";
-
+import BottomNavigation from "@material-ui/core/BottomNavigation";
+import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 
 const UserProfileContainer = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.05);
+    background: white;
 `
 
 const CoverPhoto = styled.div`
@@ -58,10 +54,29 @@ const Username = styled.div`
     color: black;
     margin: 10px;
     `
+
+const Map = styled.iframe`
+            border: none;
+            height: 100%;
+            width: 100%;
+            margin-bottom:30px;
+        `
 //Stub email for now.
 const Email = styled(Username)`
     font-size: 20px;
     margin: 0;
+`
+
+const RouteListItem = styled.div`
+    width: 97%;
+    height: 200px;
+    background: white;
+    border-radius: 10px;
+    margin: 20px 20px 20px 20px;
+    border:1px gray black;
+    display: flex;
+    flex-direction: row;
+    
 `
 
 const TabDiv = styled.div`
@@ -82,15 +97,30 @@ const Button = styled.button`
         background: #89b6b9;
       }
 `;
+const RouteButton = styled(Button)`
+    width:130px;
+    border-radius:0px;
+    background: ${props => props.color ? props.color : "#00cddb"}
+`
+const InnerContainer = styled.div`
+    height: 950px;
+    width: 95%;
+    margin-top:100px;
+    margin: 0px 0px 50px 40px;
+    box-shadow: 0px 0px 20px #c1c1c1;
+    text-align: center;
+    overflow-y:auto;
+`
 
 class UserProfile extends Component {
     constructor() {
         super();
         this.state = {
-            editProfile:false,
+            editProfile: false,
 
         }
     }
+
     componentDidMount() {
         console.log(localStorage.getItem("Username"))
         this.props.updateUsername(localStorage.getItem("Username"))
@@ -99,11 +129,11 @@ class UserProfile extends Component {
     componentWillUnmount() {
     }
 
-    handleCloseEditProfile(){
-        this.setState({editProfile:false})
+    handleCloseEditProfile() {
+        this.setState({editProfile: false})
     }
 
-    updateUsername(){
+    updateUsername() {
         window.alert("update")
     }
 
@@ -112,18 +142,19 @@ class UserProfile extends Component {
             <UserProfileContainer>
                 <CoverPhoto/>
                 <UserInformationContainer>
-                    <div style={{display: "flex", flexDirection: "column", margin: "auto",alignItems:"center"}}>
+                    <div style={{display: "flex", flexDirection: "column", margin: "auto", alignItems: "center"}}>
                         <ProfilePicture image={background2}>
                         </ProfilePicture>
                         <Username>{this.props.username}
                         </Username>
-                        <Button onClick={()=>this.setState({editProfile:true})}>Edit Profile</Button>
+                        <Button onClick={() => this.setState({editProfile: true})}>Edit Profile</Button>
                     </div>
                 </UserInformationContainer>
-                <TabDiv style={{width:"100%",marginTop:"10%"}}>
+                <TabDiv style={{width: "100%", marginTop: "10%"}}>
                     <UserProfileTabs/>
                 </TabDiv>
-                <EditProfile show={this.state.editProfile} handleClose={this.handleCloseEditProfile.bind(this)} updateUsername={this.updateUsername.bind(this)}/>
+                <EditProfile show={this.state.editProfile} handleClose={this.handleCloseEditProfile.bind(this)}
+                             updateUsername={this.updateUsername.bind(this)}/>
 
             </UserProfileContainer>
         );
@@ -148,48 +179,85 @@ function mapStateToProps(state) {
 
 const useStyles = makeStyles({
     root: {
-        margin:"0",
-        borderRadius:"50%"
-
+        margin: "0",
+        borderRadius: "50%",
+        fontSize:"50px"
     },
 
 });
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    });
+    return ref.current;
+}
 
 function UserProfileTabs() {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+    const Routes = ["a", "ab", "c", "d", "harsh", "fda", "harshasdfa", "harsasfh","c", "d", "harsh", "Bhaulik", "harsh"]
 
-    return (<div style={{width:"100"}}><div style={{marginLeft:"50px",width:"100"}}>
-        <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-            <Tab label="Favourite Routes" {...a11yProps(0)} />
-            <Tab label="Routes Created" {...a11yProps(1)} />
-            <Tab label="User Statistics" {...a11yProps(2)} />
-        </Tabs>
+    const handleRemove = (route) => {
+
+    }
+    return (<div style={{width: "100"}}>
+            <div ><BottomNavigation
+
+                value={value}
+                onChange={(event, newValue) => {
+                    setValue(newValue);
+                }}
+                showLabels
+                className={classes.root}
+            >
+                <BottomNavigationAction label={<div style={{fontSize:'15px'}}>User Information</div>}  />
+                <BottomNavigationAction label={<div style={{fontSize:'15px'}}>Routes Created</div>}  />
+                    <BottomNavigationAction label={<div style={{fontSize:'15px'}}>Favourite Routes</div>}  />
+            </BottomNavigation>
+            </div>
+            <TabPanel value={value} index={0}>
+                <div><InnerContainer/></div>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+                <div>
+                    <InnerContainer>
+                    {Routes.map((route) =>
+                        <RouteListItem>
+                            <Map
+                                title="map"
+                                src="https://maps.google.com/maps?width=300&amp;height=300&amp;hl=en&amp;q=1%20Grafton%20Street%2C%20Dublin%2C%20Ireland+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed"/>
+                            <RouteButton>Edit</RouteButton>
+                            <RouteButton onClick={handleRemove} color={"#D40943"}>Delete</RouteButton>
+                        </RouteListItem>
+                    )
+                    }
+
+                </InnerContainer></div>
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+                <InnerContainer>
+                    {Routes.map((route) =>
+                        <RouteListItem>
+                            <Map
+                                title="map"
+                                src="https://maps.google.com/maps?width=300&amp;height=300&amp;hl=en&amp;q=1%20Grafton%20Street%2C%20Dublin%2C%20Ireland+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed"/>
+                            <RouteButton>Directions</RouteButton>
+                            <RouteButton onClick={handleRemove} color={"#D40943"}>Remove</RouteButton>
+                        </RouteListItem>
+                    )
+                    }
+
+                </InnerContainer>
+
+            </TabPanel>
     </div>
-    <TabPanel value={value} index={0}>
-        <div>Item One</div>
-    </TabPanel>
-    <TabPanel value={value} index={1}>
-        <div>Item Two</div>
-    </TabPanel>
-    <TabPanel value={value} index={2}>
-       <div> Item Three</div>
-    </TabPanel>
-    <TabPanel value={value} index={3}>
-     <div>   Item Four</div>
-    </TabPanel>
-    <TabPanel value={value} index={4}>
-       <div> Item Five</div>
-    </TabPanel></div>
     );
 }
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+    const {children, value, index, ...other} = props;
     const classes = useStyles();
 
     return (
@@ -199,12 +267,12 @@ function TabPanel(props) {
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
-            style={{width:"100%",margin:"0"}}
+            style={{width: "100%", margin: "0"}}
             className={classes.root}
         >
             {value === index && (
-                <Box >
-                    <Typography >{children}</Typography>
+                <Box>
+                    <Typography>{children}</Typography>
                 </Box>
             )}
         </div>
@@ -223,4 +291,5 @@ function a11yProps(index) {
         'aria-controls': `simple-tabpanel-${index}`,
     };
 }
+
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);
