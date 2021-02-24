@@ -1,9 +1,9 @@
 const initialState = {
     username:"",
-    email: "as",
-    routesCompleted:"s",
-    distanceCompleted:"g",
-    totalTime:"12"
+    email: "",
+    routesCompleted:"",
+    distanceCompleted:"",
+    totalTime:""
 };
 
 export default function userProfileReducer(state = initialState, action) {

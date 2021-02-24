@@ -9,11 +9,13 @@ import {makeStyles} from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import EditProfile from "./editProfile.component";
+import UserCreatedRoutes from "./userCreatedRoutes.component";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
 import Modal from "react-bootstrap/Modal";
+import FavouriteRoutes from "./favouriteRoutes.component";
 
 const UserProfileContainer = styled.div`
     display: flex;
@@ -136,6 +138,13 @@ const CardItem = styled.div`
     margin: 10px;
 `
 
+const EmptyListText = styled.div`
+    margin-top: 10px;
+    font-size: 40px;
+    font-weight: 700;
+
+`
+
 const TabLabel = styled.div`
     font-size: 15px;
        
@@ -188,7 +197,7 @@ class UserProfile extends Component {
                     </div>
                 </UserInformationContainer>
                 <TabDiv style={{width: "100%", marginTop: "10%"}}>
-                    <UserProfileTabs/>
+                    <UserProfileTabs createdRoutes={this.props.createdRoutes} favouriteRoutes={this.props.favouriteRoutes}/>
                 </TabDiv>
                 <EditProfile show={this.state.editProfile} handleClose={this.handleCloseEditProfile.bind(this)}
                              updateUsername={this.updateUsername.bind(this)}/>
@@ -198,37 +207,6 @@ class UserProfile extends Component {
     }
 }
 
-
-function mapDispatchToProps(dispatch) {
-    return {
-        updateUsername: (item) => {
-            dispatch(updateUsername(item))
-        },
-        updateEmail: (item) => {
-            dispatch(updateEmail(item))
-        },
-        updateRoutesCompleted: (item) => {
-            dispatch(updateRoutesCompleted(item))
-        },
-        updateDistanceCompleted: (item) => {
-            dispatch(updateDistanceCompleted(item))
-        },
-        updateTotalTime: (item) => {
-            dispatch(updateTotalTime(item))
-        },
-
-    }
-}
-
-function mapStateToProps(state) {
-    return {
-        username: state.userProfile.username,
-        email: state.userProfile.email,
-        routesCompleted: state.userProfile.routesCompleted,
-        distanceCompleted: state.userProfile.distanceCompleted,
-        totalTime: state.userProfile.totalTime,
-    }
-}
 
 const useStyles = makeStyles({
     root: {
@@ -246,16 +224,11 @@ function usePrevious(value) {
     return ref.current;
 }
 
-function UserProfileTabs() {
+function UserProfileTabs(props) {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
-
-    const Routes = ["a", "ab", "c", "d", "harsh", "fda", "harshasdfa", "harsasfh","c", "d", "harsh", "Bhaulik", "harsh"]
     const SelectedTabStyle = {background:"#ed6622",color:"white",boxShadow:"0px 0px 20px #c1c1c1",borderRadius:"15px 15px 0px 0px"}
-    const handleRemove = (route) => {
-        console.log(route)
 
-    }
     return (<div style={{width: "100"}}>
             <div ><BottomNavigation
                 value={value}
@@ -272,31 +245,15 @@ function UserProfileTabs() {
             <TabPanel value={value} index={0}>
                 <div>
                     <InnerContainer>
-                    {Routes.map((route) =>
-                        <RouteListItem>
-                            <Map
-                                title="map"
-                                src="https://maps.google.com/maps?width=300&amp;height=300&amp;hl=en&amp;q=1%20Grafton%20Street%2C%20Dublin%2C%20Ireland+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed"/>
-                            <RouteButton>Edit</RouteButton>
-                            <RouteButton onClick={()=>handleRemove(route)} color={"#D40943"}>Delete</RouteButton>
-                        </RouteListItem>
-                    )
-                    }
+
+                        {props.createdRoutes.length > 0 ? <UserCreatedRoutes/> : <EmptyListText>No Routes Created</EmptyListText>}
 
                 </InnerContainer></div>
             </TabPanel>
             <TabPanel value={value} index={1}>
                 <InnerContainer>
-                    {Routes.map((route) =>
-                        <RouteListItem>
-                            <Map
-                                title="map"
-                                src="https://maps.google.com/maps?width=300&amp;height=300&amp;hl=en&amp;q=1%20Grafton%20Street%2C%20Dublin%2C%20Ireland+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed"/>
-                            <RouteButton>Directions</RouteButton>
-                            <RouteButton onClick={handleRemove} color={"#D40943"}>Remove</RouteButton>
-                        </RouteListItem>
-                    )
-                    }
+                    {props.favouriteRoutes.length > 0 ? <FavouriteRoutes/> : <EmptyListText>No Favourite Routes</EmptyListText>}
+
                 </InnerContainer>
 
             </TabPanel>
@@ -340,4 +297,38 @@ function a11yProps(index) {
     };
 }
 
+
+function mapDispatchToProps(dispatch) {
+    return {
+        updateUsername: (item) => {
+            dispatch(updateUsername(item))
+        },
+        updateEmail: (item) => {
+            dispatch(updateEmail(item))
+        },
+        updateRoutesCompleted: (item) => {
+            dispatch(updateRoutesCompleted(item))
+        },
+        updateDistanceCompleted: (item) => {
+            dispatch(updateDistanceCompleted(item))
+        },
+        updateTotalTime: (item) => {
+            dispatch(updateTotalTime(item))
+        },
+
+    }
+}
+
+function mapStateToProps(state) {
+    return {
+        username: state.userProfile.username,
+        email: state.userProfile.email,
+        routesCompleted: state.userProfile.routesCompleted,
+        distanceCompleted: state.userProfile.distanceCompleted,
+        totalTime: state.userProfile.totalTime,
+        favouriteRoutes: state.routesReducer.favouriteRoutes,
+        createdRoutes: state.routesReducer.createdRoutes,
+
+    }
+}
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);
