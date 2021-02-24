@@ -44,6 +44,7 @@ function NavbarComponent(props) {
 
     // Clearing all local storage.
     const handleLogOut = () => {
+        handleClose()
         localStorage.clear();
         window.location.reload();
     };
@@ -110,7 +111,7 @@ function NavbarComponent(props) {
                         open={open}
                         onClose={handleClose}
                     >
-                        <Link to="/userprofile"><MenuItem style={{color:"black"}}>Profile</MenuItem></Link>
+                        <Link to="/userprofile"><MenuItem onClick={handleClose} style={{color:"black"}}>Profile</MenuItem></Link>
                         <Link to="/login"><MenuItem style={{color:"black"}} onClick={handleLogOut}>Log Out</MenuItem></Link>
                     </Menu>
                 </div>

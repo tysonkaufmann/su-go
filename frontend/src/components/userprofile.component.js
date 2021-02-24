@@ -1,5 +1,5 @@
 import React, {Component, useEffect, useRef} from 'react';
-import {updateUsername} from "../actions/userProfile";
+import {updateUsername,updateEmail,updateRoutesCompleted,updateDistanceCompleted,updateTotalTime} from "../actions/userProfile";
 import PropTypes from 'prop-types';
 import {connect} from "react-redux";
 import styled from "styled-components";
@@ -11,6 +11,9 @@ import Box from "@material-ui/core/Box";
 import EditProfile from "./editProfile.component";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
+import Modal from "react-bootstrap/Modal";
 
 const UserProfileContainer = styled.div`
     display: flex;
@@ -44,15 +47,16 @@ const UserInformationContainer = styled.div`
     width:60%;
     display:flex;
     flex-direction: row;
-    margin: -150px 0px 0px 0px;
+    margin: -150px 0px 150px 0px;
     
 `
 
-const Username = styled.div`
+const UserFullname = styled.div`
     font-size: 40px;
     font-weight:bold;
     color: black;
     margin: 10px;
+    margin-bottom: 0px;
     `
 
 const Map = styled.iframe`
@@ -61,18 +65,12 @@ const Map = styled.iframe`
             width: 100%;
             margin-bottom:30px;
         `
-//Stub email for now.
-const Email = styled(Username)`
-    font-size: 20px;
-    margin: 0;
-`
-
 const RouteListItem = styled.div`
     width: 97%;
     height: 200px;
     background: white;
     border-radius: 10px;
-    margin: 20px 20px 20px 20px;
+    margin: 20px;
     border:1px gray black;
     display: flex;
     flex-direction: row;
@@ -112,6 +110,36 @@ const InnerContainer = styled.div`
     overflow-y:auto;
 `
 
+const UserInformationCard = styled.div`
+    display:flex;
+    flex-direction:row;
+    
+`
+
+const CardTitle = styled.div`
+    font-weight:bold;
+    margin-right: 3px;
+`
+const CardText = styled.div`
+`
+const Username = styled(UserFullname)`
+    font-weight: 500;
+    font-size: 35px;
+    color:#ed6622;
+    margin: 0;
+    
+`
+const CardItem = styled.div`
+    display:flex;
+    flex-direction: row;
+    justify-content:flex-start;
+    margin: 10px;
+`
+
+const TabLabel = styled.div`
+    font-size: 15px;
+       
+`
 class UserProfile extends Component {
     constructor() {
         super();
@@ -145,9 +173,18 @@ class UserProfile extends Component {
                     <div style={{display: "flex", flexDirection: "column", margin: "auto", alignItems: "center"}}>
                         <ProfilePicture image={background2}>
                         </ProfilePicture>
+                        <UserFullname>HARSH PATEL
+                        </UserFullname>
                         <Username>{this.props.username}
                         </Username>
-                        <Button onClick={() => this.setState({editProfile: true})}>Edit Profile</Button>
+                        <CardItem style={{margin:"auto"}}><CardTitle ><FontAwesomeIcon icon={faEnvelope} size="lg"/>
+                        </CardTitle><CardText>{this.props.email}</CardText></CardItem>
+                        <UserInformationCard >
+                            <CardItem><CardTitle>{"Routes Completed: "}</CardTitle><CardText>{this.props.routesCompleted}</CardText></CardItem>
+                            <CardItem><CardTitle>{"Distance Completed: "}</CardTitle><CardText>{this.props.distanceCompleted}</CardText></CardItem>
+                            <CardItem><CardTitle>{"Total Time: "}</CardTitle><CardText>{this.props.totalTime}</CardText></CardItem>
+                        </UserInformationCard>
+                        <Button style={{marginTop:"10px"}} onClick={() => this.setState({editProfile: true})}>Edit Profile</Button>
                     </div>
                 </UserInformationContainer>
                 <TabDiv style={{width: "100%", marginTop: "10%"}}>
@@ -167,6 +204,18 @@ function mapDispatchToProps(dispatch) {
         updateUsername: (item) => {
             dispatch(updateUsername(item))
         },
+        updateEmail: (item) => {
+            dispatch(updateEmail(item))
+        },
+        updateRoutesCompleted: (item) => {
+            dispatch(updateRoutesCompleted(item))
+        },
+        updateDistanceCompleted: (item) => {
+            dispatch(updateDistanceCompleted(item))
+        },
+        updateTotalTime: (item) => {
+            dispatch(updateTotalTime(item))
+        },
 
     }
 }
@@ -174,6 +223,10 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         username: state.userProfile.username,
+        email: state.userProfile.email,
+        routesCompleted: state.userProfile.routesCompleted,
+        distanceCompleted: state.userProfile.distanceCompleted,
+        totalTime: state.userProfile.totalTime,
     }
 }
 
@@ -198,13 +251,13 @@ function UserProfileTabs() {
     const [value, setValue] = React.useState(0);
 
     const Routes = ["a", "ab", "c", "d", "harsh", "fda", "harshasdfa", "harsasfh","c", "d", "harsh", "Bhaulik", "harsh"]
-
+    const SelectedTabStyle = {background:"#ed6622",color:"white",boxShadow:"0px 0px 20px #c1c1c1",borderRadius:"15px 15px 0px 0px"}
     const handleRemove = (route) => {
+        console.log(route)
 
     }
     return (<div style={{width: "100"}}>
             <div ><BottomNavigation
-
                 value={value}
                 onChange={(event, newValue) => {
                     setValue(newValue);
@@ -212,15 +265,11 @@ function UserProfileTabs() {
                 showLabels
                 className={classes.root}
             >
-                <BottomNavigationAction label={<div style={{fontSize:'15px'}}>User Information</div>}  />
-                <BottomNavigationAction label={<div style={{fontSize:'15px'}}>Routes Created</div>}  />
-                    <BottomNavigationAction label={<div style={{fontSize:'15px'}}>Favourite Routes</div>}  />
+                <BottomNavigationAction style={value===0 ? SelectedTabStyle: {}} label={<TabLabel >Routes Created</TabLabel>}  />
+                <BottomNavigationAction style={value===1 ? SelectedTabStyle: {}} label={<TabLabel background={value===1}>Favourite Routes</TabLabel>}  />
             </BottomNavigation>
             </div>
             <TabPanel value={value} index={0}>
-                <div><InnerContainer/></div>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
                 <div>
                     <InnerContainer>
                     {Routes.map((route) =>
@@ -229,14 +278,14 @@ function UserProfileTabs() {
                                 title="map"
                                 src="https://maps.google.com/maps?width=300&amp;height=300&amp;hl=en&amp;q=1%20Grafton%20Street%2C%20Dublin%2C%20Ireland+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed"/>
                             <RouteButton>Edit</RouteButton>
-                            <RouteButton onClick={handleRemove} color={"#D40943"}>Delete</RouteButton>
+                            <RouteButton onClick={()=>handleRemove(route)} color={"#D40943"}>Delete</RouteButton>
                         </RouteListItem>
                     )
                     }
 
                 </InnerContainer></div>
             </TabPanel>
-            <TabPanel value={value} index={2}>
+            <TabPanel value={value} index={1}>
                 <InnerContainer>
                     {Routes.map((route) =>
                         <RouteListItem>
@@ -248,7 +297,6 @@ function UserProfileTabs() {
                         </RouteListItem>
                     )
                     }
-
                 </InnerContainer>
 
             </TabPanel>
