@@ -64,6 +64,7 @@ const JumboTextDiv = styled.div`
         margin: 200px auto;       
         font-weight:bold;
 `
+
 class Home extends Component {
     componentDidMount() {
         // Persists the data temporarily
@@ -74,10 +75,10 @@ class Home extends Component {
         return (
             <HomeContainer>
                 <JumboDiv>
-                    <styledAddressBar><Form inline>
+                    <Form inline>
                         <FormControl type="text" placeholder="Search Route" size={"lg"}/>
                         <Button size={"lg"} variant="info">Search</Button>
-                    </Form></styledAddressBar>
+                    </Form>
                 </JumboDiv>
                 <JumboDiv image={background1}>
                     <JumboTextDiv inputColor={"white"}>More Than 50,000 trails. Different adventures. Countless fun.</JumboTextDiv>
