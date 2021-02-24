@@ -1,6 +1,8 @@
 # Su;Go
 ### Stand Up; Get Out!
 
+![Build](https://github.com/tysonkaufmann/su-go/actions/workflows/node.js.yml/badge.svg)
+
 ### Short Description
 - Su;Go will be a web application to encourage its users to engague in covid safe activitiy and to experience the great outdoors! Users can view exercise routes for walking, biking, and hiking as well as add their own to share with the community. We hope we can inspire the community to stand up, and get out!
 
@@ -11,7 +13,7 @@
 ### CrazyEights Team:
 | Name | GitHub Handle | Role
 | --- | --- | --- |
-| Tyson Kaufmann | tysonkaufmann | TBD
-| Cheng Li | chucklee9693 | TBD
-| Harsh Patel | Harsh071 | TBD
-| Mitul Patel | mitul264 | TBD
+| Tyson Kaufmann | tysonkaufmann | Team Lead
+| Cheng Li | chucklee9693 | Back-end Developer
+| Harsh Patel | Harsh071 | Front-end Developer
+| Mitul Patel | mitul264 | Full-Stack Developer

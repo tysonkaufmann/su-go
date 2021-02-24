@@ -20,17 +20,18 @@ exports.auth = (req, res, next) => {
     return res.status(401).json({ msg: 'No token, authorization denied' })
   }
 
-  // check if token isn't present
-  if (!token) {
-    // return 401 unauthorized response
-    return res.status(401).json({ msg: 'No token, authorization denied' })
-  }
   // verify token
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    username = decoded.username // decoded.user is from our payload that
-    next()
+    if (username == decoded.username)
+    {
+      next()
+    }
+    else {
+      res.status(401).json({ msg: 'Token is invalid' })
+    }
   } catch (err) {
+    console.log(err);
     res.status(401).json({ msg: 'Token is invalid' })
   }
 }

@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
-// User schema with only a username for now.
+
 const userSchema = new Schema({
     username: {
         type: String,
@@ -10,6 +10,17 @@ const userSchema = new Schema({
         unique: true,
         trim: true,
         minlength: 3
+    },
+    fullname: {
+        type: String,
+        required: true
+    },
+    profilepic: {
+        type: String
+    },
+    email: {
+        type: String,
+        required: true
     },
     password: {
         type: String,
@@ -23,6 +34,9 @@ const userSchema = new Schema({
 userSchema.methods = {
   authenticate: function (password) {
     return password === this.password
+  },
+  changepassword: function (password) {
+    this.password = password
   }
 }
 
