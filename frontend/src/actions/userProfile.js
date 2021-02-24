@@ -4,6 +4,12 @@ export function updateUsername(item) {
         payload: item
     }
 }
+export function updateFullname(item) {
+    return {
+        type: 'UPDATE_FULLNAME',
+        payload: item
+    }
+}
 export function updateEmail(item) {
     return {
         type: 'UPDATE_EMAIL',

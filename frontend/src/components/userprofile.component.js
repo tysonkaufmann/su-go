@@ -182,7 +182,7 @@ class UserProfile extends Component {
                     <div style={{display: "flex", flexDirection: "column", margin: "auto", alignItems: "center"}}>
                         <ProfilePicture image={background2}>
                         </ProfilePicture>
-                        <UserFullname>HARSH PATEL
+                        <UserFullname>{this.props.fullname}
                         </UserFullname>
                         <Username>{this.props.username}
                         </Username>
@@ -199,8 +199,7 @@ class UserProfile extends Component {
                 <TabDiv style={{width: "100%", marginTop: "10%"}}>
                     <UserProfileTabs createdRoutes={this.props.createdRoutes} favouriteRoutes={this.props.favouriteRoutes}/>
                 </TabDiv>
-                <EditProfile show={this.state.editProfile} handleClose={this.handleCloseEditProfile.bind(this)}
-                             updateUsername={this.updateUsername.bind(this)}/>
+                <EditProfile show={this.state.editProfile} handleClose={this.handleCloseEditProfile.bind(this)}/>
 
             </UserProfileContainer>
         );
@@ -322,6 +321,7 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         username: state.userProfile.username,
+        fullname: state.userProfile.fullname,
         email: state.userProfile.email,
         routesCompleted: state.userProfile.routesCompleted,
         distanceCompleted: state.userProfile.distanceCompleted,

@@ -1,5 +1,6 @@
 const initialState = {
     username:"",
+    fullname:"",
     email: "",
     routesCompleted:"",
     distanceCompleted:"",
@@ -10,6 +11,8 @@ export default function userProfileReducer(state = initialState, action) {
     switch (action.type) {
         case "UPDATE_USERNAME":
             return {...state,username: action.payload}
+        case "UPDATE_FULLNAME":
+            return {...state,fullname: action.payload}
         case "UPDATE_EMAIL":
             return {...state,email: action.payload}
         case "UPDATE_ROUTES_COMPLETED":
