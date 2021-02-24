@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-/* COMPONENTS USED FOR THE FORGOT PASSWORD UI*/
+/* COMPONENTS USED FOR THE EDIT PROFILE UI*/
 const Input = styled.input`
     // we can define static props
     type: "text",
@@ -43,19 +43,12 @@ const PasswordInput = styled(Input).attrs({
           border: 2px solid black;
           margin-bottom: 10px;
 `;
-
-const VerificationInput = styled(Input).attrs({
-    type: "text",
-})`
-          border: 2px solid black;
-          margin-bottom: 10px;
-`;
-
-
+// Modal for Edit Profile.
 function EditProfile(props) {
-    const [username, setUsername] = useState("");
-    const [fullname, setFullname] = useState("");
-    const [email, setEmail] = useState("");
+    // States.
+    const [username, setUsername] = useState(props.username);
+    const [fullname, setFullname] = useState(props.fullname);
+    const [email, setEmail] = useState(props.email);
     const [password, setPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [submitted, setSubmitted] = useState(false);
@@ -67,7 +60,7 @@ function EditProfile(props) {
         setChanged(true)
     }
 
-    //username input handler
+    //full name input handler
     const handleFullname = (event) => {
         setFullname(event.target.value);
         setChanged(true)
@@ -92,14 +85,16 @@ function EditProfile(props) {
 
     }
 
-    //Submit forgot password.
+    //Submit.
     const handleSubmit = () => {
         setSubmitted(true)
         if(!successful) {
-            props.updateUsername(username);
-            props.updateFullname(fullname);
-            props.updateEmail(email);
             setTimeout(() => {
+                props.updateUsername(username);
+                props.updateFullname(fullname);
+                props.updateEmail(email);
+                // TODO; PERSIST USER INFORMATION
+                localStorage.setItem("Username",username)
                 setSuccessful(true)
                 setSubmitted(false)
                 props.handleClose()
@@ -116,7 +111,6 @@ function EditProfile(props) {
             setSuccessful(false)
         }
     }, [])
-    //
 
     return (
         <Modal show={props.show} onHide={props.handleClose} centered>
@@ -177,6 +171,7 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         username: state.userProfile.username,
+        fullname: state.userProfile.fullname,
         email: state.userProfile.email,
 
     }

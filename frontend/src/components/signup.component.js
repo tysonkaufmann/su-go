@@ -38,43 +38,6 @@ const SignUpText = styled.p`
         font-size: 26px;
         color: #89b6b9
     `
-const ForgotPasswordButton = styled.button`
-      color: #00cddb;
-      background: white;
-      border: 0;
-      margin-top: 0;
-      margin-bottom: 20px;
-            &:hover {
-        color: #89b6b9;
-      }
-      `
-const Line = styled.hr`
-        border: none;
-        border-top: 3px solid #ccfdff;
-        width:200px;
-        margin:10px 10px;
-
-      `
-const Title = styled.h1`
-          padding: 20px;
-          text-align: center;
-          color: #ed6622;
-          font-size: 40px;
-          font-family: Arial, Helvetica, sans-serif;
-          text-decoration: underline;
-          font-weight:bold;
-        `
-const BackgroundDiv = styled.div`
-    background-image: url(${background3});
-
-    /* Full height */
-    height: 100vh; 
-
-    /* Center and scale the imagboe nicely */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-        `
 const UsernameInput = styled.input`
     // we can define static props
     type: "text",
@@ -103,21 +66,29 @@ const PasswordInput = styled(UsernameInput).attrs({
 function SignUp(props) {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
+    const [fullname, setFullname] = useState("");
     const [password, setPassword] = useState("");
     const [submitLoader, setLoader] = useState(false);
 
-    let isInputValid = username.trim() === "" || email.trim() === "" || password.trim() === ""
-
+    let isInputValid = username.trim() === "" || fullname.trim() === "" || email.trim() === "" || password.trim() === ""
+    // Handle Username input
     let handleUsernameInput = (event) => {
         setUsername(event.target.value)
     }
+    // Handle Fullanme input
+    let handleFullnameInput = (event) => {
+        setFullname(event.target.value)
+    }
+    // Handle Email input
     let handleEmailInput = (event) => {
         setEmail(event.target.value)
     }
+    // Handle Password input
     let handlePasswordInput = (event) => {
         setPassword(event.target.value)
     }
 
+    // Handle Signup input
     let handleSignUp = () => {
         console.log(username,email, password, )
         setLoader(true);
@@ -136,9 +107,11 @@ function SignUp(props) {
                 <SignUpContainer>
                     <SignUpText>Log In</SignUpText>
                     Email
-                    <UsernameInput value={username} onChange={handleUsernameInput} placeholder={"Enter Email"}/>
+                    <UsernameInput value={email} onChange={handleEmailInput} placeholder={"Enter Email"}/>
                     Username
-                    <UsernameInput value={email} onChange={handleEmailInput} placeholder={"New Username"}/>
+                    <UsernameInput value={username} onChange={handleUsernameInput} placeholder={"Enter Username"}/>
+                    Full Name
+                    <UsernameInput value={fullname} onChange={handleFullnameInput} placeholder={"Enter Full Name"}/>
                     Password
                     <PasswordInput value={password} onChange={handlePasswordInput} placeholder={"New Password"} />
                     <Button onClick={handleSignUp} style={{background: isInputValid || submitLoader ? "#89b6b9" : "#00cddb"}}>{

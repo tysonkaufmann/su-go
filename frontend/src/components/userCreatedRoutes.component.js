@@ -5,6 +5,8 @@ import {
     updateCreatedRoutes
 } from "../actions/routes";
 
+/* STYLED COMPONENTS USED FOR THE PAGE.*/
+
 const RouteListItem = styled.div`
     width: 97%;
     height: 200px;
@@ -41,11 +43,13 @@ const RouteButton = styled(Button)`
     border-radius:0px;
     background: ${props => props.color ? props.color : "#00cddb"}
 `
+// List of user created routes.
 function UserCreatedRoutes(props){
     return (
         <>{
             props.createdRoutes.map((route) =>
                 <RouteListItem>
+                    {/*stub map for now.*/}
                     <Map
                         title="map"
                         src="https://maps.google.com/maps?width=300&amp;height=300&amp;hl=en&amp;q=1%20Grafton%20Street%2C%20Dublin%2C%20Ireland+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed"/>

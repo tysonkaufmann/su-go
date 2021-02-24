@@ -1,5 +1,11 @@
 import React, {Component, useEffect, useRef} from 'react';
-import {updateUsername,updateEmail,updateRoutesCompleted,updateDistanceCompleted,updateTotalTime} from "../actions/userProfile";
+import {
+    updateUsername,
+    updateEmail,
+    updateRoutesCompleted,
+    updateDistanceCompleted,
+    updateTotalTime
+} from "../actions/userProfile";
 import PropTypes from 'prop-types';
 import {connect} from "react-redux";
 import styled from "styled-components";
@@ -14,8 +20,8 @@ import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
-import Modal from "react-bootstrap/Modal";
 import FavouriteRoutes from "./favouriteRoutes.component";
+/* STYLED COMPONENTS USED FOR THE PAGE.*/
 
 const UserProfileContainer = styled.div`
     display: flex;
@@ -61,24 +67,6 @@ const UserFullname = styled.div`
     margin-bottom: 0px;
     `
 
-const Map = styled.iframe`
-            border: none;
-            height: 100%;
-            width: 100%;
-            margin-bottom:30px;
-        `
-const RouteListItem = styled.div`
-    width: 97%;
-    height: 200px;
-    background: white;
-    border-radius: 10px;
-    margin: 20px;
-    border:1px gray black;
-    display: flex;
-    flex-direction: row;
-    
-`
-
 const TabDiv = styled.div`
     width:100%;
     height: 100vh;
@@ -97,11 +85,7 @@ const Button = styled.button`
         background: #89b6b9;
       }
 `;
-const RouteButton = styled(Button)`
-    width:130px;
-    border-radius:0px;
-    background: ${props => props.color ? props.color : "#00cddb"}
-`
+
 const InnerContainer = styled.div`
     height: 950px;
     width: 95%;
@@ -149,6 +133,7 @@ const TabLabel = styled.div`
     font-size: 15px;
        
 `
+
 class UserProfile extends Component {
     constructor() {
         super();
@@ -159,19 +144,15 @@ class UserProfile extends Component {
     }
 
     componentDidMount() {
-        console.log(localStorage.getItem("Username"))
         this.props.updateUsername(localStorage.getItem("Username"))
     }
 
     componentWillUnmount() {
     }
 
+    //Close edit profile modal
     handleCloseEditProfile() {
         this.setState({editProfile: false})
-    }
-
-    updateUsername() {
-        window.alert("update")
     }
 
     render() {
@@ -186,35 +167,38 @@ class UserProfile extends Component {
                         </UserFullname>
                         <Username>{this.props.username}
                         </Username>
-                        <CardItem style={{margin:"auto"}}><CardTitle ><FontAwesomeIcon icon={faEnvelope} size="lg"/>
+                        <CardItem style={{margin: "auto"}}><CardTitle><FontAwesomeIcon icon={faEnvelope} size="lg"/>
                         </CardTitle><CardText>{this.props.email}</CardText></CardItem>
-                        <UserInformationCard >
+                        <UserInformationCard>
                             <CardItem><CardTitle>{"Routes Completed: "}</CardTitle><CardText>{this.props.routesCompleted}</CardText></CardItem>
                             <CardItem><CardTitle>{"Distance Completed: "}</CardTitle><CardText>{this.props.distanceCompleted}</CardText></CardItem>
                             <CardItem><CardTitle>{"Total Time: "}</CardTitle><CardText>{this.props.totalTime}</CardText></CardItem>
                         </UserInformationCard>
-                        <Button style={{marginTop:"10px"}} onClick={() => this.setState({editProfile: true})}>Edit Profile</Button>
+                        <Button style={{marginTop: "10px"}} onClick={() => this.setState({editProfile: true})}>Edit
+                            Profile</Button>
                     </div>
                 </UserInformationContainer>
                 <TabDiv style={{width: "100%", marginTop: "10%"}}>
-                    <UserProfileTabs createdRoutes={this.props.createdRoutes} favouriteRoutes={this.props.favouriteRoutes}/>
+                    <UserProfileTabs createdRoutes={this.props.createdRoutes}
+                                     favouriteRoutes={this.props.favouriteRoutes}/>
                 </TabDiv>
                 <EditProfile show={this.state.editProfile} handleClose={this.handleCloseEditProfile.bind(this)}/>
-
             </UserProfileContainer>
         );
     }
 }
 
-
+// Styling for material UI
 const useStyles = makeStyles({
     root: {
         margin: "0",
         borderRadius: "50%",
-        fontSize:"50px"
+        fontSize: "50px"
     },
 
 });
+
+// previous props hooks
 function usePrevious(value) {
     const ref = useRef();
     useEffect(() => {
@@ -223,13 +207,20 @@ function usePrevious(value) {
     return ref.current;
 }
 
+// Tabs for the user profile page.
 function UserProfileTabs(props) {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
-    const SelectedTabStyle = {background:"#ed6622",color:"white",boxShadow:"0px 0px 20px #c1c1c1",borderRadius:"15px 15px 0px 0px"}
+    // Tab styling.
+    const SelectedTabStyle = {
+        background: "#ed6622",
+        color: "white",
+        boxShadow: "0px 0px 20px #c1c1c1",
+        borderRadius: "15px 15px 0px 0px"
+    }
 
     return (<div style={{width: "100"}}>
-            <div ><BottomNavigation
+            <div><BottomNavigation
                 value={value}
                 onChange={(event, newValue) => {
                     setValue(newValue);
@@ -237,29 +228,31 @@ function UserProfileTabs(props) {
                 showLabels
                 className={classes.root}
             >
-                <BottomNavigationAction style={value===0 ? SelectedTabStyle: {}} label={<TabLabel >Routes Created</TabLabel>}  />
-                <BottomNavigationAction style={value===1 ? SelectedTabStyle: {}} label={<TabLabel background={value===1}>Favourite Routes</TabLabel>}  />
+                <BottomNavigationAction style={value === 0 ? SelectedTabStyle : {}}
+                                        label={<TabLabel>Routes Created</TabLabel>}/>
+                <BottomNavigationAction style={value === 1 ? SelectedTabStyle : {}}
+                                        label={<TabLabel background={value === 1}>Favourite Routes</TabLabel>}/>
             </BottomNavigation>
             </div>
             <TabPanel value={value} index={0}>
                 <div>
                     <InnerContainer>
-
-                        {props.createdRoutes.length > 0 ? <UserCreatedRoutes/> : <EmptyListText>No Routes Created</EmptyListText>}
-
-                </InnerContainer></div>
+                        {props.createdRoutes.length > 0 ? <UserCreatedRoutes/> :
+                            <EmptyListText>No Routes Created</EmptyListText>}
+                    </InnerContainer>
+                </div>
             </TabPanel>
             <TabPanel value={value} index={1}>
                 <InnerContainer>
-                    {props.favouriteRoutes.length > 0 ? <FavouriteRoutes/> : <EmptyListText>No Favourite Routes</EmptyListText>}
+                    {props.favouriteRoutes.length > 0 ? <FavouriteRoutes/> :
+                        <EmptyListText>No Favourite Routes</EmptyListText>}
 
                 </InnerContainer>
-
             </TabPanel>
-    </div>
+        </div>
     );
 }
-
+// Material UI Tab panel.
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
     const classes = useStyles();
@@ -296,7 +289,7 @@ function a11yProps(index) {
     };
 }
 
-
+// Redux functions. 
 function mapDispatchToProps(dispatch) {
     return {
         updateUsername: (item) => {
@@ -331,4 +324,5 @@ function mapStateToProps(state) {
 
     }
 }
+
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);

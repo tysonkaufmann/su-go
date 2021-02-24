@@ -64,11 +64,9 @@ const JumboTextDiv = styled.div`
         margin: 200px auto;       
         font-weight:bold;
 `
-const styledAddressBar = styled.div`
-        width:${props=>props.width?props.width:"800px"}
-`
 class Home extends Component {
     componentDidMount() {
+        // Persists the data temporarily
         this.props.updateUsername(localStorage.getItem("Username"))
     }
 

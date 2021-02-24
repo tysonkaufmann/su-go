@@ -4,6 +4,8 @@ import {connect} from "react-redux";
 import {
     updateFavouriteRoutes
 } from "../actions/routes";
+
+/* COMPONENTS USED FOR THE FAVOURITE ROUTES UI*/
 const RouteListItem = styled.div`
     width: 97%;
     height: 200px;
@@ -40,6 +42,7 @@ const RouteButton = styled(Button)`
     border-radius:0px;
     background: ${props => props.color ? props.color : "#00cddb"}
 `
+//
 function FavouriteRoutes(props){
     return (
         <>{
