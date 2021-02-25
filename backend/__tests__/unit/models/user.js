@@ -40,6 +40,37 @@ describe("User", () => {
     expect(user.authenticate(encryptedPassword)).toBe(true);
   });
 
+  test('Successfully Update User Profile Information', async () => {
+    jest.setTimeout(30000);
+    username = "Cheng"
+
+    var oldProfileInfo = {
+      fullname: "C L",
+      email: "test@test.com",
+      profilepic: "FAKE BASE64 ENCODED STRING"
+    }
+    var newProfileInfo = {
+      fullname: "Chuck Lee",
+      email: "cl@test.com",
+      profilepic: "NEW FAKE PHOTO"
+    }
+
+    var user = await User.findOne({ username })
+
+    user.updateInfo(newProfileInfo)
+
+    expect(user.fullname).toBe(newProfileInfo.fullname)
+    expect(user.email).toBe(newProfileInfo.email)
+    expect(user.profilepic).toBe(newProfileInfo.profilepic)
+
+    // change back to old profile
+    user.updateInfo(oldProfileInfo)
+
+    expect(user.fullname).toBe(oldProfileInfo.fullname)
+    expect(user.email).toBe(oldProfileInfo.email)
+    expect(user.profilepic).toBe(oldProfileInfo.profilepic)
+  })
+
 
 });
 
