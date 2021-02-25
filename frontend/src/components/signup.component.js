@@ -2,12 +2,13 @@ import React, {useEffect, useState} from 'react';
 import Modal from "react-bootstrap/Modal";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimesCircle} from '@fortawesome/free-solid-svg-icons'
-import {updateUsername} from "../actions/userProfile";
+import {updateEmail, updateUsername, updateFullname} from "../actions/userProfile";
 import {connect} from "react-redux";
 import ForgotPassword from "./forgotPassword.component";
 import styled from "styled-components";
 import background3 from "../assets/images/background1.png";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import axios from "axios";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const SignUpContainer = styled.div`
@@ -91,7 +92,24 @@ function SignUp(props) {
     // Handle Signup input
     let handleSignUp = () => {
         setLoader(true);
-        setTimeout(()=>{setLoader(false);props.handleClose() }, 5000)
+        axios.post('http://localhost:5000/api/user/signup', {
+            email: email,
+            fullname: fullname,
+            username: username,
+            password: password,
+            photo:"FAKE BASE64 ENCODED IMAGE"
+    })
+            .then(function (response) {
+                if(response.data.success === "true") {
+                    setTimeout(()=>{setLoader(false);props.handleClose();window.alert("SUCCESSFUL! YOU CAN NOW LOGIN.")}, 2000)
+                }else{
+                    setTimeout(()=>{setLoader(false);props.handleClose();window.alert(response.data.msg)
+                    }, 2000)
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     return (
@@ -134,6 +152,12 @@ function mapDispatchToProps(dispatch) {
         updateUsername: (item) => {
             dispatch(updateUsername(item))
         },
+        updateEmail: (item) => {
+            dispatch(updateEmail(item))
+        },
+        updateFullname: (item) => {
+            dispatch(updateFullname(item))
+        },
 
     }
 }
@@ -141,6 +165,8 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         username: state.userProfile.username,
+        fullname: state.userProfile.fullname,
+        email: state.userProfile.email,
     }
 }
 

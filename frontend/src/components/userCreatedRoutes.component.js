@@ -48,9 +48,10 @@ function UserCreatedRoutes(props){
     return (
         <>{
             props.createdRoutes.map((route) =>
-                <RouteListItem>
+                <RouteListItem key={route}>
                     {/*stub map for now.*/}
                     <Map
+                        key={route+"1"}
                         title="map"
                         src="https://maps.google.com/maps?width=300&amp;height=300&amp;hl=en&amp;q=1%20Grafton%20Street%2C%20Dublin%2C%20Ireland+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed"/>
                     <RouteButton>Edit</RouteButton>

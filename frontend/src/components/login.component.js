@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import styled from 'styled-components'
 import background3 from "../assets/images/background1.png";
 import {connect} from "react-redux";
-import {updateUsername} from "../actions/userProfile"
+import {updateEmail, updateFullname, updateUsername} from "../actions/userProfile"
 import ForgotPassword from "./forgotPassword.component";
 import SignUp from "./signup.component";
 import {Link} from "react-router-dom";
@@ -124,7 +124,6 @@ class Login extends Component {
         //Axios call to verify username and password
         //Setting mock user token
         // If successful login update redux state username. (user profile)
-        console.log(this.state.username)
         var self = this;
         this.props.updateUsername(this.state.username)
         axios.post('http://localhost:5000/api/user/login', {
@@ -171,7 +170,7 @@ class Login extends Component {
                         <LoginText>Log In</LoginText>
                         Your Account
                         <UsernameInput value={this.state.username} onChange={this.handleUsername.bind(this)}
-                                       placeholder={"Enter Username or Email"}/>
+                                       placeholder={"Enter Username"}/>
                         Password
                         <PasswordInput placeholder={"Enter Password"} onChange={this.handlePassword.bind(this)}/>
                         <ForgotPasswordButton onClick={() => {
@@ -206,6 +205,12 @@ function mapDispatchToProps(dispatch) {
         updateUsername: (item) => {
             dispatch(updateUsername(item))
         },
+        updateEmail: (item) => {
+            dispatch(updateEmail(item))
+        },
+        updateFullname: (item) => {
+            dispatch(updateFullname(item))
+        },
 
     }
 }
@@ -213,6 +218,8 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         username: state,
+        fullname: state.userProfile.fullname,
+        email: state.userProfile.email,
     }
 }
 
