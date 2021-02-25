@@ -8,6 +8,7 @@ import ForgotPassword from "./forgotPassword.component";
 import styled from "styled-components";
 import background3 from "../assets/images/background1.png";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import axios from "axios";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const SignUpContainer = styled.div`
@@ -93,6 +94,27 @@ function SignUp(props) {
         console.log(username,email, password, )
         setLoader(true);
         setTimeout(()=>{setLoader(false);props.handleClose() }, 5000)
+
+        console.log(this.state.username)
+        var self = this;
+        this.props.updateUsername(this.state.username)
+        axios.post('http://localhost:5000/api/user/login', {
+            username: this.state.username,
+            password: this.state.password,
+        })
+            .then(function (response) {
+                if(response.data.success === "true") {
+                    localStorage.setItem("Username", self.state.username)
+                    localStorage.setItem("Expires", response.data.expiresin)
+                    self.props.setToken(response.data.token);
+                }else{
+                    window.alert(response.data.msg)
+                }
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     return (

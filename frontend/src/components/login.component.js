@@ -6,6 +6,7 @@ import {updateUsername} from "../actions/userProfile"
 import ForgotPassword from "./forgotPassword.component";
 import SignUp from "./signup.component";
 import {Link} from "react-router-dom";
+import axios from "axios";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const LoginContainer = styled.div`
@@ -105,6 +106,9 @@ class Login extends Component {
         loginVerification: false
         };
     }
+    componentDidMount() {
+
+    }
 
     //Username handler
     handleUsername = (event) => {
@@ -119,10 +123,27 @@ class Login extends Component {
     handleSubmit = () => {
         //Axios call to verify username and password
         //Setting mock user token
-        this.props.setToken("Test123");
-        localStorage.setItem("Username",this.state.username)
         // If successful login update redux state username. (user profile)
+        console.log(this.state.username)
+        var self = this;
         this.props.updateUsername(this.state.username)
+        axios.post('http://localhost:5000/api/user/login', {
+            username: this.state.username,
+            password: this.state.password,
+        })
+            .then(function (response) {
+                if(response.data.success === "true") {
+                    localStorage.setItem("Username", self.state.username)
+                    localStorage.setItem("Expires", response.data.expiresin)
+                    self.props.setToken(response.data.token);
+                }else{
+                    window.alert(response.data.msg)
+                }
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
     //Handle modal close.
     handleForgotPasswordClose = () => {
