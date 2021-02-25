@@ -28,7 +28,7 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  distance: {
+  routedistance: {
     type: Number,
     required: true
   },

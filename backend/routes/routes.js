@@ -3,10 +3,16 @@
 const router = require('express').Router();
 
 // import controller
-const { createRoute } = require('../controllers/routes');
+const { createRoute, getUserCreatedRoutes } = require('../controllers/routes');
 
 // import middleware
 const { auth } = require('../middleware/auth')
+
+// @route   GET /api/routes/usercreatedroutes/:username
+// @desc    Get user created routes
+// @access  Private - Auth needed
+router.get('/usercreatedroutes/:username', auth, getUserCreatedRoutes);
+
 
 
 // @route   POST /api/routes/createroute
