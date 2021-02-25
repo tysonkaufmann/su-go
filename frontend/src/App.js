@@ -6,6 +6,7 @@ import NavbarComponent from "./components/navbar.component"
 import Home from "./components/home.component"
 import Login from "./components/login.component"
 import SignUp from "./components/signup.component"
+import UserProfile from "./components/userprofile.component"
 import useToken from "./components/useToken";
 
 function App() {
@@ -21,8 +22,9 @@ function App() {
         <div className="fill-window" style={{display:"flex",flexDirection:"column"}}>
           <div><NavbarComponent /></div>
           <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/signup" component={SignUp} />
+          <Route path="/" exact component={Home} />
+          <Route path="/signup" exact component={SignUp} />
+          <Route path="/userprofile" exact component={UserProfile} />
           </Switch>
         </div>
     );

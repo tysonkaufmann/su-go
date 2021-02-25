@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import {updateUsername} from "../actions/userProfile"
 import ForgotPassword from "./forgotPassword.component";
 import SignUp from "./signup.component";
+import {Link} from "react-router-dom";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const LoginContainer = styled.div`
@@ -80,7 +81,7 @@ const UsernameInput = styled.input`
 
   color: black;
   font-size: 1em;
-  border: 2px solid #ed6622;
+  border: 2px solid black;
   border-radius: 5px;
   
   /* here we use the dynamically computed prop */
@@ -91,7 +92,7 @@ const UsernameInput = styled.input`
 const PasswordInput = styled(UsernameInput).attrs({
     type: "password",
 })`
-          border: 2px solid #ed6622;
+          border: 2px solid black;
           margin-bottom: 10px;
 `;
 
@@ -100,7 +101,9 @@ const PasswordInput = styled(UsernameInput).attrs({
 class Login extends Component {
     constructor() {
         super();
-        this.state = {username: "", password: "", showForgotPasswordModal: false, showSignUp:false};
+        this.state = {username: "", password: "", showForgotPasswordModal: false, showSignUp:false,
+        loginVerification: false
+        };
     }
 
     //Username handler
@@ -117,7 +120,7 @@ class Login extends Component {
         //Axios call to verify username and password
         //Setting mock user token
         this.props.setToken("Test123");
-
+        localStorage.setItem("Username",this.state.username)
         // If successful login update redux state username. (user profile)
         this.props.updateUsername(this.state.username)
     }
@@ -131,7 +134,10 @@ class Login extends Component {
     }
     // handling forgotten password. ( TODO: update endpoint )
     handleForgotPassword = (username) => {
-        window.alert(`Please check your email ${username} for your password.`)
+        // window.alert(`Please check your email ${username} for your password.`)
+        // check if email sent is successful
+        // if true set Login Verification true
+        this.setState({loginVerification: true,})
     }
 
     render() {
@@ -152,10 +158,12 @@ class Login extends Component {
                         }}>Forgot your password?</ForgotPasswordButton>
                         <ForgotPassword show={this.state.showForgotPasswordModal}
                                         handleForgotPassword={this.handleForgotPassword}
-                                        handleClose={this.handleForgotPasswordClose}/>
+                                        handleClose={this.handleForgotPasswordClose}
+                                        loginVerification={this.state.loginVerification}
+                        />
 
                         <Button style={{background: isInputValid ? "#89b6b9" : "#00cddb"}}
-                                disabled={isInputValid} onClick={this.handleSubmit.bind(this)}>Log In</Button>
+                                                   disabled={isInputValid} onClick={this.handleSubmit.bind(this)}><Link to={"/home"} style={{color:"white"}}>Log In</Link></Button>
                         <div
                             style={{margin: "20px", display: "flex", justifyContent: "center", alignContent: "center"}}>
                             <Line/>
