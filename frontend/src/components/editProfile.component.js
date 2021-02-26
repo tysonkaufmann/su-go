@@ -52,6 +52,7 @@ const ForgotPasswordButton = styled.button`
 // Modal for Edit Profile.
 function EditProfile(props) {
     // States.
+
     const [fullname, setFullname] = useState(props.fullname);
     const [email, setEmail] = useState(props.email);
     const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
@@ -78,11 +79,16 @@ function EditProfile(props) {
         axios.post('http://localhost:5000/api/userprofile/updateuserinformation', {
             email: email,
             fullname: fullname,
-            "x-auth-username": props.username,
-            username: props.username,
             profilepic: "FAKE BASE64 ENCODED IMAGE",
-            "x-auth-token":localStorage.getItem("token"),
-            token:localStorage.getItem("token")
+            headers:{
+                "x-auth-username"
+                    :
+                props.username,
+                "x-auth-token"
+                    :
+                    JSON.parse(localStorage.getItem("token"))
+            },
+
         })
             .then(function (response) {
                 if (response.data.success === "true") {

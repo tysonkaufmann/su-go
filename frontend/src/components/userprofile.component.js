@@ -4,6 +4,7 @@ import {
     updateEmail,
     updateRoutesCompleted,
     updateDistanceCompleted,
+    updateFullname,
     updateTotalTime
 } from "../actions/userProfile";
 import PropTypes from 'prop-types';
@@ -21,6 +22,7 @@ import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
 import FavouriteRoutes from "./favouriteRoutes.component";
+import axios from "axios";
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 
 const UserProfileContainer = styled.div`
@@ -145,6 +147,35 @@ class UserProfile extends Component {
 
     componentDidMount() {
         this.props.updateUsername(localStorage.getItem("Username"))
+        let self = this;
+        axios.get(`http://localhost:5000/api/userprofile/userinformation/${this.props.username}`,{
+
+        headers:{
+            "x-auth-username"
+        :
+            this.props.username,
+                "x-auth-token"
+        :
+                    JSON.parse(localStorage.getItem("token"))
+        }
+            }
+
+        ).then(function (response) {
+            // handle success
+            if (response.data.success === "true") {
+                self.props.updateUsername(response.data.data.username)
+                self.props.updateFullname(response.data.data.fullname)
+                self.props.updateEmail(response.data.data.email)
+                self.props.updateRoutesCompleted(response.data.data.totalroutescompleted)
+                self.props.updateDistanceCompleted(response.data.data.totaldistancecompleted)
+                self.props.updateTotalTime(response.data.totalroutetime)
+            }
+        })
+            .catch(function (error) {
+                // handle
+                console.log(error);
+            })
+
     }
 
     componentWillUnmount() {
@@ -297,6 +328,9 @@ function mapDispatchToProps(dispatch) {
     return {
         updateUsername: (item) => {
             dispatch(updateUsername(item))
+        },
+        updateFullname: (item) => {
+            dispatch(updateFullname(item))
         },
         updateEmail: (item) => {
             dispatch(updateEmail(item))
