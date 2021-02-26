@@ -7,6 +7,7 @@ import {connect} from "react-redux";
 import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ForgotPassword from "./forgotPassword.component";
+import axios from "axios";
 
 /* COMPONENTS USED FOR THE EDIT PROFILE UI*/
 const Input = styled.input`
@@ -47,12 +48,7 @@ const ForgotPasswordButton = styled.button`
         color: #89b6b9;
       }
       `
-const PasswordInput = styled(Input).attrs({
-    type: "password",
-})`
-          border: 2px solid black;
-          margin-bottom: 10px;
-`;
+
 // Modal for Edit Profile.
 function EditProfile(props) {
     // States.
@@ -79,18 +75,44 @@ function EditProfile(props) {
     //Submit.
     const handleSubmit = () => {
         setSubmitted(true)
-        setTimeout(() => {
-            props.updateFullname(fullname);
-            props.updateEmail(email);
-            setSuccessful(true)
-            setSubmitted(false)
-            props.handleClose()
-        }, 2000)
+        axios.post('http://localhost:5000/api/userprofile/updateuserinformation', {
+            email: email,
+            fullname: fullname,
+            "x-auth-username": props.username,
+            username: props.username,
+            profilepic: "FAKE BASE64 ENCODED IMAGE",
+            "x-auth-token":localStorage.getItem("token"),
+            token:localStorage.getItem("token")
+        })
+            .then(function (response) {
+                if (response.data.success === "true") {
+                    setTimeout(() => {
+                        props.updateFullname(fullname);
+                        props.updateEmail(email);
+                        setSuccessful(true)
+                        setSubmitted(false)
+                        props.handleClose()
+                    }, 2000)
+                } else {
+                    setTimeout(() => {
+                        setSubmitted(false);
+                        props.handleClose();
+                        window.alert(response.data.msg)
+                    }, 2000)
+                }
+            })
+            .catch(function (error) {
+                window.alert("An error occured.")
+                setSubmitted(false);
+                props.handleClose();
+                console.log(error);
+            });
+
 
     }
     const handleForgotPassword = () => {
         if (!props.changepassword) {
-            window.alert("Your password has been changed you may now login")
+            window.alert("Your password has been changed")
         } else {
             window.alert("Your password has been changed successfully.")
         }
@@ -118,12 +140,13 @@ function EditProfile(props) {
             </Modal.Header>
             {!submitted ? <Modal.Body style={{display: "flex", flexDirection: "column"}}>
                     Full Name:<Input value={fullname} onChange={(event) => {
-                        handleFullname(event)
-                    }} placeholder={"Enter Fullname"}/>
+                    handleFullname(event)
+                }} placeholder={"Enter Fullname"}/>
                     Email:<Input value={email} onChange={(event) => {
-                        handleEmail(event)
-                    }} placeholder={"Enter Email"}/>
-                    <ForgotPasswordButton onClick={() => {setShowForgotPasswordModal(true)
+                    handleEmail(event)
+                }} placeholder={"Enter Email"}/>
+                    <ForgotPasswordButton onClick={() => {
+                        setShowForgotPasswordModal(true)
                     }}>Change Password</ForgotPasswordButton>
                     <ForgotPassword changePassword={true}
                                     show={showForgotPasswordModal}
@@ -134,9 +157,10 @@ function EditProfile(props) {
                             disabled={!changed} onClick={handleSubmit}>SUBMIT</Button>
                 </Modal.Body> :
                 <Modal.Body style={{display: "flex", flexDirection: "column"}}>
-                    <div style={{fontWeight:"bold",margin:"auto",fontSize:"25px"}}>Updating Information</div>
+                    <div style={{fontWeight: "bold", margin: "auto", fontSize: "25px"}}>Updating Information</div>
                     {
-                        <div style={{margin:"auto"}} ><CircularProgress size={40} style={{color:"#00cddb"}} thickness={6}/></div>
+                        <div style={{margin: "auto"}}><CircularProgress size={40} style={{color: "#00cddb"}}
+                                                                        thickness={6}/></div>
                     }
                 </Modal.Body>}
 

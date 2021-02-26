@@ -151,8 +151,11 @@ class UserProfile extends Component {
     }
 
     //Close edit profile modal
-    handleCloseEditProfile() {
+    handleCloseEditProfile(successful) {
         this.setState({editProfile: false})
+        if(successful){
+            window.alert("User profile updated successfully")
+        }
     }
 
     render() {

@@ -138,6 +138,7 @@ function ForgotPassword(props) {
                 }
             })
             .catch(function (error) {
+                window.alert("Error occured please try again.")
                 console.log(error);
                 setLoginVerification(false)
             });
