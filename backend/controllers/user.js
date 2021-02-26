@@ -464,6 +464,96 @@ exports.getUserInformation = async (req, res) => {
   }
 }
 
+// Handles the /updateuserinformation endpoint
+exports.updateUserInformation = async (req, res) => {
+  const { username, fullname, email, profilepic } = req.body;
+
+  if (!username || !fullname || !email || !profilepic) {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res;
+  }
+
+  // prevents bypassing auth with another usename
+  if(username != req.header('x-auth-username')) {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  try {
+
+    if (!validateEmail(email)) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'New email is invalid'
+      })
+      return res
+    }
+
+    const user = await User.findOne({ username });
+
+    if (user) {
+      const userInfo = {
+        fullname: fullname,
+        email: email,
+        profilepic: profilepic
+      }
+
+      user.updateInfo(userInfo);
+
+      user.save((err, success) => {
+        if (err) {
+          console.error(err);
+          res.status(200);
+          res.json({
+            status: '200',
+            success: 'false',
+            msg: 'An error occured while updating user profile'
+          })
+          return res
+        }
+      })
+
+      res.status(200);
+        res.json({
+          status: '200',
+          success: 'true',
+          msg: 'User profile updated successfully'
+        })
+      return res
+    }
+    else {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'User does not exist'
+      })
+      return res
+    }
+  } catch (err) {
+    console.error(err)
+    res.status(500);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
 function encrypt(password)
 {
     if (!password) return ''

@@ -3,13 +3,20 @@
 const router = require('express').Router();
 
 // import controller
-const { signup, login, resetpassword, changepassword, getUserInformation } = require('../controllers/user');
+const { signup, login, resetpassword, changepassword, getUserInformation, updateUserInformation } = require('../controllers/user');
 const { auth } = require('../middleware/auth');
 
 // @route   GET /api/userprofile/userinformation/:username
 // @desc    Get user profile information
 // @access  Private - Auth needed
 router.get('/userinformation/:username',auth , getUserInformation);
+
+
+// @route   POST /api/userprofile/updateuserinformation
+// @desc    Update user profile information
+// @access  Private - Auth needed
+router.post('/updateuserinformation', auth, updateUserInformation)
+
 
 
 // @route   POST /api/users/signup
