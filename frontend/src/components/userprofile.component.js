@@ -23,6 +23,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
 import FavouriteRoutes from "./favouriteRoutes.component";
 import axios from "axios";
+import {updateCreatedRoutes} from "../actions/routes";
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 
 const UserProfileContainer = styled.div`
@@ -148,18 +149,15 @@ class UserProfile extends Component {
     componentDidMount() {
         this.props.updateUsername(localStorage.getItem("Username"))
         let self = this;
-        axios.get(`http://localhost:5000/api/userprofile/userinformation/${this.props.username}`,{
+        axios.get(`http://localhost:5000/api/userprofile/userinformation/${this.props.username}`, {
 
-        headers:{
-            "x-auth-username"
-        :
-            this.props.username,
-                "x-auth-token"
-        :
-                    JSON.parse(localStorage.getItem("token"))
-        }
+                headers: {
+                    "x-auth-username":
+                    this.props.username,
+                    "x-auth-token":
+                        JSON.parse(localStorage.getItem("token"))
+                }
             }
-
         ).then(function (response) {
             // handle success
             if (response.data.success === "true") {
@@ -169,6 +167,26 @@ class UserProfile extends Component {
                 self.props.updateRoutesCompleted(response.data.data.totalroutescompleted)
                 self.props.updateDistanceCompleted(response.data.data.totaldistancecompleted)
                 self.props.updateTotalTime(response.data.totalroutetime)
+
+                axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${self.props.username}`, {
+
+                        headers: {
+                            "x-auth-username":
+                            self.props.username,
+                            "x-auth-token":
+                                JSON.parse(localStorage.getItem("token"))
+                        }
+                    }
+                ).then(function (response) {
+                    // handle success
+                    if (response.data.success === "true") {
+                        self.props.updateCreatedRoutes(response.data.data)
+                    }
+                })
+                    .catch(function (error) {
+                        // handle
+                        console.log(error);
+                    })
             }
         })
             .catch(function (error) {
@@ -176,6 +194,57 @@ class UserProfile extends Component {
                 console.log(error);
             })
 
+
+
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        this.props.updateUsername(localStorage.getItem("Username"))
+        let self = this;
+        axios.get(`http://localhost:5000/api/userprofile/userinformation/${this.props.username}`, {
+
+                headers: {
+                    "x-auth-username":
+                    this.props.username,
+                    "x-auth-token":
+                        JSON.parse(localStorage.getItem("token"))
+                }
+            }
+        ).then(function (response) {
+            // handle success
+            if (response.data.success === "true") {
+                self.props.updateUsername(response.data.data.username)
+                self.props.updateFullname(response.data.data.fullname)
+                self.props.updateEmail(response.data.data.email)
+                self.props.updateRoutesCompleted(response.data.data.totalroutescompleted)
+                self.props.updateDistanceCompleted(response.data.data.totaldistancecompleted)
+                self.props.updateTotalTime(response.data.totalroutetime)
+
+                axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${this.props.username}`, {
+
+                        headers: {
+                            "x-auth-username":
+                            self.props.username,
+                            "x-auth-token":
+                                JSON.parse(localStorage.getItem("token"))
+                        }
+                    }
+                ).then(function (response) {
+                    // handle success
+                    if (response.data.success === "true") {
+                        self.props.updateCreatedRoutes(response.data.data)
+                    }
+                })
+                    .catch(function (error) {
+                        // handle
+                        console.log(error);
+                    })
+            }
+        })
+            .catch(function (error) {
+                // handle
+                console.log(error);
+            })
     }
 
     componentWillUnmount() {
@@ -184,12 +253,12 @@ class UserProfile extends Component {
     //Close edit profile modal
     handleCloseEditProfile(successful) {
         this.setState({editProfile: false})
-        if(successful){
+        if (successful) {
             window.alert("User profile updated successfully")
         }
     }
-
     render() {
+
         return (
             <UserProfileContainer>
                 <CoverPhoto/>
@@ -286,6 +355,7 @@ function UserProfileTabs(props) {
         </div>
     );
 }
+
 // Material UI Tab panel.
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
@@ -343,6 +413,9 @@ function mapDispatchToProps(dispatch) {
         },
         updateTotalTime: (item) => {
             dispatch(updateTotalTime(item))
+        },
+        updateCreatedRoutes: (item) => {
+            dispatch(updateCreatedRoutes(item))
         },
 
     }
