@@ -162,12 +162,10 @@ class UserProfile extends Component {
             // handle success
             if (response.data.success === "true") {
                 // Update user profile information
+                console.log(response)
                 self.props.updateUsername(response.data.data.username)
                 self.props.updateFullname(response.data.data.fullname)
                 self.props.updateEmail(response.data.data.email)
-                self.props.updateRoutesCompleted(response.data.data.totalroutescompleted)
-                self.props.updateDistanceCompleted(response.data.data.totaldistancecompleted)
-                self.props.updateTotalTime(response.data.totalroutetime)
                 // Get routes if profile information is successful
                 axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${self.props.username}`, {
                         headers: {
@@ -223,16 +221,11 @@ class UserProfile extends Component {
                         </Username>
                         <CardItem style={{margin: "auto"}}><CardTitle><FontAwesomeIcon icon={faEnvelope} size="lg"/>
                         </CardTitle><CardText>{this.props.email}</CardText></CardItem>
-                        <UserInformationCard>
-                            <CardItem><CardTitle>{"Routes Completed: "}</CardTitle><CardText>{this.props.routesCompleted}</CardText></CardItem>
-                            <CardItem><CardTitle>{"Distance Completed: "}</CardTitle><CardText>{this.props.distanceCompleted}</CardText></CardItem>
-                            <CardItem><CardTitle>{"Total Time: "}</CardTitle><CardText>{this.props.totalTime}</CardText></CardItem>
-                        </UserInformationCard>
                         <Button style={{marginTop: "10px"}} onClick={() => this.setState({editProfile: true})}>Edit
                             Profile</Button>
                     </div>
                 </UserInformationContainer>
-                <TabDiv style={{width: "100%", marginTop: "10%"}}>
+                <TabDiv style={{width: "100%", marginTop: "5%"}}>
                     <UserProfileTabs createdRoutes={this.props.createdRoutes}
                                      favouriteRoutes={this.props.favouriteRoutes}/>
                 </TabDiv>
