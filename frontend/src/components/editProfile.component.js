@@ -6,6 +6,7 @@ import {updateEmail, updateUsername, updateFullname} from "../actions/userProfil
 import {connect} from "react-redux";
 import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import ForgotPassword from "./forgotPassword.component";
 
 /* COMPONENTS USED FOR THE EDIT PROFILE UI*/
 const Input = styled.input`
@@ -36,7 +37,16 @@ const Button = styled.button`
         background: #89b6b9;
       }
 `;
-
+const ForgotPasswordButton = styled.button`
+      color: #00cddb;
+      background: white;
+      border: 0;
+      margin-top: 0;
+      margin-bottom: 20px;
+            &:hover {
+        color: #89b6b9;
+      }
+      `
 const PasswordInput = styled(Input).attrs({
     type: "password",
 })`
@@ -46,19 +56,12 @@ const PasswordInput = styled(Input).attrs({
 // Modal for Edit Profile.
 function EditProfile(props) {
     // States.
-    const [username, setUsername] = useState(props.username);
     const [fullname, setFullname] = useState(props.fullname);
     const [email, setEmail] = useState(props.email);
-    const [password, setPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
+    const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [successful, setSuccessful] = useState(false);
     const [changed, setChanged] = useState(false);
-    //username input handler
-    const handleUsername = (event) => {
-        setUsername(event.target.value);
-        setChanged(true)
-    }
 
     //full name input handler
     const handleFullname = (event) => {
@@ -72,43 +75,36 @@ function EditProfile(props) {
         setChanged(true)
 
     }
-    //password input handler
-    const handlePasswordInput = (event) => {
-        setPassword(event.target.value);
-        setChanged(true)
-
-    }
-    //new password input handler
-    const handleNewPasswordInput = (event) => {
-        setNewPassword(event.target.value);
-        setChanged(true)
-
-    }
 
     //Submit.
     const handleSubmit = () => {
         setSubmitted(true)
-        if(!successful) {
-            setTimeout(() => {
-                props.updateUsername(username);
-                props.updateFullname(fullname);
-                props.updateEmail(email);
-                // TODO; PERSIST USER INFORMATION
-                localStorage.setItem("Username",username)
-                setSuccessful(true)
-                setSubmitted(false)
-                props.handleClose()
-            }, 2000)
+        setTimeout(() => {
+            props.updateFullname(fullname);
+            props.updateEmail(email);
+            setSuccessful(true)
+            setSubmitted(false)
+            props.handleClose()
+        }, 2000)
+
+    }
+    const handleForgotPassword = () => {
+        if (!props.changepassword) {
+            window.alert("Your password has been changed you may now login")
+        } else {
+            window.alert("Your password has been changed successfully.")
         }
     }
+    const handleForgotPasswordClose = () => {
+        setShowForgotPasswordModal(false)
+    }
+
 
     // mount and unmount hooks.
     useEffect(() => {
         setSubmitted(false)
-        setSuccessful(false)
         return () => {
             setSubmitted(false)
-            setSuccessful(false)
         }
     }, [])
 
@@ -121,29 +117,26 @@ function EditProfile(props) {
                 <Modal.Title style={{marginRight: "auto", marginLeft: "auto"}}>Edit Profile</Modal.Title>
             </Modal.Header>
             {!submitted ? <Modal.Body style={{display: "flex", flexDirection: "column"}}>
-                    Username:<Input value={username} onChange={(event) => {
-                        handleUsername(event)
-                    }} placeholder={"Enter Username"}/>
-                    Fullname:<Input value={fullname} onChange={(event) => {
+                    Full Name:<Input value={fullname} onChange={(event) => {
                         handleFullname(event)
                     }} placeholder={"Enter Fullname"}/>
                     Email:<Input value={email} onChange={(event) => {
                         handleEmail(event)
                     }} placeholder={"Enter Email"}/>
-                    Password:<PasswordInput value={password} onChange={(event) => {
-                        handlePasswordInput(event)
-                    }} placeholder={"Enter Password"}/>
-                    New Password:<PasswordInput value={newPassword} onChange={(event) => {
-                        handleNewPasswordInput(event)
-                    }} placeholder={"Enter New Password"}/>
+                    <ForgotPasswordButton onClick={() => {setShowForgotPasswordModal(true)
+                    }}>Change Password</ForgotPasswordButton>
+                    <ForgotPassword changePassword={true}
+                                    show={showForgotPasswordModal}
+                                    handleForgotPassword={handleForgotPassword}
+                                    handleClose={handleForgotPasswordClose}
+                    />
                     <Button style={{background: !changed ? "#89b6b9" : "#00cddb"}}
                             disabled={!changed} onClick={handleSubmit}>SUBMIT</Button>
                 </Modal.Body> :
                 <Modal.Body style={{display: "flex", flexDirection: "column"}}>
                     <div style={{fontWeight:"bold",margin:"auto",fontSize:"25px"}}>Updating Information</div>
-                    {successful ? <>
-                        SUBMITTED SUCCESSFULLY!
-                    </> : <div style={{margin:"auto"}} ><CircularProgress size={40} style={{color:"#00cddb"}} thickness={6}/></div>
+                    {
+                        <div style={{margin:"auto"}} ><CircularProgress size={40} style={{color:"#00cddb"}} thickness={6}/></div>
                     }
                 </Modal.Body>}
 
