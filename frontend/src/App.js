@@ -23,6 +23,7 @@ function App() {
           <div><NavbarComponent /></div>
           <Switch>
           <Route path="/" exact component={Home} />
+          <Route path="/Home" exact component={Home} />
           <Route path="/signup" exact component={SignUp} />
           <Route path="/userprofile" exact component={UserProfile} />
           </Switch>

@@ -4,6 +4,7 @@ import {
     updateEmail,
     updateRoutesCompleted,
     updateDistanceCompleted,
+    updateFullname,
     updateTotalTime
 } from "../actions/userProfile";
 import PropTypes from 'prop-types';
@@ -21,6 +22,8 @@ import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
 import FavouriteRoutes from "./favouriteRoutes.component";
+import axios from "axios";
+import {updateCreatedRoutes} from "../actions/routes";
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 
 const UserProfileContainer = styled.div`
@@ -144,18 +147,67 @@ class UserProfile extends Component {
     }
 
     componentDidMount() {
+        // Get user information
         this.props.updateUsername(localStorage.getItem("Username"))
+        let self = this;
+        axios.get(`http://localhost:5000/api/userprofile/userinformation/${localStorage.getItem("Username")}`, {
+                headers: {
+                    "x-auth-username":
+                        localStorage.getItem("Username"),
+                    "x-auth-token":
+                        JSON.parse(localStorage.getItem("token"))
+                }
+            }
+        ).then(function (response) {
+            // handle success
+            if (response.data.success === "true") {
+                // Update user profile information
+                console.log(response)
+                self.props.updateUsername(response.data.data.username)
+                self.props.updateFullname(response.data.data.fullname)
+                self.props.updateEmail(response.data.data.email)
+                // Get routes if profile information is successful
+                axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${self.props.username}`, {
+                        headers: {
+                            "x-auth-username":
+                            self.props.username,
+                            "x-auth-token":
+                                JSON.parse(localStorage.getItem("token"))
+                        }
+                    }
+                ).then(function (response) {
+                    // handle success and update routes.
+                    if (response.data.success === "true") {
+                        self.props.updateCreatedRoutes(response.data.data)
+                    }
+                })
+                    .catch(function (error) {
+                        // handle
+                        console.log(error);
+                    })
+            }
+        })
+            .catch(function (error) {
+                // handle
+                console.log(error);
+            })
+
+
+
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
     }
 
     componentWillUnmount() {
     }
 
     //Close edit profile modal
-    handleCloseEditProfile() {
+    handleCloseEditProfile(successful) {
         this.setState({editProfile: false})
     }
-
     render() {
+
         return (
             <UserProfileContainer>
                 <CoverPhoto/>
@@ -169,16 +221,11 @@ class UserProfile extends Component {
                         </Username>
                         <CardItem style={{margin: "auto"}}><CardTitle><FontAwesomeIcon icon={faEnvelope} size="lg"/>
                         </CardTitle><CardText>{this.props.email}</CardText></CardItem>
-                        <UserInformationCard>
-                            <CardItem><CardTitle>{"Routes Completed: "}</CardTitle><CardText>{this.props.routesCompleted}</CardText></CardItem>
-                            <CardItem><CardTitle>{"Distance Completed: "}</CardTitle><CardText>{this.props.distanceCompleted}</CardText></CardItem>
-                            <CardItem><CardTitle>{"Total Time: "}</CardTitle><CardText>{this.props.totalTime}</CardText></CardItem>
-                        </UserInformationCard>
                         <Button style={{marginTop: "10px"}} onClick={() => this.setState({editProfile: true})}>Edit
                             Profile</Button>
                     </div>
                 </UserInformationContainer>
-                <TabDiv style={{width: "100%", marginTop: "10%"}}>
+                <TabDiv style={{width: "100%", marginTop: "5%"}}>
                     <UserProfileTabs createdRoutes={this.props.createdRoutes}
                                      favouriteRoutes={this.props.favouriteRoutes}/>
                 </TabDiv>
@@ -252,6 +299,7 @@ function UserProfileTabs(props) {
         </div>
     );
 }
+
 // Material UI Tab panel.
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
@@ -295,6 +343,9 @@ function mapDispatchToProps(dispatch) {
         updateUsername: (item) => {
             dispatch(updateUsername(item))
         },
+        updateFullname: (item) => {
+            dispatch(updateFullname(item))
+        },
         updateEmail: (item) => {
             dispatch(updateEmail(item))
         },
@@ -306,6 +357,9 @@ function mapDispatchToProps(dispatch) {
         },
         updateTotalTime: (item) => {
             dispatch(updateTotalTime(item))
+        },
+        updateCreatedRoutes: (item) => {
+            dispatch(updateCreatedRoutes(item))
         },
 
     }

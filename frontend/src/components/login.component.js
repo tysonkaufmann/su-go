@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import styled from 'styled-components'
 import background3 from "../assets/images/background1.png";
 import {connect} from "react-redux";
-import {updateUsername} from "../actions/userProfile"
+import {updateEmail, updateFullname, updateUsername} from "../actions/userProfile"
 import ForgotPassword from "./forgotPassword.component";
 import SignUp from "./signup.component";
 import {Link} from "react-router-dom";
+import axios from "axios";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const LoginContainer = styled.div`
@@ -102,8 +103,10 @@ class Login extends Component {
     constructor() {
         super();
         this.state = {username: "", password: "", showForgotPasswordModal: false, showSignUp:false,
-        loginVerification: false
         };
+    }
+    componentDidMount() {
+
     }
 
     //Username handler
@@ -119,10 +122,26 @@ class Login extends Component {
     handleSubmit = () => {
         //Axios call to verify username and password
         //Setting mock user token
-        this.props.setToken("Test123");
-        localStorage.setItem("Username",this.state.username)
         // If successful login update redux state username. (user profile)
+        var self = this;
         this.props.updateUsername(this.state.username)
+        axios.post('http://localhost:5000/api/user/login', {
+            username: this.state.username,
+            password: this.state.password,
+        })
+            .then(function (response) {
+                if(response.data.success === "true") {
+                    localStorage.setItem("Username", self.state.username)
+                    localStorage.setItem("Expires", response.data.expiresin)
+                    self.props.setToken(response.data.token);
+                }else{
+                    window.alert(response.data.msg)
+                }
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
     //Handle modal close.
     handleForgotPasswordClose = () => {
@@ -133,11 +152,10 @@ class Login extends Component {
         this.setState({showSignUp: false})
     }
     // handling forgotten password. ( TODO: update endpoint )
-    handleForgotPassword = (username) => {
-        // window.alert(`Please check your email ${username} for your password.`)
+    handleForgotPassword = () => {
         // check if email sent is successful
         // if true set Login Verification true
-        this.setState({loginVerification: true,})
+        window.alert("Your password has been changed you may now login")
     }
 
     render() {
@@ -150,7 +168,7 @@ class Login extends Component {
                         <LoginText>Log In</LoginText>
                         Your Account
                         <UsernameInput value={this.state.username} onChange={this.handleUsername.bind(this)}
-                                       placeholder={"Enter Username or Email"}/>
+                                       placeholder={"Enter Username"}/>
                         Password
                         <PasswordInput placeholder={"Enter Password"} onChange={this.handlePassword.bind(this)}/>
                         <ForgotPasswordButton onClick={() => {
@@ -159,7 +177,6 @@ class Login extends Component {
                         <ForgotPassword show={this.state.showForgotPasswordModal}
                                         handleForgotPassword={this.handleForgotPassword}
                                         handleClose={this.handleForgotPasswordClose}
-                                        loginVerification={this.state.loginVerification}
                         />
 
                         <Button style={{background: isInputValid ? "#89b6b9" : "#00cddb"}}
@@ -185,6 +202,12 @@ function mapDispatchToProps(dispatch) {
         updateUsername: (item) => {
             dispatch(updateUsername(item))
         },
+        updateEmail: (item) => {
+            dispatch(updateEmail(item))
+        },
+        updateFullname: (item) => {
+            dispatch(updateFullname(item))
+        },
 
     }
 }
@@ -192,6 +215,8 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         username: state,
+        fullname: state.userProfile.fullname,
+        email: state.userProfile.email,
     }
 }
 
