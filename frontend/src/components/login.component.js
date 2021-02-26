@@ -153,7 +153,6 @@ class Login extends Component {
     }
     // handling forgotten password. ( TODO: update endpoint )
     handleForgotPassword = () => {
-        // window.alert(`Please check your email ${username} for your password.`)
         // check if email sent is successful
         // if true set Login Verification true
         window.alert("Your password has been changed you may now login")

@@ -76,7 +76,6 @@ function ForgotPassword(props) {
     //Submit forgot password.
     const handleSubmit = () => {
         setSubmitted(true)
-        // props.handleForgotPassword(username);
 
         axios.post('http://localhost:5000/api/user/resetpassword', {
             username: username

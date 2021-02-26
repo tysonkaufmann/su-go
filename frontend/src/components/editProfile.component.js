@@ -53,8 +53,8 @@ const ForgotPasswordButton = styled.button`
 function EditProfile(props) {
     // States.
 
-    const [fullname, setFullname] = useState(props.fullname);
-    const [email, setEmail] = useState(props.email);
+    const [fullname, setFullname] = useState("");
+    const [email, setEmail] = useState("");
     const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [successful, setSuccessful] = useState(false);
@@ -73,22 +73,19 @@ function EditProfile(props) {
 
     }
 
-    //Submit.
+    //Submit the update profile.
     const handleSubmit = () => {
         setSubmitted(true)
         axios.post('http://localhost:5000/api/userprofile/updateuserinformation', {
-            email: email,
+            username: props.username,
             fullname: fullname,
+            email: email,
             profilepic: "FAKE BASE64 ENCODED IMAGE",
-            headers:{
-                "x-auth-username"
-                    :
-                props.username,
-                "x-auth-token"
-                    :
-                    JSON.parse(localStorage.getItem("token"))
-            },
-
+        }, {
+            headers: {
+                "x-auth-username": props.username,
+                "x-auth-token": JSON.parse(localStorage.getItem("token"))
+            }
         })
             .then(function (response) {
                 if (response.data.success === "true") {
@@ -108,25 +105,19 @@ function EditProfile(props) {
                 }
             })
             .catch(function (error) {
-                window.alert("An error occured.")
+                // Errors.
+                window.alert("An error occured while updating.")
                 setSubmitted(false);
                 props.handleClose();
                 console.log(error);
             });
-
-
     }
     const handleForgotPassword = () => {
-        if (!props.changepassword) {
             window.alert("Your password has been changed")
-        } else {
-            window.alert("Your password has been changed successfully.")
-        }
     }
     const handleForgotPasswordClose = () => {
         setShowForgotPasswordModal(false)
     }
-
 
     // mount and unmount hooks.
     useEffect(() => {
@@ -136,6 +127,12 @@ function EditProfile(props) {
         }
     }, [])
 
+    useEffect(() => {
+        setEmail(props.email)
+        setFullname(props.fullname)
+        return () => {
+        }
+    }, [props.show])
     return (
         <Modal show={props.show} onHide={props.handleClose} centered>
             <Modal.Header>
@@ -169,7 +166,6 @@ function EditProfile(props) {
                                                                         thickness={6}/></div>
                     }
                 </Modal.Body>}
-
             <Modal.Footer>
 
             </Modal.Footer>

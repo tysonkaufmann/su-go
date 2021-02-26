@@ -147,13 +147,13 @@ class UserProfile extends Component {
     }
 
     componentDidMount() {
+        // Get user information
         this.props.updateUsername(localStorage.getItem("Username"))
         let self = this;
-        axios.get(`http://localhost:5000/api/userprofile/userinformation/${this.props.username}`, {
-
+        axios.get(`http://localhost:5000/api/userprofile/userinformation/${localStorage.getItem("Username")}`, {
                 headers: {
                     "x-auth-username":
-                    this.props.username,
+                        localStorage.getItem("Username"),
                     "x-auth-token":
                         JSON.parse(localStorage.getItem("token"))
                 }
@@ -161,15 +161,15 @@ class UserProfile extends Component {
         ).then(function (response) {
             // handle success
             if (response.data.success === "true") {
+                // Update user profile information
                 self.props.updateUsername(response.data.data.username)
                 self.props.updateFullname(response.data.data.fullname)
                 self.props.updateEmail(response.data.data.email)
                 self.props.updateRoutesCompleted(response.data.data.totalroutescompleted)
                 self.props.updateDistanceCompleted(response.data.data.totaldistancecompleted)
                 self.props.updateTotalTime(response.data.totalroutetime)
-
+                // Get routes if profile information is successful
                 axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${self.props.username}`, {
-
                         headers: {
                             "x-auth-username":
                             self.props.username,
@@ -178,7 +178,7 @@ class UserProfile extends Component {
                         }
                     }
                 ).then(function (response) {
-                    // handle success
+                    // handle success and update routes.
                     if (response.data.success === "true") {
                         self.props.updateCreatedRoutes(response.data.data)
                     }
@@ -199,52 +199,6 @@ class UserProfile extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        this.props.updateUsername(localStorage.getItem("Username"))
-        let self = this;
-        axios.get(`http://localhost:5000/api/userprofile/userinformation/${this.props.username}`, {
-
-                headers: {
-                    "x-auth-username":
-                    this.props.username,
-                    "x-auth-token":
-                        JSON.parse(localStorage.getItem("token"))
-                }
-            }
-        ).then(function (response) {
-            // handle success
-            if (response.data.success === "true") {
-                self.props.updateUsername(response.data.data.username)
-                self.props.updateFullname(response.data.data.fullname)
-                self.props.updateEmail(response.data.data.email)
-                self.props.updateRoutesCompleted(response.data.data.totalroutescompleted)
-                self.props.updateDistanceCompleted(response.data.data.totaldistancecompleted)
-                self.props.updateTotalTime(response.data.totalroutetime)
-
-                axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${this.props.username}`, {
-
-                        headers: {
-                            "x-auth-username":
-                            self.props.username,
-                            "x-auth-token":
-                                JSON.parse(localStorage.getItem("token"))
-                        }
-                    }
-                ).then(function (response) {
-                    // handle success
-                    if (response.data.success === "true") {
-                        self.props.updateCreatedRoutes(response.data.data)
-                    }
-                })
-                    .catch(function (error) {
-                        // handle
-                        console.log(error);
-                    })
-            }
-        })
-            .catch(function (error) {
-                // handle
-                console.log(error);
-            })
     }
 
     componentWillUnmount() {
@@ -253,9 +207,6 @@ class UserProfile extends Component {
     //Close edit profile modal
     handleCloseEditProfile(successful) {
         this.setState({editProfile: false})
-        if (successful) {
-            window.alert("User profile updated successfully")
-        }
     }
     render() {
 

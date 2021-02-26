@@ -4,9 +4,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 import {updateEmail, updateUsername, updateFullname} from "../actions/userProfile";
 import {connect} from "react-redux";
-import ForgotPassword from "./forgotPassword.component";
 import styled from "styled-components";
-import background3 from "../assets/images/background1.png";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from "axios";
 
