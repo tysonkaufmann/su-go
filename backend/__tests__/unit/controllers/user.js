@@ -1,5 +1,13 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const { signup, login, encrypt, resetpassword, changepassword, getUserInformation } = require('../../../controllers/user.js')
+const { 
+  signup, 
+  login, 
+  encrypt, 
+  resetpassword, 
+  changepassword, 
+  getUserInformation, 
+  updateUserInformation 
+} = require('../../../controllers/user.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
 const Verification = require('../../../models/verification')
@@ -184,6 +192,250 @@ describe("User", () => {
         expect(data.json.status).toBe(expectedResponse.status);
         expect(data.json.success).toBe(expectedResponse.success);
       });
+
+    });
+
+    it('Update User Profile Failed - No Username Provided', async() => {
+      jest.setTimeout(30000);
+      const req = mockRequest({
+        headers: { "x-auth-username" : "Cheng" },
+        header: function(header) {
+          return this.headers[header]
+        },
+        body: {
+          username: "Cheng",
+          fullname: "C L",
+          email: "test@test.com",
+        }
+      });
+      var res = mockResponse({ hostname: 'tester', 
+        status : function(statusCode) {
+          this.status = statusCode
+        },
+        json : function(body) {
+          this.json = body
+        }, 
+      });
+
+      var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+      }
+
+      var response = await updateUserInformation(req, res)
+      expect(response.json.status).toBe(expectedResponse.status);
+      expect(response.json.success).toBe(expectedResponse.success);
+      expect(response.json.msg).toBe(expectedResponse.msg);
+    })
+
+    it('Update User Profile Failed - No Fullname Provided', async() => {
+      jest.setTimeout(30000);
+      const req = mockRequest({ 
+        headers: { "x-auth-username" : "Cheng" },
+        header: function(header) {
+          return this.headers[header]
+        },
+        body: {
+          username: "Cheng",
+          email: "test@test.com",
+          profilepic: "FAKE BASE64 ENCODED STRING"
+        }
+      });
+      var res = mockResponse({ hostname: 'tester', 
+        status : function(statusCode) {
+          this.status = statusCode
+        },
+        json : function(body) {
+          this.json = body
+        }, 
+      });
+
+      var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+      }
+
+      var response = await updateUserInformation(req, res)
+      expect(response.json.status).toBe(expectedResponse.status);
+      expect(response.json.success).toBe(expectedResponse.success);
+      expect(response.json.msg).toBe(expectedResponse.msg);
+    })
+
+    it('Update User Profile Failed - No Email Provided', async() => {
+      jest.setTimeout(30000);
+      const req = mockRequest({
+        headers: { "x-auth-username" : "Cheng" },
+        header: function(header) {
+          return this.headers[header]
+        },
+        body: {
+          username: "Cheng",
+          fullname: "C L",
+          profilepic: "FAKE BASE64 ENCODED STRING"
+        }
+      });
+      var res = mockResponse({ hostname: 'tester', 
+        status : function(statusCode) {
+          this.status = statusCode
+        },
+        json : function(body) {
+          this.json = body
+        }, 
+      });
+
+      var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+      }
+
+      var response = await updateUserInformation(req, res)
+      expect(response.json.status).toBe(expectedResponse.status);
+      expect(response.json.success).toBe(expectedResponse.success);
+      expect(response.json.msg).toBe(expectedResponse.msg);
+    })
+
+    it('Update User Profile Failed - No Profile Picture Provided', async() => {
+      jest.setTimeout(30000);
+      const req = mockRequest({ 
+        headers: { "x-auth-username" : "Cheng" },
+        header: function(header) {
+          return this.headers[header]
+        },
+          body: {
+          username: "Cheng",
+          fullname: "C L",
+          email: "test@test.com",
+        }
+      });
+      var res = mockResponse({ hostname: 'tester', 
+        status : function(statusCode) {
+          this.status = statusCode
+        },
+        json : function(body) {
+          this.json = body
+        }, 
+      });
+
+      var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+      }
+
+      var response = await updateUserInformation(req, res)
+      expect(response.json.status).toBe(expectedResponse.status);
+      expect(response.json.success).toBe(expectedResponse.success);
+      expect(response.json.msg).toBe(expectedResponse.msg);
+    })
+
+    test("Update User Profile Failed - Wrong x-auth-username", async() => {
+      jest.setTimeout(30000);
+      var req = mockRequest({ 
+        header: function(header) {
+          return false
+        },
+        body: {
+          username: "Cheng",
+          fullname: "C L",
+          email: "test@test.com",
+          profilepic: "FAKE BASE64 ENCODED STRING"
+        }
+      });
+
+      var res = mockResponse({ hostname: 'tester',
+        status : function(statusCode) {
+          this.status = statusCode
+        },
+        json : function(body) {
+          this.json = body
+        },
+      });
+
+      var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+      }
+
+      var response = await updateUserInformation(req, res)
+      expect(response.json.status).toBe(expectedResponse.status);
+      expect(response.json.success).toBe(expectedResponse.success);
+      expect(response.json.msg).toBe(expectedResponse.msg);
+
+    });
+
+    test("Update User Profile Failed - Invalid Email", async() => {
+      jest.setTimeout(30000);
+      var req = mockRequest({ 
+        headers: { "x-auth-username" : "Cheng" },
+        header: function(header) {
+          return this.headers[header]
+        },
+        body: {
+          username: "Cheng",
+          fullname: "C L",
+          email: "testtest.com",
+          profilepic: "FAKE BASE64 ENCODED STRING"
+        }
+      });
+
+      var res = mockResponse({ hostname: 'tester',
+        status : function(statusCode) {
+          this.status = statusCode
+        },
+        json : function(body) {
+          this.json = body
+        },
+      });
+
+      var expectedResponse = {
+        "status": "200",
+        "success": "false",
+        "msg": "New email is invalid"
+      }
+
+      var response = await updateUserInformation(req, res)
+      expect(response.json.status).toBe(expectedResponse.status);
+      expect(response.json.success).toBe(expectedResponse.success);
+      expect(response.json.msg).toBe(expectedResponse.msg);
+    });
+
+    test("Update User Profile Failed - User Not Found", async() => {
+      jest.setTimeout(30000);
+      var req = mockRequest({ 
+        header: function(header) {
+          return "fakefakefake"
+        },
+        body: {
+          username: "fakefakefake",
+          fullname: "C L",
+          email: "test@test.com",
+          profilepic: "FAKE BASE64 ENCODED STRING"
+        }
+      });
+
+      var res = mockResponse({ hostname: 'tester',
+        status : function(statusCode) {
+          this.status = statusCode
+        },
+        json : function(body) {
+          this.json = body
+        },
+      });
+
+      var expectedResponse = {
+        "status": "200",
+        "success": "false",
+        "msg": "User does not exist"
+      }
+
+      var response = await updateUserInformation(req, res)
+      expect(response.json.status).toBe(expectedResponse.status);
+      expect(response.json.success).toBe(expectedResponse.success);
+      expect(response.json.msg).toBe(expectedResponse.msg);
 
     });
 

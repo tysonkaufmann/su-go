@@ -37,6 +37,11 @@ userSchema.methods = {
   },
   changepassword: function (password) {
     this.password = password
+  },
+  updateInfo: function (userInfo) {
+      this.fullname = userInfo.fullname
+      this.email = userInfo.email
+      this.profilepic = userInfo.profilepic
   }
 }
 

@@ -587,6 +587,167 @@ it('Get User Information - Successful', async done => {
   done()
 })
 
+it('Update User Information - No x-auth-username', async done => {
+  jest.setTimeout(30000);
+  payload = {
+    username: "Cheng",
+    fullname: "C L",
+    email: "test@test.com",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+
+  var expectedResponse = { "msg": "No username, authorization denied" }
+
+  const response = await request.post('/api/userprofile/updateuserinformation').send(payload)
+
+  expect(response.body.msg).toBe(expectedResponse.msg);
+  done()
+})
+
+it('Update User Information - No x-auth-token', async done => {
+  jest.setTimeout(30000);
+  payload = {
+    username: "Cheng",
+    fullname: "C L",
+    email: "test@test.com",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+
+  var expectedResponse = { "msg": "No token, authorization denied" }
+
+  const response = await request.post('/api/userprofile/updateuserinformation').send(payload).set('x-auth-username', 'Cheng')
+
+  expect(response.body.msg).toBe(expectedResponse.msg);
+  done()
+})
+
+it('Update User Information - Wrong x-auth-username', async done => {
+  jest.setTimeout(30000);
+  loginPaylod = {
+    username: "Cheng",
+    password: "Test123"
+  }
+
+  payload = {
+    username: "Cheng",
+    fullname: "C L",
+    email: "test@test.com",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+
+  const response2 = await request.post('/api/user/login').send(loginPaylod)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+  var expectedResponse = { "msg": "Token is invalid" }
+  const response = await request.post('/api/userprofile/updateuserinformation').send(payload).set('x-auth-username', 'FAKEFAKE').set('x-auth-token', token)
+
+  expect(response.body.msg).toBe(expectedResponse.msg);
+  done()
+})
+
+it('Update User Information - Wrong x-auth-token', async done => {
+  jest.setTimeout(30000);
+
+  payload = {
+    username: "Cheng",
+    fullname: "C L",
+    email: "test@test.com",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+
+  var expectedResponse = { "msg": "Token is invalid" }
+  const response = await request.post('/api/userprofile/updateuserinformation').send(payload).set('x-auth-username', 'Cheng').set('x-auth-token', "fake")
+
+  expect(response.body.msg).toBe(expectedResponse.msg);
+  done()
+})
+
+it('Update User Information - Conflicting x-auth-username and POST body.data.username', async done => {
+  jest.setTimeout(30000);
+
+  loginPaylod = {
+    username: "Mitul2",
+    password: "test"
+  }
+  payload = {
+    username: "Cheng",
+    fullname: "Mitul",
+    email: "Mitul264@gmail.com",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+
+  const response2 = await request.post('/api/user/login').send(loginPaylod)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var expectedResponse = {
+    "status": "400",
+    "success": "false",
+    "msg": "Bad Request"
+  }
+
+  const response = await request.post('/api/userprofile/updateuserinformation').send(payload).set('x-auth-username', 'Mitul2').set('x-auth-token', token)
+
+  expect(response.body.msg).toBe(expectedResponse.msg);
+  expect(response.body.status).toBe(expectedResponse.status);
+  expect(response.body.success).toBe(expectedResponse.success);
+  done()
+})
+
+it('Update User Information - Successful', async done => {
+  jest.setTimeout(30000);
+
+  loginPaylod = {
+    username: "Cheng",
+    password: "Test123"
+  }
+  oldProfile = {
+    username: "Cheng",
+    fullname: "C L",
+    email: "test@test.com",
+    profilepic: "FAKE BASE64 ENCODED STRING"
+  }
+  payload = {
+    username: "Cheng",
+    fullname: "Chuck Lee",
+    email: "cl@test.com",
+    profilepic: "NEW FAKE PHOTO"
+  }
+
+  const response2 = await request.post('/api/user/login').send(loginPaylod)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var expectedResponse = {
+    "status": "200",
+    "success": "true",
+    "msg": "User profile updated successfully"
+  }
+
+  const response = await request.post('/api/userprofile/updateuserinformation').send(payload).set('x-auth-username', 'Cheng').set('x-auth-token', token)
+
+  expect(response.body.msg).toBe(expectedResponse.msg);
+  expect(response.body.status).toBe(expectedResponse.status);
+  expect(response.body.success).toBe(expectedResponse.success);
+
+
+  // change back profile
+  const response3 = await request.post('/api/userprofile/updateuserinformation').send(oldProfile).set('x-auth-username', 'Cheng').set('x-auth-token', token)
+  expect(response3.body.msg).toBe(expectedResponse.msg);
+  expect(response3.body.status).toBe(expectedResponse.status);
+  expect(response3.body.success).toBe(expectedResponse.success);
+  done()
+})
+
 
 
 afterAll(() => {
