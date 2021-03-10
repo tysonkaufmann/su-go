@@ -8,7 +8,7 @@ import background1 from "../assets/images/background1.png";
 import {Form} from 'react-bootstrap/'
 import {FormControl} from 'react-bootstrap/'
 import {Button} from 'react-bootstrap/'
-
+import MapContainerComponent from "./mapContainer.component";
 //Home page components.
 const HomeContainer = styled.div`
     display: flex;
@@ -97,9 +97,7 @@ class Home extends Component {
                     width: "100%",
                     height: "500px"
                 }}><StyledText>EXPLORE ROUTES NEARBY</StyledText>
-                    <Map
-                        title="map"
-                        src="https://maps.google.com/maps?width=500&amp;height=500&amp;hl=en&amp;q=1%20Grafton%20Street%2C%20Dublin%2C%20Ireland+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed"/>
+                <MapContainerComponent/>
                 </div>
             </HomeContainer>
         );
