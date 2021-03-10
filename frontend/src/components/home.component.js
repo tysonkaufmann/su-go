@@ -97,7 +97,7 @@ class Home extends Component {
                     width: "100%",
                     height: "500px"
                 }}><StyledText>EXPLORE ROUTES NEARBY</StyledText>
-                <MapContainerComponent/>
+                <MapContainerComponent route={[]} locate={true}/>
                 </div>
             </HomeContainer>
         );
