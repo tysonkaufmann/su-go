@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 import {
     updateCreatedRoutes
 } from "../actions/routes";
+import MapContainerComponent from "./mapContainer.component";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 
@@ -59,16 +60,14 @@ function UserCreatedRoutes(props){
                         <TitleDiv>{route.routetitle.toUpperCase()}</TitleDiv>
                         <RouteListItem key={route}>
                         {/*stub map for now.*/}
-                        <Map
-                            key={route + "1"}
-                            title="map"
-                            src="https://maps.google.com/maps?width=300&amp;height=300&amp;hl=en&amp;q=1%20Grafton%20Street%2C%20Dublin%2C%20Ireland+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed"/>
+                        <MapContainerComponent route={
+                            route.route} lat={route.lat} long={route.long} locate={false}
+                        />
                         <RouteButton>Edit</RouteButton>
                         <RouteButton color={"#D40943"}>Delete</RouteButton>
 
                     </RouteListItem>
                         <div>{"Route Description: "}{route.routedescription}</div>
-                        <div>{"Route Distance: "}{route.routedistance}</div>
                         <div>{"Route time: "}{route.routetime}</div>
                     </div>)
                 }
