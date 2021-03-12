@@ -82,8 +82,8 @@ function NavbarComponent(props) {
                         </Form>
                     </Nav>
                     <Nav className={"center"} style={{marginLeft: "10px", marginTop: "5px"}}>
-                        <Link to={"./routes"} ><Nav.Link href={"./routes"}>ROUTES</Nav.Link></Link>
-                        <Link><Nav.Link>MAP</Nav.Link></Link>
+                        <Nav.Link href={"./routes"}>ROUTES</Nav.Link>
+                        <Nav.Link href={"./map"}>MAP</Nav.Link>
                     </Nav>
                 </Nav>
                 <div style={{display: "flex", flexDirection: "row", padding: "2px", marginLeft: "2px"}}>

@@ -7,6 +7,7 @@ const initialState = {
         routetime: "abc",
         lat: 0,
         long: 0,
+        rating: 3,
         route: [
             [
                 [51.5, -0.1],
@@ -27,6 +28,7 @@ const initialState = {
             routetime: "abc",
             lat: 0,
             long: 0,
+            rating: 4.5,
             route: [
                 [
                     [53.5, -0.1],
