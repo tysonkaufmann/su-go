@@ -56,6 +56,7 @@ function NavbarComponent(props) {
 
     const UsernameText = styled.div`
         margin: 0px;
+        
     `
     return (
         <Navbar collapseOnSelect expand="lg" variant="light">
@@ -81,8 +82,8 @@ function NavbarComponent(props) {
                         </Form>
                     </Nav>
                     <Nav className={"center"} style={{marginLeft: "10px", marginTop: "5px"}}>
-                        <Nav.Link href="#features">Routes</Nav.Link>
-                        <Nav.Link href="#features">Map</Nav.Link>
+                        <Link to={"./routes"} ><Nav.Link href={"./routes"}>ROUTES</Nav.Link></Link>
+                        <Link><Nav.Link>MAP</Nav.Link></Link>
                     </Nav>
                 </Nav>
                 <div style={{display: "flex", flexDirection: "row", padding: "2px", marginLeft: "2px"}}>
