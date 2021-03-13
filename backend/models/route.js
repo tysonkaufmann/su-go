@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const routeSchema = new Schema({
   routeid: {
-    type: Number,
+    type: String,
     required: true,
     unique: true,
   },
@@ -49,9 +49,9 @@ const userSchema = new Schema({
 });
 
 // methods
-userSchema.methods = {}
+routeSchema.methods = {}
 
 // Makes the user model.
-const User = mongoose.model('Route', userSchema);
+const Route = mongoose.model('Route', routeSchema);
 
-module.exports = User;
+module.exports = Route;

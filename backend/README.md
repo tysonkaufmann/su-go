@@ -8,6 +8,7 @@
 #### install Req and Res Mocker - ``npm i -D jest-mock-req-res``
 #### install JWT - ``npm install jsonwebtoken``
 #### install Supertest - ``npm install supertest --save-dev``
+#### install UUID ``npm install uuid``
 #### To run the server - ``` npm run start```
 #### Mongoose  
 Schemas (models folder) can be added using mongoose that will directly interact with MongoDB.
