@@ -694,6 +694,70 @@ it('Get User Created Routes - Successful', async done => {
   done()
 })
 
+
+it('Get Routes - Successful', async done => {
+  jest.setTimeout(30000);
+
+  var expectedResponse = {
+    "status": "200",
+    "success": "true",
+    "data":
+      {
+        "routeid": "1",
+        "routedescription": "test description 2",
+        "username": "Cheng",
+        "routetitle": "test route 2",
+        "routetype": "test type 2",
+        "routetime": "test time 2",
+        "routedistance": 2000,
+        "photos": [
+          "fake photo",
+          "another fake photo"
+        ],
+        "mapdata": {
+          "coordinates": [
+            200,
+            200
+          ],
+          "type": "Point"
+        }
+      },
+    "msg": "user routes retrieved"
+  }
+  const response = await request.get('/api/routes/getroute/1')
+
+  expect(response.body.status).toBe(expectedResponse.status);
+  expect(response.body.success).toBe(expectedResponse.success);
+  expect(response.body.data.username).toBe(expectedResponse.data.username);
+  expect(response.body.data.routeid).toBe(expectedResponse.data.routeid);
+  expect(response.body.data.routedescription).toBe(expectedResponse.data.routedescription);
+  expect(response.body.data.routetitle).toBe(expectedResponse.data.routetitle);
+  expect(response.body.data.routetype).toBe(expectedResponse.data.routetype);
+  expect(response.body.data.routetime).toBe(expectedResponse.data.routetime);
+  expect(response.body.data.routedistance).toBe(expectedResponse.data.routedistance);
+
+  done()
+})
+
+
+it('Get Routes - No Route Found', async done => {
+  jest.setTimeout(30000);
+
+  var expectedResponse = {
+    "status": "404",
+    "success": "false",
+    "msg": "Route does not exist"
+  }
+  const response = await request.get('/api/routes/getroute/fakefakefake')
+
+  expect(response.body.status).toBe(expectedResponse.status);
+  expect(response.body.success).toBe(expectedResponse.success);
+  expect(response.body.msg).toBe(expectedResponse.msg);
+
+  done()
+})
+
+
 afterAll(() => {
   mongoose.connection.close()
   process.env.PORT=5000

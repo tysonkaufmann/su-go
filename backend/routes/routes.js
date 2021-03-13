@@ -3,7 +3,7 @@
 const router = require('express').Router();
 
 // import controller
-const { createRoute, getUserCreatedRoutes } = require('../controllers/routes');
+const { createRoute, getRoute, getUserCreatedRoutes } = require('../controllers/routes');
 
 // import middleware
 const { auth } = require('../middleware/auth')
@@ -13,11 +13,14 @@ const { auth } = require('../middleware/auth')
 // @access  Private - Auth needed
 router.get('/usercreatedroutes/:username', auth, getUserCreatedRoutes);
 
-
-
 // @route   POST /api/routes/createroute
 // @desc    creates a route
 // @access  Public
 router.post('/createroute', auth, createRoute);
+
+// @route   GET /api/routes/getroute/{ROUTEID}
+// @desc    Gets all the data with an associated route
+// @access  Public
+router.get('/getroute/:routeid', getRoute);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const { getUserCreatedRoutes, createRoute } = require('../../../controllers/routes.js')
+const { getUserCreatedRoutes, getRoute, createRoute } = require('../../../controllers/routes.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
 
@@ -708,6 +708,111 @@ describe("Route", () => {
 
     return getUserCreatedRoutes(req, res).then(data => {
       expect(data.json.msg).toBe(expectedResponse.msg);
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+    });
+
+  });
+
+
+  test("Get a route - Successful", () => {
+    jest.setTimeout(30000);
+    var req = mockRequest({
+      params: { routeid: "1" },
+      method: "GET",
+      header : function(header) {
+        return this.headers[header]
+      }
+    });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+      "status": "200",
+      "success": "true",
+      "data": [
+        {
+          "routeid": "0",
+          "routedescription": "test description 1",
+          "username": "Cheng",
+          "routetitle": "test route 1",
+          "routetype": "test type 1",
+          "routetime": "test time 1",
+          "routedistance": 1000,
+          "photos": [
+            "fake photo",
+            "another fake photo"
+          ],
+          "mapdata": {
+            "coordinates": [
+              100,
+              100
+            ],
+            "type": "Point"
+          }
+        },
+        {
+          "routeid": "1",
+          "routedescription": "test description 2",
+          "username": "Cheng",
+          "routetitle": "test route 2",
+          "routetype": "test type 2",
+          "routetime": "test time 2",
+          "routedistance": 2000,
+          "photos": [
+            "fake photo",
+            "another fake photo"
+          ],
+          "mapdata": {
+            "coordinates": [
+              200,
+              200
+            ],
+            "type": "Point"
+          }
+        }
+      ],
+      "msg": "Route does not exist"
+    }
+
+    return getRoute(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+    });
+
+  });
+
+  test("Get a route - Route Does not exist", () => {
+    jest.setTimeout(30000);
+    var req = mockRequest({
+      params: { routeid: "fakefakefake" },
+      method: "GET",
+      header : function(header) {
+        return this.headers[header]
+      }
+    });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+      "status": "404",
+      "success": "false",
+      "msg": "Route does not exist"
+    }
+
+    return getRoute(req, res).then(data => {
       expect(data.json.status).toBe(expectedResponse.status);
       expect(data.json.success).toBe(expectedResponse.success);
     });

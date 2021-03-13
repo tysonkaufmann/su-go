@@ -5,6 +5,72 @@ const User = require('../models/user')
 const Route = require('../models/route');
 const {v4 : uuidv4} = require('uuid')
 
+
+exports.getRoute = async (req, res) => {
+
+  const { routeid } = req.params
+
+  // prevents bypassing auth with another usename
+  if(!routeid)
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  try {
+    // check if route exists
+    const route = await Route.findOne({ routeid: routeid})
+
+    if (!route) {
+      res.status(404);
+      res.json({
+        status: '404',
+        success: 'false',
+        msg: 'Route does not exist'
+      })
+      return res
+    }
+
+    var data = {
+      routeid: route.routeid,
+      routedescription: route.routedescription,
+      username: route.username,
+      routetitle: route.routetitle,
+      routetype: route.routetype,
+      routetime: route.routetime,
+      routedistance: route.routedistance,
+      photos: route.photos,
+      mapdata: route.mapdata
+    }
+
+    // return the data
+    res.status(200);
+    res.json({
+      status: '200',
+      success: 'true',
+      data: data,
+      msg: 'Route retrieved'
+    })
+    return res
+
+  } catch (err) {
+    console.error(err)
+    res.status(500);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
+
 exports.createRoute = async (req, res) => {
 
   var { username, routetitle, routetype, routetime, routedescription, photos, mapdata, routedistance } = req.body
