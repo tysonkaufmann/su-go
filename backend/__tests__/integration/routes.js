@@ -948,7 +948,7 @@ it('Get Routes - Successful', async done => {
       },
     "msg": "user routes retrieved"
   }
-  const response = await request.get('/api/routes/getroute/1')
+  const response = await request.get('/api/routes/1')
 
   expect(response.body.status).toBe(expectedResponse.status);
   expect(response.body.success).toBe(expectedResponse.success);
@@ -972,7 +972,7 @@ it('Get Routes - No Route Found', async done => {
     "success": "false",
     "msg": "Route does not exist"
   }
-  const response = await request.get('/api/routes/getroute/fakefakefake')
+  const response = await request.get('/api/routes/fakefakefake')
 
   expect(response.body.status).toBe(expectedResponse.status);
   expect(response.body.success).toBe(expectedResponse.success);

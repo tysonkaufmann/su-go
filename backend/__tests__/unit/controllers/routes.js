@@ -154,7 +154,7 @@ describe("Route", () => {
     });
   });
 
-  // successful deletion will be covered in integration tests 
+  // successful deletion will be covered in integration tests
   // create a route successfully will be tested in integration tests
 
   test("Create a Route - Wrong Format For Map Data", () => {

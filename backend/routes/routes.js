@@ -18,10 +18,10 @@ router.get('/usercreatedroutes/:username', auth, getUserCreatedRoutes);
 // @access  Public
 router.post('/createroute', auth, createRoute);
 
-// @route   GET /api/routes/getroute/{ROUTEID}
+// @route   GET /api/routes/{ROUTEID}
 // @desc    Gets all the data with an associated route
 // @access  Public
-router.get('/getroute/:routeid', getRoute);
+router.get('/:routeid', getRoute);
 
 
 // @route   POST /api/routes/{routeid}/delete
