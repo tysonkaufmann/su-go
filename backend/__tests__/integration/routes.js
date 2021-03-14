@@ -149,6 +149,86 @@ it('Start Routes - Successful', async done => {
 })
 
 
+it('End Routes - Successful', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var payload = {
+
+    "routedescription": "test description 2",
+    "username": "aryastark",
+    "routetype" : "bike",
+    "routetitle": "test route 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var expectedResponse = {
+    "status": "200",
+    "success": "true",
+    "msg": "Route Successfully Created"
+  }
+  var response = await request.post('/api/routes/createroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload)
+
+  expect(response.body.status).toBe(expectedResponse.status);
+  expect(response.body.success).toBe(expectedResponse.success);
+  expect(response.body.msg).toBe(expectedResponse.msg);
+
+  var route = await Route.findOne({ "username": "aryastark" })
+
+  var payload2 = { username : "aryastark"}
+
+  var expectedResponse2 = {
+    "status": "200",
+    "success": "true",
+    "msg": "Route started successfully"
+  }
+  var response3 = await request.post('/api/routes/'+ route.routeid +'/startroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
+
+  expect(response3.body.status).toBe(expectedResponse2.status);
+  expect(response3.body.success).toBe(expectedResponse2.success);
+  expect(response3.body.msg).toBe(expectedResponse2.msg);
+
+  var expectedResponse4 = {
+    "status": "200",
+    "success": "true",
+    "msg": "Route ended successfully"
+  }
+  var response4 = await request.post('/api/routes/'+ route.routeid +'/endroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
+
+  expect(response4.body.status).toBe(expectedResponse4.status);
+  expect(response4.body.success).toBe(expectedResponse4.success);
+  expect(response4.body.msg).toBe(expectedResponse4.msg);
+
+  await Route.findOneAndDelete(
+    { "username": "aryastark" },
+    { "sort": { "_id": -1 } })
+
+  done()
+})
+
+
 it('Start Routes - User Already on Route', async done => {
   jest.setTimeout(30000);
 
@@ -234,6 +314,75 @@ it('Start Routes - User Already on Route', async done => {
 })
 
 
+it('End Routes - User Not on Route', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var payload = {
+
+    "routedescription": "test description 2",
+    "username": "aryastark",
+    "routetype" : "bike",
+    "routetitle": "test route 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var expectedResponse = {
+    "status": "200",
+    "success": "true",
+    "msg": "Route Successfully Created"
+  }
+  var response = await request.post('/api/routes/createroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload)
+
+  expect(response.body.status).toBe(expectedResponse.status);
+  expect(response.body.success).toBe(expectedResponse.success);
+  expect(response.body.msg).toBe(expectedResponse.msg);
+
+  var route = await Route.findOne({ "username": "aryastark" })
+
+  var payload2 = { username : "aryastark"}
+
+  var expectedResponse3 = {
+    "status": "200",
+    "success": "false",
+    "msg": "User is currently not on this route or it has exceeded the 10 hour route time limit"
+  }
+  var response4 = await request.post('/api/routes/'+ route.routeid +'/endroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
+
+  expect(response4.body.status).toBe(expectedResponse3.status);
+  expect(response4.body.success).toBe(expectedResponse3.success);
+  expect(response4.body.msg).toBe(expectedResponse3.msg);
+
+  await Route.findOneAndDelete(
+    { "username": "aryastark" },
+    { "sort": { "_id": -1 } })
+
+  done()
+})
+
+
 it('Start Routes - Route Not Found', async done => {
   jest.setTimeout(30000);
 
@@ -278,6 +427,59 @@ it('Start Routes - Route Not Found', async done => {
   }
 
   var response3 = await request.post('/api/routes/fakefakefake/startroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
+
+  expect(response3.body.status).toBe(expectedResponse2.status);
+  expect(response3.body.success).toBe(expectedResponse2.success);
+  expect(response3.body.msg).toBe(expectedResponse2.msg);
+
+  done()
+})
+
+
+it('End Routes - Route Not Found', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var payload = {
+
+    "routedescription": "test description 2",
+    "username": "aryastark",
+    "routetype" : "bike",
+    "routetitle": "test route 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var payload2 = { username : "aryastark"}
+
+  var expectedResponse2 = {
+    "status": "404",
+    "success": "false",
+    "msg": "Route not found"
+  }
+
+  var response3 = await request.post('/api/routes/fakefakefake/endroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
 
   expect(response3.body.status).toBe(expectedResponse2.status);
   expect(response3.body.success).toBe(expectedResponse2.success);
@@ -394,6 +596,57 @@ it('Start Routes - Conflicting Usernames', async done => {
 })
 
 
+it('End Routes - Conflicting Usernames', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var payload = {
+
+    "routedescription": "test description 2",
+    "username": "aryastark",
+    "routetype" : "bike",
+    "routetitle": "test route 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var payload2 = { username : "fakefakefake"}
+
+  var expectedResponse2 = {
+    "status": "400",
+    "success": "false",
+    "msg": "Bad Request, username in the body does not match x-auth-username"
+  }
+
+  var response3 = await request.post('/api/routes/fakefakefake/endroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
+
+  expect(response3.body.status).toBe(expectedResponse2.status);
+  expect(response3.body.success).toBe(expectedResponse2.success);
+  expect(response3.body.msg).toBe(expectedResponse2.msg);
+
+  done()
+})
 
 
 
@@ -501,6 +754,60 @@ it('Start Routes - No Username', async done => {
 
   done()
 })
+
+
+it('End Routes - No Username', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var payload = {
+
+    "routedescription": "test description 2",
+    "username": "aryastark",
+    "routetype" : "bike",
+    "routetitle": "test route 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var payload2 = { fake : "aryastark"}
+
+  var expectedResponse2 = {
+    "status": "400",
+    "success": "false",
+    "msg": "Bad Request"
+  }
+
+  var response3 = await request.post('/api/routes/fakefakefake/endroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
+
+  expect(response3.body.status).toBe(expectedResponse2.status);
+  expect(response3.body.success).toBe(expectedResponse2.success);
+  expect(response3.body.msg).toBe(expectedResponse2.msg);
+
+  done()
+})
+
 
 
 it('Delete Routes - No Username', async done => {

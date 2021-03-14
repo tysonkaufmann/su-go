@@ -6,12 +6,90 @@ const Route = require('../models/route');
 const Traffic = require('../models/traffic');
 const {v4 : uuidv4} = require('uuid')
 
+
+exports.endRoute = async (req, res) => {
+
+  var { routeid } = req.params
+  var { username } = req.body
+
+  if(!routeid || !username)
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  // prevents bypassing auth with another usename
+  if(username != req.header('x-auth-username'))
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request, username in the body does not match x-auth-username'
+    })
+    return res
+  }
+
+  try {
+    // check if route exists
+    const route = await Route.findOne({ routeid: routeid})
+
+
+    if (!route) {
+      res.status(404);
+      res.json({
+        status: '404',
+        success: 'false',
+        msg: 'Route not found'
+      })
+      return res
+    }
+
+    const alreadyExist = await Traffic.findOne({ username: username})
+
+    if (!alreadyExist) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'User is currently not on this route or it has exceeded the 10 hour route time limit'
+      })
+      return res
+    }
+
+    const isdeleted = await Traffic.findOneAndDelete({ username: username})
+
+    // return the data
+    res.status(200);
+    res.json({
+      status: '200',
+      success: 'true',
+      msg: 'Route ended successfully'
+    })
+    return res
+
+  } catch (err) {
+    console.error(err)
+    res.status(500);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
 exports.startRoute = async (req, res) => {
 
   var { routeid } = req.params
   var { username } = req.body
 
-  // prevents bypassing auth with another usename
   if(!routeid || !username)
   {
     res.status(400);
