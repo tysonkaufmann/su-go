@@ -7,6 +7,64 @@ const Traffic = require('../models/traffic');
 const {v4 : uuidv4} = require('uuid')
 
 
+exports.routeTraffic = async (req, res) => {
+
+  var { routeid } = req.params
+
+  if(!routeid)
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  try {
+    // check if route exists
+    const route = await Route.findOne({ routeid: routeid})
+
+    if (!route) {
+      res.status(404);
+      res.json({
+        status: '404',
+        success: 'false',
+        msg: 'Route not found'
+      })
+      return res
+    }
+
+    const alreadyExist = await Traffic.find({ routeid: routeid})
+    var traffic = alreadyExist.length
+
+    // return the data
+    res.status(200);
+    res.json({
+      status: '200',
+      success: 'true',
+      data : {
+        traffic : traffic
+      },
+      msg: 'Traffic found successfully'
+    })
+    return res
+
+  } catch (err) {
+    console.error(err)
+    res.status(500);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
+
+
 exports.endRoute = async (req, res) => {
 
   var { routeid } = req.params

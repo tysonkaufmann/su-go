@@ -3,7 +3,7 @@
 const router = require('express').Router();
 
 // import controller
-const { createRoute, getRoute, getUserCreatedRoutes, deleteRoute, startRoute, endRoute } = require('../controllers/routes');
+const { createRoute, getRoute, getUserCreatedRoutes, deleteRoute, startRoute, endRoute, routeTraffic } = require('../controllers/routes');
 
 // import middleware
 const { auth } = require('../middleware/auth')
@@ -29,15 +29,20 @@ router.get('/:routeid', getRoute);
 // @access  Private - Auth needed
 router.post('/:routeid/delete', auth, deleteRoute);
 
-// @route   POST /api/routes/startRoute
+// @route   POST /api/routes/:routeid/startroute
 // @desc    Starts a route
 // @access  Private - Auth needed
 router.post('/:routeid/startroute', auth, startRoute);
 
-// @route   POST /api/routes/startRoute
+// @route   POST /api/routes/:routeid/endroute
 // @desc    Starts a route
 // @access  Private - Auth needed
 router.post('/:routeid/endroute', auth, endRoute);
+
+// @route   POST /api/routes/:routeid/traffic
+// @desc    Starts a route
+// @access  Public
+router.get('/:routeid/traffic', routeTraffic);
 
 
 module.exports = router;

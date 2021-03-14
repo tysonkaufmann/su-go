@@ -1,5 +1,5 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const { getUserCreatedRoutes, getRoute, createRoute, deleteRoute, startRoute, endRoute } = require('../../../controllers/routes.js')
+const { getUserCreatedRoutes, getRoute, createRoute, deleteRoute, startRoute, endRoute, routeTraffic } = require('../../../controllers/routes.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
 
@@ -15,6 +15,43 @@ beforeAll(() => {
 });
 
 describe("Route", () => {
+
+
+  test("View Traffic - Route Not Found", () => {
+    jest.setTimeout(30000);
+
+    var payload = {username : "aryastark"}
+
+    var req = mockRequest({body: payload,
+      params: { routeid :"fakefakefake" },
+      method: "POST",
+      headers: { "x-auth-username" : "aryastark" },
+      header : function(header) {
+        return this.headers[header]
+      }
+    });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "404",
+        "success": "false",
+        "msg": "Route not found"
+    }
+
+    return routeTraffic(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  });
+
 
   // successful start a route will be covered in integration tests
 

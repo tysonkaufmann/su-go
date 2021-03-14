@@ -149,6 +149,94 @@ it('Start Routes - Successful', async done => {
 })
 
 
+it('View Traffic - Successful', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var payload = {
+
+    "routedescription": "test description 2",
+    "username": "aryastark",
+    "routetype" : "bike",
+    "routetitle": "test route 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var expectedResponse = {
+    "status": "200",
+    "success": "true",
+    "msg": "Route Successfully Created"
+  }
+  var response = await request.post('/api/routes/createroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload)
+
+  expect(response.body.status).toBe(expectedResponse.status);
+  expect(response.body.success).toBe(expectedResponse.success);
+  expect(response.body.msg).toBe(expectedResponse.msg);
+
+  var route = await Route.findOne({ "username": "aryastark" })
+
+  var payload2 = { username : "aryastark"}
+
+  var expectedResponse2 = {
+    "status": "200",
+    "success": "true",
+    "msg": "Route started successfully"
+  }
+  var response3 = await request.post('/api/routes/'+ route.routeid +'/startroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
+
+  expect(response3.body.status).toBe(expectedResponse2.status);
+  expect(response3.body.success).toBe(expectedResponse2.success);
+  expect(response3.body.msg).toBe(expectedResponse2.msg);
+
+  var expectedResponse5 = {
+    "status": "200",
+    "success": "true",
+    "data": {
+              "traffic": 1 ,
+            },
+    "msg" : "Traffic found successfully"
+  }
+  var response5 = await request.get('/api/routes/'+ route.routeid +'/traffic')
+
+  expect(response5.body.status).toBe(expectedResponse5.status);
+  expect(response5.body.success).toBe(expectedResponse5.success);
+  expect(response5.body.msg).toBe(expectedResponse5.msg);
+
+  await Route.findOneAndDelete(
+    { "username": "aryastark" },
+    { "sort": { "_id": -1 } })
+
+  await Traffic.findOneAndDelete(
+    { "username": "aryastark" },
+    { "sort": { "_id": -1 } })
+
+  done()
+})
+
+
+
 it('End Routes - Successful', async done => {
   jest.setTimeout(30000);
 
@@ -378,6 +466,58 @@ it('End Routes - User Not on Route', async done => {
   await Route.findOneAndDelete(
     { "username": "aryastark" },
     { "sort": { "_id": -1 } })
+
+  done()
+})
+
+it('View Traffic - Route Not Found', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var payload = {
+
+    "routedescription": "test description 2",
+    "username": "aryastark",
+    "routetype" : "bike",
+    "routetitle": "test route 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var payload2 = { username : "aryastark"}
+
+  var expectedResponse2 = {
+    "status": "404",
+    "success": "false",
+    "msg": "Route not found"
+  }
+
+  var response3 = await request.get('/api/routes/fakefakefake/traffic')
+
+  expect(response3.body.status).toBe(expectedResponse2.status);
+  expect(response3.body.success).toBe(expectedResponse2.success);
+  expect(response3.body.msg).toBe(expectedResponse2.msg);
 
   done()
 })
