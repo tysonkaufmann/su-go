@@ -1,6 +1,8 @@
 const mongoose = require('mongoose'); // Connects to mongodb
 const Verification = require('./../../models/verification')
 const User = require('../../models/user.js');
+const Route = require('./../../models/route')
+const Traffic = require('./../../models/traffic')
 process.env.PORT=7000
 const supertest = require('supertest');
 const app = require('./../../server.js') // Link to your server file
@@ -10,6 +12,161 @@ beforeAll(() => {
   // to suppress errors on edge test cases that are meant to throw errors for produciton teams
   console.error = function() {}
 });
+
+it('Get Current User Route - User Not On Any route', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var expectedResponse3 = {
+    "status": "200",
+    "success": "false",
+    "msg": "User is not currently on a route"
+  }
+  var response4 = await request.get('/api/user/aryastark/currentroute').set('x-auth-username', 'aryastark').set('x-auth-token', token)
+
+  expect(response4.body.status).toBe(expectedResponse3.status);
+  expect(response4.body.success).toBe(expectedResponse3.success);
+  expect(response4.body.msg).toBe(expectedResponse3.msg);
+
+
+  await Route.findOneAndDelete(
+    { "username": "aryastark" },
+    { "sort": { "_id": -1 } })
+
+  done()
+})
+
+
+it('Get Current User Route - Username Mismatch', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var expectedResponse3 = {
+    "status": "400",
+    "success": "false",
+    "msg": "Bad Request, username in the body does not match x-auth-username"
+  }
+  var response4 = await request.get('/api/user/aryastarka/currentroute').set('x-auth-username', 'aryastark').set('x-auth-token', token)
+
+  expect(response4.body.status).toBe(expectedResponse3.status);
+  expect(response4.body.success).toBe(expectedResponse3.success);
+  expect(response4.body.msg).toBe(expectedResponse3.msg);
+
+
+  await Route.findOneAndDelete(
+    { "username": "aryastark" },
+    { "sort": { "_id": -1 } })
+
+  done()
+})
+
+
+it('Get Current User Route - Successful', async done => {
+  jest.setTimeout(30000);
+
+  payload1 = {
+    username : "aryastark",
+    password : "Test123"
+  }
+  const response2 = await request.post('/api/user/login').send(payload1)
+  expect(response2.status).toBe(200)
+  expect(response2.body.success).toBe("true")
+  expect(response2.body.msg).toBe("Login successful")
+
+  var token = response2.body.token
+
+  var payload = {
+
+    "routedescription": "test description 2",
+    "username": "aryastark",
+    "routetype" : "bike",
+    "routetitle": "test route 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var expectedResponse = {
+    "status": "200",
+    "success": "true",
+    "msg": "Route Successfully Created"
+  }
+  var response = await request.post('/api/routes/createroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload)
+
+  expect(response.body.status).toBe(expectedResponse.status);
+  expect(response.body.success).toBe(expectedResponse.success);
+  expect(response.body.msg).toBe(expectedResponse.msg);
+
+  var route = await Route.findOne({ "username": "aryastark" })
+
+  var payload2 = { username : "aryastark"}
+
+  var expectedResponse2 = {
+    "status": "200",
+    "success": "true",
+    "msg": "Route started successfully"
+  }
+  var response3 = await request.post('/api/routes/'+ route.routeid +'/startroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
+
+  expect(response3.body.status).toBe(expectedResponse2.status);
+  expect(response3.body.success).toBe(expectedResponse2.success);
+  expect(response3.body.msg).toBe(expectedResponse2.msg);
+
+
+  var expectedResponse3 = {
+    "status": "200",
+    "success": "true",
+    "msg": "Route found successfully"
+  }
+  var response4 = await request.get('/api/user/aryastark/currentroute').set('x-auth-username', 'aryastark').set('x-auth-token', token).send(payload2)
+
+  expect(response4.body.status).toBe(expectedResponse3.status);
+  expect(response4.body.success).toBe(expectedResponse3.success);
+  expect(response4.body.msg).toBe(expectedResponse3.msg);
+
+
+  await Route.findOneAndDelete(
+    { "username": "aryastark" },
+    { "sort": { "_id": -1 } })
+
+  await Traffic.findOneAndDelete(
+    { "username": "aryastark" },
+    { "sort": { "_id": -1 } })
+
+  done()
+})
+
+
 
 it('Signup Endpoint Test - Successful Signup', async done => {
   // Sends POST Request to /signup endpoint

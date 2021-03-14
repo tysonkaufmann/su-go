@@ -263,7 +263,9 @@ exports.createRoute = async (req, res) => {
     return res.json({
       status: '200',
       success: 'true',
-      routeid: routeid,
+      data: {
+        route : newRouteInfo
+      },
       msg: 'Route Successfully Created'
     })
   } catch (err) {

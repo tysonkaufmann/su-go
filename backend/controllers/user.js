@@ -5,8 +5,88 @@ const {Email} = require('../services/email')
 // import models
 const User = require('../models/user')
 const Verification = require('../models/verification')
+const Traffic = require('../models/traffic')
+const Route = require('../models/route')
 //import validators
 const { validateUsername, validatePassword, validateEmail } = require('../helpers/validators')
+
+
+exports.getUserCurrentRoute = async (req, res) => {
+
+  var { username } = req.params
+
+  if(!username)
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  // prevents bypassing auth with another usename
+  if(username != req.header('x-auth-username'))
+  {
+    res.status(400);
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request, username in the body does not match x-auth-username'
+    })
+    return res
+  }
+
+  try {
+    // check if route exists
+    const traffic = await Traffic.findOne({ username: username})
+    if (!traffic) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'User is not currently on a route'
+      })
+      return res
+    }
+    const route = await Route.findOne({ routeid:traffic.routeid })
+
+    if (!route) {
+      res.status(200);
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'User is not currently on a route'
+      })
+      return res
+    }
+
+    // return the data
+    res.status(200);
+    res.json({
+      status: '200',
+      success: 'true',
+      data: {
+        username: username,
+        route: route,
+      },
+      msg: 'Route found successfully'
+    })
+    return res
+
+  } catch (err) {
+    console.error(err)
+    res.status(500);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
 
 
 // Handles the /login endpoint
