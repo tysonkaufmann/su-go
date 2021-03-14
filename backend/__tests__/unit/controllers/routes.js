@@ -1,5 +1,5 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const { getUserCreatedRoutes, getRoute, createRoute, deleteRoute } = require('../../../controllers/routes.js')
+const { getUserCreatedRoutes, getRoute, createRoute, deleteRoute, startRoute } = require('../../../controllers/routes.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
 
@@ -15,6 +15,44 @@ beforeAll(() => {
 });
 
 describe("Route", () => {
+
+  // successful start a route will be covered in integration tests
+  
+  test("Start a Route - Route Not Found", () => {
+    jest.setTimeout(30000);
+
+    var payload = {username : "aryastark"}
+
+    var req = mockRequest({body: payload,
+      params: { routeid :"fakefakefake" },
+      method: "POST",
+      headers: { "x-auth-username" : "aryastark" },
+      header : function(header) {
+        return this.headers[header]
+      }
+    });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "404",
+        "success": "false",
+        "msg": "Route not found"
+    }
+
+    return startRoute(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  });
+
 
   test("Delete a Route - Route Not Found", () => {
     jest.setTimeout(30000);
@@ -85,6 +123,39 @@ describe("Route", () => {
     });
   });
 
+  test("Start a Route - No Username", () => {
+    jest.setTimeout(30000);
+
+    var req = mockRequest({
+      params: { routeid :"fakefakefake" },
+      method: "POST",
+      headers: { "x-auth-username" : "aryastark" },
+      header : function(header) {
+        return this.headers[header]
+      }
+    });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+    }
+
+    return startRoute(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  });
+
   test("Delete a Route - No RouteId", () => {
     jest.setTimeout(30000);
 
@@ -118,6 +189,78 @@ describe("Route", () => {
       expect(data.json.msg).toBe(expectedResponse.msg);
     });
   });
+
+
+  test("Start a Route - No RouteId", () => {
+    jest.setTimeout(30000);
+
+    var payload = {username : "aryastark"}
+
+    var req = mockRequest({body: payload,
+      method: "POST",
+      headers: { "x-auth-username" : "aryastark" },
+      header : function(header) {
+        return this.headers[header]
+      }
+    });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request"
+    }
+
+    return startRoute(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  });
+
+
+  test("Start a Route - Username Mismatch", () => {
+    jest.setTimeout(30000);
+
+    var payload = {username : "aryastarka"}
+
+    var req = mockRequest({body: payload,
+      params: { routeid :"fakefakefake" },
+      method: "POST",
+      headers: { "x-auth-username" : "aryastark" },
+      header : function(header) {
+        return this.headers[header]
+      }
+    });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "400",
+        "success": "false",
+        "msg": "Bad Request, username in the body does not match x-auth-username"
+    }
+
+    return startRoute(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  });
+
 
   test("Delete a Route - Username Mismatch", () => {
     jest.setTimeout(30000);
