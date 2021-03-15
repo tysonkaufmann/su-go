@@ -3,7 +3,7 @@
 const router = require('express').Router();
 
 // import controller
-const { createRoute, getUserCreatedRoutes } = require('../controllers/routes');
+const { createRoute, getRoute, getUserCreatedRoutes, deleteRoute, startRoute, endRoute, routeTraffic } = require('../controllers/routes');
 
 // import middleware
 const { auth } = require('../middleware/auth')
@@ -13,11 +13,36 @@ const { auth } = require('../middleware/auth')
 // @access  Private - Auth needed
 router.get('/usercreatedroutes/:username', auth, getUserCreatedRoutes);
 
-
-
 // @route   POST /api/routes/createroute
 // @desc    creates a route
 // @access  Public
 router.post('/createroute', auth, createRoute);
+
+// @route   GET /api/routes/{ROUTEID}
+// @desc    Gets all the data with an associated route
+// @access  Public
+router.get('/:routeid', getRoute);
+
+
+// @route   POST /api/routes/{routeid}/delete
+// @desc    Deletes the route that matches the routeid
+// @access  Private - Auth needed
+router.post('/:routeid/delete', auth, deleteRoute);
+
+// @route   POST /api/routes/:routeid/startroute
+// @desc    Starts a route
+// @access  Private - Auth needed
+router.post('/:routeid/startroute', auth, startRoute);
+
+// @route   POST /api/routes/:routeid/endroute
+// @desc    Starts a route
+// @access  Private - Auth needed
+router.post('/:routeid/endroute', auth, endRoute);
+
+// @route   POST /api/routes/:routeid/traffic
+// @desc    Starts a route
+// @access  Public
+router.get('/:routeid/traffic', routeTraffic);
+
 
 module.exports = router;

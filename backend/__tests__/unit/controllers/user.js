@@ -1,12 +1,13 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const { 
-  signup, 
-  login, 
-  encrypt, 
-  resetpassword, 
-  changepassword, 
-  getUserInformation, 
-  updateUserInformation 
+const {
+  signup,
+  login,
+  encrypt,
+  resetpassword,
+  changepassword,
+  getUserInformation,
+  updateUserInformation,
+  getUserCurrentRoute
 } = require('../../../controllers/user.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
@@ -24,11 +25,80 @@ beforeAll(() => {
 });
 
 describe("User", () => {
-  
+
     test("Successful Password Encryption", () => {
         var password = "password"
         expect(encrypt(password)).toBe("5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8");
     });
+
+
+    test("Current User Route - User Not on Route", () => {
+      jest.setTimeout(30000);
+
+      var req = mockRequest({
+        params: { username :"aryastark" },
+        method: "POST",
+        headers: { "x-auth-username" : "aryastark" },
+        header : function(header) {
+          return this.headers[header]
+        }
+      });
+      var res = mockResponse({ hostname: 'tester',
+        status : function(statusCode) {
+          this.status = statusCode
+        },
+        json : function(body) {
+          this.json = body
+        },
+      });
+
+      var expectedResponse = {
+          "status": "200",
+          "success": "false",
+          "msg": "User is not currently on a route"
+      }
+
+      return getUserCurrentRoute(req, res).then(data => {
+        expect(data.json.status).toBe(expectedResponse.status);
+        expect(data.json.success).toBe(expectedResponse.success);
+        expect(data.json.msg).toBe(expectedResponse.msg);
+      });
+    });
+
+
+    test("Current User Route - Username Mismatch", () => {
+      jest.setTimeout(30000);
+
+      var req = mockRequest({
+        params: { username :"aryastarka" },
+        method: "POST",
+        headers: { "x-auth-username" : "aryastark" },
+        header : function(header) {
+          return this.headers[header]
+        }
+      });
+      var res = mockResponse({ hostname: 'tester',
+        status : function(statusCode) {
+          this.status = statusCode
+        },
+        json : function(body) {
+          this.json = body
+        },
+      });
+
+      var expectedResponse = {
+          "status": "400",
+          "success": "false",
+          "msg": "Bad Request, username in the body does not match x-auth-username"
+      }
+
+      return getUserCurrentRoute(req, res).then(data => {
+        expect(data.json.status).toBe(expectedResponse.status);
+        expect(data.json.success).toBe(expectedResponse.success);
+        expect(data.json.msg).toBe(expectedResponse.msg);
+      });
+    });
+
 
 
     test("Failed Login - Incorrect Username", () => {
@@ -208,13 +278,13 @@ describe("User", () => {
           email: "test@test.com",
         }
       });
-      var res = mockResponse({ hostname: 'tester', 
+      var res = mockResponse({ hostname: 'tester',
         status : function(statusCode) {
           this.status = statusCode
         },
         json : function(body) {
           this.json = body
-        }, 
+        },
       });
 
       var expectedResponse = {
@@ -231,7 +301,7 @@ describe("User", () => {
 
     it('Update User Profile Failed - No Fullname Provided', async() => {
       jest.setTimeout(30000);
-      const req = mockRequest({ 
+      const req = mockRequest({
         headers: { "x-auth-username" : "Cheng" },
         header: function(header) {
           return this.headers[header]
@@ -242,13 +312,13 @@ describe("User", () => {
           profilepic: "FAKE BASE64 ENCODED STRING"
         }
       });
-      var res = mockResponse({ hostname: 'tester', 
+      var res = mockResponse({ hostname: 'tester',
         status : function(statusCode) {
           this.status = statusCode
         },
         json : function(body) {
           this.json = body
-        }, 
+        },
       });
 
       var expectedResponse = {
@@ -276,13 +346,13 @@ describe("User", () => {
           profilepic: "FAKE BASE64 ENCODED STRING"
         }
       });
-      var res = mockResponse({ hostname: 'tester', 
+      var res = mockResponse({ hostname: 'tester',
         status : function(statusCode) {
           this.status = statusCode
         },
         json : function(body) {
           this.json = body
-        }, 
+        },
       });
 
       var expectedResponse = {
@@ -299,7 +369,7 @@ describe("User", () => {
 
     it('Update User Profile Failed - No Profile Picture Provided', async() => {
       jest.setTimeout(30000);
-      const req = mockRequest({ 
+      const req = mockRequest({
         headers: { "x-auth-username" : "Cheng" },
         header: function(header) {
           return this.headers[header]
@@ -310,13 +380,13 @@ describe("User", () => {
           email: "test@test.com",
         }
       });
-      var res = mockResponse({ hostname: 'tester', 
+      var res = mockResponse({ hostname: 'tester',
         status : function(statusCode) {
           this.status = statusCode
         },
         json : function(body) {
           this.json = body
-        }, 
+        },
       });
 
       var expectedResponse = {
@@ -333,7 +403,7 @@ describe("User", () => {
 
     test("Update User Profile Failed - Wrong x-auth-username", async() => {
       jest.setTimeout(30000);
-      var req = mockRequest({ 
+      var req = mockRequest({
         header: function(header) {
           return false
         },
@@ -369,7 +439,7 @@ describe("User", () => {
 
     test("Update User Profile Failed - Invalid Email", async() => {
       jest.setTimeout(30000);
-      var req = mockRequest({ 
+      var req = mockRequest({
         headers: { "x-auth-username" : "Cheng" },
         header: function(header) {
           return this.headers[header]
@@ -405,7 +475,7 @@ describe("User", () => {
 
     test("Update User Profile Failed - User Not Found", async() => {
       jest.setTimeout(30000);
-      var req = mockRequest({ 
+      var req = mockRequest({
         header: function(header) {
           return "fakefakefake"
         },
