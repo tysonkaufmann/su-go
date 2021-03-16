@@ -1,9 +1,49 @@
 const initialState = {
     favouriteRoutes: [],
     createdRoutes: [{
-        routetitle: "abc",
-        routedescription: "abc",
-        routedistance: "abc",
+        image: "../assets/jog.jpg",
+
+        routetitle: "Biking Route",
+        routedescription: "A short bike ride with a refreshing view.",
+        routedistance: 12,
+        routetime: "abc",
+        lat: 0,
+        long: 0,
+        rating: 3,
+        route: [
+            [
+                [51.5, -0.1],
+                [51.5, -0.12],
+                [51.52, -0.12],
+            ],
+            [
+                [51.5, -0.05],
+                [51.5, -0.06],
+                [51.52, -0.06],
+            ],
+        ]
+    },
+        {
+            routetitle: "Walk Route.",
+            routedescription: "Nearby walk to the lake.",
+            routedistance: 8,
+            routetime: "abc",
+            lat: 0,
+            long: 0,
+            rating: 4.5,
+            route: [
+                [
+                    [53.5, -0.1],
+                    [53.5, -0.12],
+                    [53.52, -0.12],
+                ],
+
+            ]
+        },{
+        image: "../assets/bike.jpg",
+        routetitle: "Jogging",
+        routedescription: "A quick jog.",
+        routedistance: 2,
         routetime: "abc",
         lat: 0,
         long: 0,
@@ -24,7 +64,7 @@ const initialState = {
         {
             routetitle: "ROUTE 2",
             routedescription: "THIS IS SOMEWHERE ELSE",
-            routedistance: "abc",
+            routedistance: 7,
             routetime: "abc",
             lat: 0,
             long: 0,

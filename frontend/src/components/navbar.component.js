@@ -59,7 +59,7 @@ function NavbarComponent(props) {
         
     `
     return (
-        <Navbar collapseOnSelect expand="lg" variant="light">
+        <Navbar sticky collapseOnSelect expand="lg" variant="light">
             <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
             <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="mr-auto">
@@ -76,10 +76,6 @@ function NavbarComponent(props) {
                                 </div>
                             </Link>
                         </Navbar.Brand>
-                        <Form inline>
-                            <FormControl type="text" placeholder="Search" className="mr-sm-2"/>
-                            <Button variant="outline-info">Search</Button>
-                        </Form>
                     </Nav>
                     <Nav className={"center"} style={{marginLeft: "10px", marginTop: "5px"}}>
                         <Nav.Link href={"./routes"}>ROUTES</Nav.Link>

@@ -21,7 +21,7 @@ function App() {
 
     return (
         <div className="fill-window" style={{display:"flex",flexDirection:"column"}}>
-          <div><NavbarComponent /></div>
+          <div style={{zIndex:1000,top:0,position:"sticky",background:"white"}}><NavbarComponent /></div>
           <Switch>
           <Route path="/" exact component={Home} />
           <Route path="/Home" exact component={Home} />
