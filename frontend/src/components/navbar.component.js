@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import Logo from "../assets/images/logo.png";
 import {Navbar} from 'react-bootstrap/'
@@ -15,6 +15,7 @@ import background3 from "../assets/images/background1.png";
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import {makeStyles} from '@material-ui/core/styles';
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -58,6 +59,54 @@ function NavbarComponent(props) {
         margin: 0px;
         
     `
+    useEffect(()=>{
+        // Get user information
+        props.updateUsername(localStorage.getItem("Username"))
+        let self = this;
+        axios.get(`http://localhost:5000/api/userprofile/userinformation/${localStorage.getItem("Username")}`, {
+                headers: {
+                    "x-auth-username":
+                        localStorage.getItem("Username"),
+                    "x-auth-token":
+                        JSON.parse(localStorage.getItem("token"))
+                }
+            }
+        ).then(function (response) {
+            // handle success
+            if (response.data.success === "true") {
+                // Update user profile information
+                console.log(response)
+                self.props.updateUsername(response.data.data.username)
+                self.props.updateFullname(response.data.data.fullname)
+                self.props.updateEmail(response.data.data.email)
+                // Get routes if profile information is successful
+                axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${self.props.username}`, {
+                        headers: {
+                            "x-auth-username":
+                            self.props.username,
+                            "x-auth-token":
+                                JSON.parse(localStorage.getItem("token"))
+                        }
+                    }
+                ).then(function (response) {
+                    // handle success and update routes.
+                    if (response.data.success === "true") {
+                        self.props.updateCreatedRoutes(response.data.data)
+                    }
+                })
+                    .catch(function (error) {
+                        // handle
+                        console.log(error);
+                    })
+            }
+        })
+            .catch(function (error) {
+                // handle
+                console.log(error);
+            })
+
+
+    },[])
     return (
         <Navbar sticky collapseOnSelect expand="lg" variant="light">
             <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
