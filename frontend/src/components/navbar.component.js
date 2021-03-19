@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import Logo from "../assets/images/logo.png";
 import {Navbar} from 'react-bootstrap/'
@@ -16,6 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import {makeStyles} from '@material-ui/core/styles';
 import axios from "axios";
+import CreateRouteComponent from "./createRoute.component";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -33,7 +34,7 @@ function NavbarComponent(props) {
 
     const [anchorEl, setAnchorEl] = React.useState(null); // Used for the dropdown
     const open = Boolean(anchorEl);
-
+    const  [createRouteOpen, setCreateRouteOpen] = useState(false);
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget); // when menu button clicked.
@@ -41,6 +42,10 @@ function NavbarComponent(props) {
 
     const handleClose = () => {
         setAnchorEl(null); //Closing menu
+    };
+    const handleCreateRoute = () => {
+        setAnchorEl(null); //Closing menu
+        setCreateRouteOpen(true)
     };
 
     // Clearing all local storage.
@@ -158,10 +163,12 @@ function NavbarComponent(props) {
                         onClose={handleClose}
                     >
                         <Link to="/userprofile"><MenuItem onClick={handleClose} style={{color:"black"}}>Profile</MenuItem></Link>
-                        <Link to="/login"><MenuItem style={{color:"black"}} onClick={handleLogOut}>Log Out</MenuItem></Link>
+                        <MenuItem onClick={handleCreateRoute} style={{color:"black"}}>Create a Route</MenuItem>
+                            <Link to="/login"><MenuItem style={{color:"black"}} onClick={handleLogOut}>Log Out</MenuItem></Link>
                     </Menu>
                 </div>
-            </Navbar.Collapse>
+                <CreateRouteComponent handleClose={()=>setCreateRouteOpen(false)} show={createRouteOpen}/>
+        </Navbar.Collapse>
         </Navbar>
     );
 
