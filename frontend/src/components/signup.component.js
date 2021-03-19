@@ -138,7 +138,6 @@ function SignUp(props) {
                     </div>
                     {/*Already have an account?*/}
                     <Button onClick={props.handleClose}>Log in</Button>
-                    <SignUp  />
                 </SignUpContainer>
             </Modal.Body>
         </Modal>

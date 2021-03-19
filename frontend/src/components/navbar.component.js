@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import Logo from "../assets/images/logo.png";
 import {Navbar} from 'react-bootstrap/'
@@ -15,6 +15,8 @@ import background3 from "../assets/images/background1.png";
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import {makeStyles} from '@material-ui/core/styles';
+import axios from "axios";
+import CreateRouteComponent from "./createRoute.component";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,7 +34,7 @@ function NavbarComponent(props) {
 
     const [anchorEl, setAnchorEl] = React.useState(null); // Used for the dropdown
     const open = Boolean(anchorEl);
-
+    const  [createRouteOpen, setCreateRouteOpen] = useState(false);
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget); // when menu button clicked.
@@ -40,6 +42,10 @@ function NavbarComponent(props) {
 
     const handleClose = () => {
         setAnchorEl(null); //Closing menu
+    };
+    const handleCreateRoute = () => {
+        setAnchorEl(null); //Closing menu
+        setCreateRouteOpen(true)
     };
 
     // Clearing all local storage.
@@ -56,9 +62,58 @@ function NavbarComponent(props) {
 
     const UsernameText = styled.div`
         margin: 0px;
+        
     `
+    useEffect(()=>{
+        // Get user information
+        props.updateUsername(localStorage.getItem("Username"))
+        let self = this;
+        axios.get(`http://localhost:5000/api/userprofile/userinformation/${localStorage.getItem("Username")}`, {
+                headers: {
+                    "x-auth-username":
+                        localStorage.getItem("Username"),
+                    "x-auth-token":
+                        JSON.parse(localStorage.getItem("token"))
+                }
+            }
+        ).then(function (response) {
+            // handle success
+            if (response.data.success === "true") {
+                // Update user profile information
+                console.log(response)
+                self.props.updateUsername(response.data.data.username)
+                self.props.updateFullname(response.data.data.fullname)
+                self.props.updateEmail(response.data.data.email)
+                // Get routes if profile information is successful
+                axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${self.props.username}`, {
+                        headers: {
+                            "x-auth-username":
+                            self.props.username,
+                            "x-auth-token":
+                                JSON.parse(localStorage.getItem("token"))
+                        }
+                    }
+                ).then(function (response) {
+                    // handle success and update routes.
+                    if (response.data.success === "true") {
+                        self.props.updateCreatedRoutes(response.data.data)
+                    }
+                })
+                    .catch(function (error) {
+                        // handle
+                        console.log(error);
+                    })
+            }
+        })
+            .catch(function (error) {
+                // handle
+                console.log(error);
+            })
+
+
+    },[])
     return (
-        <Navbar collapseOnSelect expand="lg" variant="light">
+        <Navbar sticky collapseOnSelect expand="lg" variant="light">
             <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
             <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="mr-auto">
@@ -75,14 +130,10 @@ function NavbarComponent(props) {
                                 </div>
                             </Link>
                         </Navbar.Brand>
-                        <Form inline>
-                            <FormControl type="text" placeholder="Search" className="mr-sm-2"/>
-                            <Button variant="outline-info">Search</Button>
-                        </Form>
                     </Nav>
                     <Nav className={"center"} style={{marginLeft: "10px", marginTop: "5px"}}>
-                        <Nav.Link href="#features">Routes</Nav.Link>
-                        <Nav.Link href="#features">Map</Nav.Link>
+                        <Nav.Link href={"./routes"}>ROUTES</Nav.Link>
+                        <Nav.Link href={"./map"}>MAP</Nav.Link>
                     </Nav>
                 </Nav>
                 <div style={{display: "flex", flexDirection: "row", padding: "2px", marginLeft: "2px"}}>
@@ -112,10 +163,12 @@ function NavbarComponent(props) {
                         onClose={handleClose}
                     >
                         <Link to="/userprofile"><MenuItem onClick={handleClose} style={{color:"black"}}>Profile</MenuItem></Link>
-                        <Link to="/login"><MenuItem style={{color:"black"}} onClick={handleLogOut}>Log Out</MenuItem></Link>
+                        <MenuItem onClick={handleCreateRoute} style={{color:"black"}}>Create a Route</MenuItem>
+                            <Link to="/login"><MenuItem style={{color:"black"}} onClick={handleLogOut}>Log Out</MenuItem></Link>
                     </Menu>
                 </div>
-            </Navbar.Collapse>
+                <CreateRouteComponent handleClose={()=>setCreateRouteOpen(false)} show={createRouteOpen}/>
+        </Navbar.Collapse>
         </Navbar>
     );
 

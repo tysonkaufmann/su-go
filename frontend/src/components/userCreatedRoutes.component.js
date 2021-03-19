@@ -68,7 +68,7 @@ function UserCreatedRoutes(props){
 
                     </RouteListItem>
                         <div>{"Route Description: "}{route.routedescription}</div>
-                        <div>{"Route time: "}{route.routetime}</div>
+                        <div>{"Route Distance: "}{route.routedistance}{"(KM)"}</div>
                     </div>)
                 }
             )
