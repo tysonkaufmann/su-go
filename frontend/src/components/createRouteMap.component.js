@@ -85,7 +85,7 @@ function LocationMarker(props) {
     })
 
     const updateMarkerLatLng = (LatLong, index) => {
-        if(index > -1) {
+        if(index > -1 && LatLong) {
             let temp = _.cloneDeep(markerArray)
             temp[index] = LatLong
             console.log(temp, markerArray)
