@@ -1,12 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import Modal from "react-bootstrap/Modal";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 import {updateEmail, updateUsername, updateFullname} from "../actions/userProfile";
 import {connect} from "react-redux";
 import styled from "styled-components";
-import CircularProgress from '@material-ui/core/CircularProgress';
-import axios from "axios";
 import MapContainerComponent from "./mapContainer.component";
 import CreateRouteMapComponent from "./createRouteMap.component";
 import {makeStyles} from "@material-ui/core/styles";
@@ -14,6 +10,9 @@ import Stepper from "@material-ui/core/Stepper";
 import Typography from "@material-ui/core/Typography";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
+
+import CreateRouteDetails from "./createRouteDetails.component";
+import {updateCreateRouteDetails, addCreatedRoute} from "../actions/routes";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const SignUpContainer = styled.div`
@@ -68,25 +67,30 @@ const PasswordInput = styled(UsernameInput).attrs({
 `;
 
 const MapContainer = styled.div`
-    width:"80vh";
-    height:"80vh";
+    height: 60vh;
+    margin:auto 50px;
 `
+
 /********************************/
 
 function CreateRouteComponent(props) {
-
+    //ADDS IT TO THE REDUX STORE
+    const handleFinish = () => {
+        props.addCreatedRoute(props.createRouteDetails)
+        props.updateCreateRouteDetails({})
+        props.handleClose()
+    }
     return (
         <Modal onHide={props.handleClose} size={"lg"} show={props.show} centered>
             <Modal.Header>
                 <Modal.Title>CREATE ROUTE</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-        <MapContainer>
-            <div style={{width:"60vh",height:"60vh"}} >
-                <CreateRouteMapComponent route={[]} locate={true}/>
-            </div>
-        </MapContainer>
-
+                <MapContainer>
+                    <ResponsiveDiv >
+                        <HorizontalLinearStepper handleClose={handleFinish} routeDetails={props.createRouteDetails}/>
+                    </ResponsiveDiv>
+                </MapContainer>
             </Modal.Body>
         </Modal>
     );
@@ -103,7 +107,12 @@ function mapDispatchToProps(dispatch) {
         updateFullname: (item) => {
             dispatch(updateFullname(item))
         },
-
+        addCreatedRoute: (item) => {
+            dispatch(addCreatedRoute(item))
+        },
+        updateCreateRouteDetails: (item) => {
+            dispatch(updateCreateRouteDetails(item))
+        },
     }
 }
 
@@ -112,9 +121,26 @@ function mapStateToProps(state) {
         username: state.userProfile.username,
         fullname: state.userProfile.fullname,
         email: state.userProfile.email,
+        createRouteDetails: state.routesReducer.createRouteDetails,
     }
 }
 
+const Input = styled.input`
+    // we can define static props
+    type: "text",
+    // or we can define dynamic ones
+    size:"0.5em",
+
+  color: black;
+  font-size: 1em;
+  border: 2px solid black;
+  border-radius: 5px;
+  
+  /* here we use the dynamically computed prop */
+  margin-top: 0px;
+  margin-bottom: 20px;
+  padding:5px;
+`;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -129,38 +155,68 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const ResponsiveDiv = styled.div`
+    width: 100%;
+    height: 40vh;
+    @media (max-width: 600px) {
+    width: 100%;
+}
+    
+`
+const RowDiv = styled.div`
+    display: flex;
+    flex-direction: row;
+    `
+const ColumnDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    height:100%
+    `
+
 function getSteps() {
-    return ['Select campaign settings', 'Create an ad group', 'Create an ad'];
+    return ['Enter Map Information', 'Create the route', 'Confirm Route Details'];
 }
 
-function getStepContent(step) {
+function getStepContent(step, handleNext, handleBack, route) {
     switch (step) {
         case 0:
-            return 'DE';
+            return <ResponsiveDiv>
+                <CreateRouteDetails handleNext={handleNext}/>
+            </ResponsiveDiv>
         case 1:
-            return 'What is an ad group anyways?';
+            return <ResponsiveDiv>
+                <CreateRouteMapComponent handleBack={handleBack} handleNext={handleNext}/></ResponsiveDiv>;
         case 2:
-            return 'This is the bit I really care about!';
+            return <ResponsiveDiv>
+                <ColumnDiv>
+                    <RowDiv>{"Route Title: "}{route.routetitle}</RowDiv>
+                    <RowDiv>{"Route Description: "}{route.routedescription}</RowDiv>
+                    <RowDiv>{"Route Distance: "}{route.routedistance}(KM)</RowDiv>
+                    <MapContainerComponent route={route.route.length < 1 ?  [] : route.route} locate={false}/>
+                </ColumnDiv>
+
+
+            </ResponsiveDiv>;
         default:
             return 'Unknown step';
     }
 }
 
-function HorizontalLinearStepper() {
+function HorizontalLinearStepper(props) {
     const classes = useStyles();
     const [activeStep, setActiveStep] = React.useState(0);
     const [skipped, setSkipped] = React.useState(new Set());
     const steps = getSteps();
-
-    const isStepOptional = (step) => {
-        return step === 1;
-    };
 
     const isStepSkipped = (step) => {
         return skipped.has(step);
     };
 
     const handleNext = () => {
+        if(activeStep === steps.length-1){
+            props.handleClose();
+        }
+
         let newSkipped = skipped;
         if (isStepSkipped(activeStep)) {
             newSkipped = new Set(newSkipped.values());
@@ -175,37 +231,16 @@ function HorizontalLinearStepper() {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const handleSkip = () => {
-        if (!isStepOptional(activeStep)) {
-            // You probably want to guard against something like this,
-            // it should never occur unless someone's actively trying to break something.
-            throw new Error("You can't skip a step that isn't optional.");
-        }
-
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        setSkipped((prevSkipped) => {
-            const newSkipped = new Set(prevSkipped.values());
-            newSkipped.add(activeStep);
-            return newSkipped;
-        });
-    };
-
     const handleReset = () => {
         setActiveStep(0);
     };
 
     return (
-        <div className={classes.root}>
+        <ResponsiveDiv className={classes.root}>
             <Stepper activeStep={activeStep}>
                 {steps.map((label, index) => {
                     const stepProps = {};
                     const labelProps = {};
-                    if (isStepOptional(index)) {
-                        labelProps.optional = <Typography variant="caption">Optional</Typography>;
-                    }
-                    if (isStepSkipped(index)) {
-                        stepProps.completed = false;
-                    }
                     return (
                         <Step key={label} {...stepProps}>
                             <StepLabel {...labelProps}>{label}</StepLabel>
@@ -220,40 +255,30 @@ function HorizontalLinearStepper() {
                             All steps completed - you&apos;re finished
                         </Typography>
                         <Button onClick={handleReset} className={classes.button}>
-                            Reset
+                            Close
                         </Button>
                     </div>
                 ) : (
                     <div>
-                        <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
+                        <Typography className={classes.instructions}>{getStepContent(activeStep,handleNext,handleBack,props.routeDetails)}</Typography>
                         <div>
-                            <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
+                            {
+                                activeStep == 2 && <><Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
                                 Back
                             </Button>
-                            {isStepOptional(activeStep) && (
                                 <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleSkip}
-                                    className={classes.button}
-                                >
-                                    Skip
-                                </Button>
-                            )}
-
-                            <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleNext}
                                 className={classes.button}
-                            >
+                                >
                                 {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                            </Button>
+                                </Button></>}
                         </div>
                     </div>
                 )}
             </div>
-        </div>
+        </ResponsiveDiv>
     );
 }
 

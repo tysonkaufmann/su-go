@@ -10,3 +10,15 @@ export function updateCreatedRoutes(item) {
         payload: item
     }
 }
+export function updateCreateRouteDetails(item) {
+    return {
+        type: 'UPDATE_CREATE_ROUTE_DETAILS',
+        payload: item
+    }
+}
+export function addCreatedRoute(item) {
+    return {
+        type: 'ADD_CREATED_ROUTE',
+        payload: item
+    }
+}

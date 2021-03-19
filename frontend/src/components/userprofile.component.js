@@ -192,11 +192,10 @@ class UserProfile extends Component {
                 console.log(error);
             })
 
-
-
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        console.log(this.props)
     }
 
     componentWillUnmount() {
@@ -207,6 +206,7 @@ class UserProfile extends Component {
         this.setState({editProfile: false})
     }
     render() {
+        console.log(this.props)
 
         return (
             <UserProfileContainer>
@@ -265,7 +265,7 @@ function UserProfileTabs(props) {
         boxShadow: "0px 0px 20px #c1c1c1",
         borderRadius: "15px 15px 0px 0px"
     }
-
+    console.log(props)
     return (<div style={{width: "100"}}>
             <div><BottomNavigation
                 value={value}

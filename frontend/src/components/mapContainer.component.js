@@ -5,12 +5,13 @@ import MarkerComponent from "./markerComponent.component";
 function MapContainerComponent(props) {
     let [lat, setLat] = useState(0)
     let [long, setLong] = useState(0)
+
     return (
         <MapContainer
             style={{width: "100%", height: "100%"}} center={[lat, long]} zoom={13} scrollWheelZoom={false}>
             <MapConsumer>
                 {(map) => {
-                    props.locate ? props.route.length > 0 ? map.panTo([props.route[0][0][0], props.route[0][0][1]]) : map.locate() : map.panTo([props.route[0][0][0], props.route[0][0][1]])
+                    props.locate ? props.route.length > 0 ? map.panTo([props.route[0].lat, props.route[0].lng]) : map.locate() : map.panTo([props.route[0].lat, props.route[0].lng])
                     return null
                 }}
             </MapConsumer>
@@ -18,11 +19,11 @@ function MapContainerComponent(props) {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             {props.locate && <LocationMarker popupTitle={"You are here"}/>}
-            {props.route.length > 0 && <> <MarkerComponent popupTitle={"Start"} lat={props.route[0][0][0]}
-                                                           long={props.route[0][0][1]}/> <MarkerComponent
+            {props.route.length > 0 && <> <MarkerComponent popupTitle={"Start"} lat={props.route[0].lat}
+                                                           long={props.route[0].lng}/> <MarkerComponent
                 popupTitle={"End"}
-                lat={props.route[props.route.length - 1][props.route[props.route.length - 1].length - 1][0]}
-                long={props.route[props.route.length - 1][props.route[props.route.length - 1].length - 1][1]}/></>}
+                lat={props.route[props.route.length - 1].lat}
+                long={props.route[props.route.length - 1].lng}/></>}
             <Polyline pathOptions={{color: 'black'}} positions={props.route}/>
         </MapContainer>
     );
