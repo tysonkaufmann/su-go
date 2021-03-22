@@ -83,7 +83,7 @@ class RoutePage extends Component {
     }
 
     componentDidMount() {
-        this.setState({currentRoute: this.props.created, Routes: this.props.createdRoutes})
+        this.setState({currentRoute: this.props.created, Routes: this.props.allRoutes})
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -155,7 +155,7 @@ class RoutePage extends Component {
                     )}
                 </RouteLeft>
                 <RouteRight>
-                    <MapContainerComponent route={this.state.route} locate={true}/>
+                    <MapContainerComponent route={this.state.route} locate={true} allRoutes={this.props.allRoutes} />
                 </RouteRight>
             </RoutePageContainer>
         );
@@ -273,7 +273,7 @@ function mapStateToProps(state) {
         totalTime: state.userProfile.totalTime,
         favouriteRoutes: state.routesReducer.favouriteRoutes,
         createdRoutes: state.routesReducer.createdRoutes,
-
+        allRoutes: state.routesReducer.allRoutes,
     }
 }
 
