@@ -132,6 +132,7 @@ const fillBlueOptions = { fillColor: 'blue' }
 
 function PolyLineRoute(props) {
     const [position, setPosition] = useState(null)
+    const [mount, setMount] = useState(true)
     const [markerArray, setMarkerArray] = useState([])
 
     const map_c = useMapEvents({
@@ -145,9 +146,15 @@ function PolyLineRoute(props) {
         },
         locationfound(e) {
             setPosition(e.latlng)
+            if(mount){
             map_c.flyTo(e.latlng, map_c.getZoom())
+            }
         },
     })
+
+    useEffect(()=>{
+        setTimeout(()=>setMount(false), 3000)
+    },[])
 
     const updateMarkerLatLng = (LatLong, index) => {
         if(index > -1 && LatLong) {

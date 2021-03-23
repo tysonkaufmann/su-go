@@ -109,6 +109,7 @@ function MapContainerComponent(props) {
 
 function LocationMarker(props) {
     const [position, setPosition] = useState(null)
+    const [mount, setMount] = useState(true)
 
     const map = useMapEvents({
         click() {
@@ -116,10 +117,15 @@ function LocationMarker(props) {
         },
         locationfound(e) {
             setPosition(e.latlng)
-            map.flyTo(e.latlng, map.getZoom())
+            if(mount){
+                map.flyTo(e.latlng, map.getZoom())
+            }
         },
     })
 
+    useEffect(()=>{
+        setTimeout(()=>setMount(false), 3000)
+    },[])
     return position === null ? null : (
         <Marker position={position}>
             <Popup>{props.popupTitle}</Popup>

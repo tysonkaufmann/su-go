@@ -228,8 +228,10 @@ export default function routesReducer(state = initialState, action) {
             return { ...state, createRouteDetails: action.payload }
         case "ADD_CREATED_ROUTE":
             let temp = state.createdRoutes.slice()
+            let temp_all_routes = state.allRoutes.slice()
             temp.push(action.payload)
-            return { ...state, createdRoutes: temp }
+            temp_all_routes.push(action.payload)
+            return { ...state, createdRoutes: temp, allRoutes: temp_all_routes }
         default:
             return state;
     }
