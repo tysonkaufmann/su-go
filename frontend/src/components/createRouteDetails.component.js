@@ -50,6 +50,7 @@ const ContainerDiv = styled.div`
     flex-direction: column;
     padding: 50px 0px 50px 0px;
 `
+
 // Modal for Edit Profile.
 function CreateRouteDetails(props) {
     // States.
@@ -79,16 +80,22 @@ function CreateRouteDetails(props) {
 
 
     const handleNextClick = () => {
-        props.updateCreateRouteDetails({routetitle:routetitle,routedistance:routedistance,routedescription:routedescription,routetime:routetime,route:[]})
+        props.updateCreateRouteDetails({
+            routetitle: routetitle,
+            routedistance: routedistance,
+            routedescription: routedescription,
+            routetime: routetime,
+            route: []
+        })
         props.handleNext()
     }
 
-    useEffect(()=> {
+    useEffect(() => {
             setRouteTitle(props.createRouteDetails.routetitle)
             setRouteDescription(props.createRouteDetails.routedescription)
             setRouteDistance(props.createRouteDetails.routedistance)
             setRouteTime(props.createRouteDetails.routetime)
-        },[props]
+        }, [props]
     )
 
     let disabled = routetitle === "" ||
@@ -110,11 +117,11 @@ function CreateRouteDetails(props) {
             Enter Approximate Time taken:<Input value={routetime} type={"number"} onChange={(event) => {
             handleRouteTime(event)
         }} placeholder={"Enter Time (Minutes)"}/>
-        <Button
-            style={{background: disabled ? '#89b6b9' : '#00cddb'}}
-            disabled={
-                disabled
-        } onClick={()=>handleNextClick()}>Next</Button>
+            <Button
+                style={{background: disabled ? '#89b6b9' : '#00cddb'}}
+                disabled={
+                    disabled
+                } onClick={() => handleNextClick()}>Next</Button>
         </ContainerDiv>
     );
 }
