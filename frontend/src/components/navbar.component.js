@@ -80,7 +80,6 @@ function NavbarComponent(props) {
             // handle success
             if (response.data.success === "true") {
                 // Update user profile information
-                console.log(response)
                 self.props.updateUsername(response.data.data.username)
                 self.props.updateFullname(response.data.data.fullname)
                 self.props.updateEmail(response.data.data.email)
@@ -133,7 +132,6 @@ function NavbarComponent(props) {
                     </Nav>
                     <Nav className={"center"} style={{marginLeft: "10px", marginTop: "5px"}}>
                         <Nav.Link href={"./routes"}>ROUTES</Nav.Link>
-                        <Nav.Link href={"./map"}>MAP</Nav.Link>
                     </Nav>
                 </Nav>
                 <div style={{display: "flex", flexDirection: "row", padding: "2px", marginLeft: "2px"}}>

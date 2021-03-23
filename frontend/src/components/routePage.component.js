@@ -87,13 +87,15 @@ class RoutePage extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        if(prevProps.allRoutes !== this.props.allRoutes) {
+            this.setState({Routes: this.props.allRoutes})
+        }
     }
 
     componentWillUnmount() {
     }
 
     setMapDetails = (key) => {
-        console.log(key)
         this.setState({route: key.route})
     }
     // sort the routes by the type of sort selected by the users and update the list.
@@ -133,7 +135,6 @@ class RoutePage extends Component {
     }
 
     render() {
-        let arr = [1, 2, 3, 4, 5]
         return (
             <RoutePageContainer>
                 <UpperLeft>

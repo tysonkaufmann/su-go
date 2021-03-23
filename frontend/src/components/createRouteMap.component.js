@@ -79,6 +79,12 @@ function CreateRouteMapComponent(props) {
         setRoute([])
     }
 
+    useEffect(
+        ()=>{
+            if(props.route.length < 1){setRoute(props.route)}
+        },[]
+    )
+
     return (
         <><MapContainer
             style={{width: "100%", height: "100%"}} center={[lat, long]} zoom={13} scrollWheelZoom={false}>

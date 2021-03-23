@@ -77,9 +77,7 @@ const MapContainer = styled.div`
 function CreateRouteComponent(props) {
     //ADDS IT TO THE REDUX STORE
     const handleFinish = () => {
-        props.addCreatedRoute(props.createRouteDetails)
         props.updateCreateRouteDetails({})
-        console.log(parseInt(props.createRouteDetails.routedistance))
         let post_data = {
             routetitle:props.createRouteDetails.routetitle,
             routetime:props.createRouteDetails.routetime.toString(),
@@ -101,6 +99,7 @@ function CreateRouteComponent(props) {
         })
             .then(function (response) {
                 if(response.data.success === "true") {
+                    props.addCreatedRoute({...response.data.data.route,route: response.data.data.route.mapdata.coordinates.route})
                     props.handleClose();
                 }else{
                     window.alert("ERROR Please try again.")
@@ -219,7 +218,7 @@ function getStepContent(step, handleNext, handleBack, route,handleReset) {
             </ResponsiveDiv>
         case 1:
             return <ResponsiveDiv>
-                <CreateRouteMapComponent handleBack={handleBack} handleNext={handleNext}/></ResponsiveDiv>;
+                <CreateRouteMapComponent route={route.route.length < 1 ?  [] : route.route} handleBack={handleBack} handleNext={handleNext}/></ResponsiveDiv>;
         case 2:
             return <ResponsiveDiv>
                 <ColumnDiv>

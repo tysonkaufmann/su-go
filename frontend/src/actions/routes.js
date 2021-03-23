@@ -22,3 +22,9 @@ export function addCreatedRoute(item) {
         payload: item
     }
 }
+export function removeCreatedRoute(item) {
+    return {
+        type: 'REMOVE_CREATED_ROUTES',
+        payload: item
+    }
+}
