@@ -56,6 +56,7 @@ function CreateRouteDetails(props) {
     const [routetitle, setRouteTitle] = useState("");
     const [routedescription, setRouteDescription] = useState("");
     const [routedistance, setRouteDistance] = useState("");
+    const [routetime, setRouteTime] = useState("");
 
     //full name input handler
     const handleRouteTitle = (event) => {
@@ -70,11 +71,15 @@ function CreateRouteDetails(props) {
     const handleRouteDistance = (event) => {
         setRouteDistance(event.target.value);
 
+    }    //full name input handler
+    const handleRouteTime = (event) => {
+        setRouteTime(event.target.value);
+
     }
 
 
     const handleNextClick = () => {
-        props.updateCreateRouteDetails({routetitle:routetitle,routedistance:routedistance,routedescription:routedescription,route:[]})
+        props.updateCreateRouteDetails({routetitle:routetitle,routedistance:routedistance,routedescription:routedescription,routetime:routetime,route:[]})
         props.handleNext()
     }
 
@@ -82,8 +87,14 @@ function CreateRouteDetails(props) {
             setRouteTitle(props.createRouteDetails.routetitle)
             setRouteDescription(props.createRouteDetails.routedescription)
             setRouteDistance(props.createRouteDetails.routedistance)
+            setRouteTime(props.createRouteDetails.routetime)
         },[props]
     )
+
+    let disabled = routetitle === "" ||
+        routedescription === "" ||
+        routedistance === "" ||
+        routetime === ""
 
     return (
         <ContainerDiv>
@@ -96,7 +107,14 @@ function CreateRouteDetails(props) {
             Enter Distance:<Input value={routedistance} type={"number"} onChange={(event) => {
             handleRouteDistance(event)
         }} placeholder={"Enter Distance (KM)"}/>
-        <Button onClick={()=>handleNextClick()}>Next</Button>
+            Enter Approximate Time taken:<Input value={routetime} type={"number"} onChange={(event) => {
+            handleRouteTime(event)
+        }} placeholder={"Enter Time (Minutes)"}/>
+        <Button
+            style={{background: disabled ? '#89b6b9' : '#00cddb'}}
+            disabled={
+                disabled
+        } onClick={()=>handleNextClick()}>Next</Button>
         </ContainerDiv>
     );
 }

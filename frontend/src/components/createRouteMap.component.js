@@ -75,6 +75,9 @@ function CreateRouteMapComponent(props) {
         )
         props.handleNext()
     }
+    const handleClear = () => {
+        setRoute([])
+    }
 
     return (
         <><MapContainer
@@ -88,11 +91,12 @@ function CreateRouteMapComponent(props) {
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {<PolyLineRoute setRoute={(route)=>setRoute(route)} popupTitle={"You are here"}/>}
+            {<PolyLineRoute clear={route.length===0} setRoute={(route)=>setRoute(route)} popupTitle={"You are here"}/>}
         </MapContainer>
             <ButtonDiv>
                 <Button onClick={()=>{props.handleBack()}}>Back</Button>
                 <Button style={{background: route.length < 2 ? '#89b6b9' : '#00cddb'}} disabled={route.length<2} onClick={()=>handleNextClick()}>Next</Button>
+                <Button style={{background: route.length < 2 ? '#89b6b9' : '#00cddb'}} disabled={route.length<2} onClick={()=>handleClear()}>Clear</Button>
             </ButtonDiv>
 
         </>
@@ -155,6 +159,11 @@ function PolyLineRoute(props) {
     useEffect(()=>{
         setTimeout(()=>setMount(false), 3000)
     },[])
+
+    useEffect(()=>{
+        setMarkerArray([])
+    },[props.clear])
+
 
     const updateMarkerLatLng = (LatLong, index) => {
         if(index > -1 && LatLong) {

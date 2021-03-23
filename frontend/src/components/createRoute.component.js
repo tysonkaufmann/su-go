@@ -13,6 +13,7 @@ import StepLabel from "@material-ui/core/StepLabel";
 
 import CreateRouteDetails from "./createRouteDetails.component";
 import {updateCreateRouteDetails, addCreatedRoute} from "../actions/routes";
+import axios from "axios";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 const SignUpContainer = styled.div`
@@ -78,7 +79,40 @@ function CreateRouteComponent(props) {
     const handleFinish = () => {
         props.addCreatedRoute(props.createRouteDetails)
         props.updateCreateRouteDetails({})
-        props.handleClose()
+        console.log(parseInt(props.createRouteDetails.routedistance))
+        let post_data = {
+            routetitle:props.createRouteDetails.routetitle,
+            routetime:props.createRouteDetails.routetime.toString(),
+            routedescription:props.createRouteDetails.routedescription,
+            routedistance: parseInt(props.createRouteDetails.routedistance),
+            username:props.username,
+            mapdata: {coordinates: {route:props.createRouteDetails.route}, type:"Point"},
+            routetype:"Point",
+            photos:[
+                "fake photo",
+                "another fake photo"
+            ],
+        }
+        axios.post('http://localhost:5000/api/routes/createroute', post_data,{
+            headers: {
+                "x-auth-username": props.username,
+                "x-auth-token": JSON.parse(localStorage.getItem("token"))
+            }
+        })
+            .then(function (response) {
+                if(response.data.success === "true") {
+                    props.handleClose();
+                }else{
+                    window.alert("ERROR Please try again.")
+                    window.alert(response.msg)
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+                window.alert(error)
+
+            });
+
     }
     return (
         <Modal onHide={props.handleClose} size={"lg"} show={props.show} centered>
@@ -177,7 +211,7 @@ function getSteps() {
     return ['Enter Map Information', 'Create the route', 'Confirm Route Details'];
 }
 
-function getStepContent(step, handleNext, handleBack, route) {
+function getStepContent(step, handleNext, handleBack, route,handleReset) {
     switch (step) {
         case 0:
             return <ResponsiveDiv>
@@ -194,11 +228,12 @@ function getStepContent(step, handleNext, handleBack, route) {
                     <RowDiv>{"Route Distance: "}{route.routedistance}(KM)</RowDiv>
                     <MapContainerComponent route={route.route.length < 1 ?  [] : route.route} locate={false}/>
                 </ColumnDiv>
-
-
             </ResponsiveDiv>;
         default:
-            return 'Unknown step';
+            return  <ResponsiveDiv>
+                An error occured.
+                <Button onClick={handleReset}>RESET</Button>
+            </ResponsiveDiv>;
     }
 }
 
@@ -249,18 +284,8 @@ function HorizontalLinearStepper(props) {
                 })}
             </Stepper>
             <div>
-                {activeStep === steps.length ? (
                     <div>
-                        <Typography className={classes.instructions}>
-                            All steps completed - you&apos;re finished
-                        </Typography>
-                        <Button onClick={handleReset} className={classes.button}>
-                            Close
-                        </Button>
-                    </div>
-                ) : (
-                    <div>
-                        <Typography className={classes.instructions}>{getStepContent(activeStep,handleNext,handleBack,props.routeDetails)}</Typography>
+                        <Typography className={classes.instructions}>{getStepContent(activeStep,handleNext,handleBack,props.routeDetails,handleReset)}</Typography>
                         <div>
                             {
                                 activeStep == 2 && <><Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
@@ -276,7 +301,6 @@ function HorizontalLinearStepper(props) {
                                 </Button></>}
                         </div>
                     </div>
-                )}
             </div>
         </ResponsiveDiv>
     );

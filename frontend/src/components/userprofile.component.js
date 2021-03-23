@@ -178,7 +178,12 @@ class UserProfile extends Component {
                 ).then(function (response) {
                     // handle success and update routes.
                     if (response.data.success === "true") {
-                        self.props.updateCreatedRoutes(response.data.data)
+                        let createdRoutes = []
+                        for (let i = 0; i < response.data.data.length; i++) {
+                            let item = {...response.data.data[i], route:response.data.data[i].mapdata.coordinates.route}
+                            createdRoutes.push(item)
+                        }
+                        self.props.updateCreatedRoutes(createdRoutes)
                     }
                 })
                     .catch(function (error) {

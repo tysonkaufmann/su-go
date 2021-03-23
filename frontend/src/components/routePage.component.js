@@ -255,6 +255,7 @@ function MapDetailCard(props) {
         <RouteTitleText>{props.route.routetitle}</RouteTitleText>
         <RouteNameText>{props.route.routedescription}{" ("}{props.route.routedistance}{" KM)"}</RouteNameText>
         <Rating
+            name="hover-feedback"
             disabled={true}
             precision={1}
             value={props.route.rating}

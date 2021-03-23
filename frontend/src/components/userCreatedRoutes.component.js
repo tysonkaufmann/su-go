@@ -57,7 +57,7 @@ function UserCreatedRoutes(props){
             props.createdRoutes.map((route,index) => {
                     console.log(route)
                     return (<div style={{borderBottom:"1px solid gray",marginBottom:"10px"}} key={index}>
-                        <TitleDiv>{route.routetitle.toUpperCase()}</TitleDiv>
+                        <TitleDiv>{route.routetitle? route.routetitle.toUpperCase(): ""}</TitleDiv>
                         <RouteListItem key={route}>
                         {/*stub map for now.*/}
                         <MapContainerComponent route={
