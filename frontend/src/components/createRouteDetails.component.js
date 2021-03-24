@@ -50,12 +50,14 @@ const ContainerDiv = styled.div`
     flex-direction: column;
     padding: 50px 0px 50px 0px;
 `
+
 // Modal for Edit Profile.
 function CreateRouteDetails(props) {
     // States.
     const [routetitle, setRouteTitle] = useState("");
     const [routedescription, setRouteDescription] = useState("");
     const [routedistance, setRouteDistance] = useState("");
+    const [routetime, setRouteTime] = useState("");
 
     //full name input handler
     const handleRouteTitle = (event) => {
@@ -70,20 +72,36 @@ function CreateRouteDetails(props) {
     const handleRouteDistance = (event) => {
         setRouteDistance(event.target.value);
 
+    }    //full name input handler
+    const handleRouteTime = (event) => {
+        setRouteTime(event.target.value);
+
     }
 
 
     const handleNextClick = () => {
-        props.updateCreateRouteDetails({routetitle:routetitle,routedistance:routedistance,routedescription:routedescription,route:[]})
+        props.updateCreateRouteDetails({
+            routetitle: routetitle,
+            routedistance: routedistance,
+            routedescription: routedescription,
+            routetime: routetime,
+            route: []
+        })
         props.handleNext()
     }
 
-    useEffect(()=> {
+    useEffect(() => {
             setRouteTitle(props.createRouteDetails.routetitle)
             setRouteDescription(props.createRouteDetails.routedescription)
             setRouteDistance(props.createRouteDetails.routedistance)
-        },[props]
+            setRouteTime(props.createRouteDetails.routetime)
+        }, [props]
     )
+
+    let disabled = routetitle === "" ||
+        routedescription === "" ||
+        routedistance === "" ||
+        routetime === ""
 
     return (
         <ContainerDiv>
@@ -96,7 +114,14 @@ function CreateRouteDetails(props) {
             Enter Distance:<Input value={routedistance} type={"number"} onChange={(event) => {
             handleRouteDistance(event)
         }} placeholder={"Enter Distance (KM)"}/>
-        <Button onClick={()=>handleNextClick()}>Next</Button>
+            Enter Approximate Time taken:<Input value={routetime} type={"number"} onChange={(event) => {
+            handleRouteTime(event)
+        }} placeholder={"Enter Time (Minutes)"}/>
+            <Button
+                style={{background: disabled ? '#89b6b9' : '#00cddb'}}
+                disabled={
+                    disabled
+                } onClick={() => handleNextClick()}>Next</Button>
         </ContainerDiv>
     );
 }

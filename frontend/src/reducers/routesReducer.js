@@ -227,9 +227,19 @@ export default function routesReducer(state = initialState, action) {
         case "UPDATE_CREATE_ROUTE_DETAILS":
             return { ...state, createRouteDetails: action.payload }
         case "ADD_CREATED_ROUTE":
-            let temp = state.createdRoutes.slice()
-            temp.push(action.payload)
-            return { ...state, createdRoutes: temp }
+            let addCreatedRoutes = state.createdRoutes.slice()
+            let addAllRoutes = state.allRoutes.slice()
+            addCreatedRoutes.push(action.payload)
+            addAllRoutes.push(action.payload)
+            return { ...state, createdRoutes: addCreatedRoutes, allRoutes: addAllRoutes }
+        case "REMOVE_CREATED_ROUTES":
+            let removeCreatedRoutes =  state.createdRoutes.filter(function( obj ) {
+                return obj.routeid !== action.payload;
+            });
+            let removeAllRoutes =  state.allRoutes.filter(function( obj ) {
+                return obj.routeid !== action.payload;
+            });
+            return { ...state, createdRoutes: removeCreatedRoutes, allRoutes: removeAllRoutes }
         default:
             return state;
     }
