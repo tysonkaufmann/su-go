@@ -484,3 +484,47 @@ exports.getUserCreatedRoutes = async (req, res) => {
     return res
   }
 }
+
+
+exports.getAllRoutes = async (req, res) => {
+
+  try {
+
+    // retrieve routes created by user
+    const results = await Route.find()
+
+    const routes = results.map((route) => {
+      return {
+        routeid: route.routeid,
+        routedescription: route.routedescription,
+        username: route.username,
+        routetitle: route.routetitle,
+        routetype: route.routetype,
+        routetime: route.routetime,
+        routedistance: route.routedistance,
+        photos: route.photos,
+        mapdata: route.mapdata
+      }
+    })
+
+    // return the data
+    res.status(200);
+    res.json({
+      status: '200',
+      success: 'true',
+      data: routes,
+      msg: 'routes retrieved'
+    })
+    return res
+
+  } catch (err) {
+    console.error(err)
+    res.status(500);
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}

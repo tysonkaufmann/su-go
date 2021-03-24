@@ -1,5 +1,5 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const { getUserCreatedRoutes, getRoute, createRoute, deleteRoute, startRoute, endRoute, routeTraffic } = require('../../../controllers/routes.js')
+const { getUserCreatedRoutes, getAllRoutes, getRoute, createRoute, deleteRoute, startRoute, endRoute, routeTraffic } = require('../../../controllers/routes.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
 
@@ -15,6 +15,37 @@ beforeAll(() => {
 });
 
 describe("Route", () => {
+
+  test("Routes - Get all Routes", () => {
+    jest.setTimeout(30000);
+
+    var req = mockRequest({
+      method: "GET",
+      header : function(header) {
+        return this.headers[header]
+      }
+    });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "200",
+        "success": "true",
+        "msg": "routes retrieved"
+    }
+
+    return getAllRoutes(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  });
 
 
   test("View Traffic - Route Not Found", () => {

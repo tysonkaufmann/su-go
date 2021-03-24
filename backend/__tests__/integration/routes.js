@@ -11,6 +11,26 @@ beforeAll(() => {
   console.error = function() {}
 });
 
+
+it('Routes - Get All Routes', async done => {
+  jest.setTimeout(30000);
+
+  const response2 = await request.get('/api/routes')
+
+  var expectedResponse2 = {
+    "status": "200",
+    "success": "true",
+    "msg": "routes retrieved"
+  }
+
+  expect(response2.body.status).toBe(expectedResponse2.status);
+  expect(response2.body.success).toBe(expectedResponse2.success);
+  expect(response2.body.msg).toBe(expectedResponse2.msg);
+
+  done()
+})
+
+
 it('Delete Routes - Successful', async done => {
   jest.setTimeout(30000);
 
