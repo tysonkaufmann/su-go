@@ -1,5 +1,5 @@
 // Boilerplate https://bcostabatista.medium.com/testing-nodejs-applications-with-jest-7ae334daaf55
-const { getUserCreatedRoutes, getRoute, createRoute, deleteRoute, startRoute, endRoute, routeTraffic } = require('../../../controllers/routes.js')
+const { getUserCreatedRoutes, getAllRoutes, getRoute, createRoute, deleteRoute, startRoute, endRoute, routeTraffic } = require('../../../controllers/routes.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
 
@@ -15,6 +15,37 @@ beforeAll(() => {
 });
 
 describe("Route", () => {
+
+  test("Routes - Get all Routes", () => {
+    jest.setTimeout(30000);
+
+    var req = mockRequest({
+      method: "GET",
+      header : function(header) {
+        return this.headers[header]
+      }
+    });
+    var res = mockResponse({ hostname: 'tester',
+      status : function(statusCode) {
+        this.status = statusCode
+      },
+      json : function(body) {
+        this.json = body
+      },
+    });
+
+    var expectedResponse = {
+        "status": "200",
+        "success": "true",
+        "msg": "routes retrieved"
+    }
+
+    return getAllRoutes(req, res).then(data => {
+      expect(data.json.status).toBe(expectedResponse.status);
+      expect(data.json.success).toBe(expectedResponse.success);
+      expect(data.json.msg).toBe(expectedResponse.msg);
+    });
+  });
 
 
   test("View Traffic - Route Not Found", () => {
@@ -441,52 +472,6 @@ describe("Route", () => {
   // successful deletion will be covered in integration tests
   // create a route successfully will be tested in integration tests
 
-  test("Create a Route - Wrong Format For Map Data", () => {
-    jest.setTimeout(30000);
-
-    var payload = {
-
-      "routedescription": "test description 2",
-      "username": "aryastark",
-      "routetitle": "test route 2",
-      "routetype": "test type 2",
-      "routetime": "test time 2",
-      "routedistance": 2000,
-      "photos": [
-        "fake photo",
-        "another fake photo"
-      ],
-      "mapdata": ""
-    }
-
-    var req = mockRequest({body: payload,
-      method: "POST",
-      headers: { "x-auth-username" : "aryastark" },
-      header : function(header) {
-        return this.headers[header]
-      }
-    });
-    var res = mockResponse({ hostname: 'tester',
-      status : function(statusCode) {
-        this.status = statusCode
-      },
-      json : function(body) {
-        this.json = body
-      },
-    });
-
-    var expectedResponse = {
-      "status": "400",
-      "success": "false",
-      "msg": "Bad Request"
-    }
-
-    return createRoute(req, res).then(data => {
-      expect(data.json.status).toBe(expectedResponse.status);
-      expect(data.json.success).toBe(expectedResponse.success);
-      expect(data.json.msg).toBe(expectedResponse.msg);
-    });
-  });
 
   test("Create a Route - No Map Data", () => {
     jest.setTimeout(30000);
@@ -534,55 +519,6 @@ describe("Route", () => {
     });
   });
 
-  test("Create a Route - Wrong Format for Photos", () => {
-    jest.setTimeout(30000);
-
-    var payload = {
-
-      "routedescription": "test description 2",
-      "username": "aryastark",
-      "routetitle": "test route 2",
-      "routetype": "test type 2",
-      "routetime": "test time 2",
-      "routedistance": 2000,
-      "photos": "",
-      "mapdata": {
-        "coordinates": [
-          200,
-          200
-        ],
-        "type": "Point"
-      }
-    }
-
-    var req = mockRequest({body: payload,
-      method: "POST",
-      headers: { "x-auth-username" : "aryastark" },
-      header : function(header) {
-        return this.headers[header]
-      }
-    });
-    var res = mockResponse({ hostname: 'tester',
-      status : function(statusCode) {
-        this.status = statusCode
-      },
-      json : function(body) {
-        this.json = body
-      },
-    });
-
-    var expectedResponse = {
-      "status": "400",
-      "success": "false",
-      "msg": "Bad Request"
-    }
-
-    return createRoute(req, res).then(data => {
-      expect(data.json.status).toBe(expectedResponse.status);
-      expect(data.json.success).toBe(expectedResponse.success);
-      expect(data.json.msg).toBe(expectedResponse.msg);
-    });
-  });
 
   test("Create a Route - No Photos", () => {
     jest.setTimeout(30000);
@@ -633,58 +569,6 @@ describe("Route", () => {
     });
   });
 
-  test("Create a Route - Route Distance Wrong Format", () => {
-    jest.setTimeout(30000);
-
-    var payload = {
-
-      "routedescription": "test description 2",
-      "username": "aryastark",
-      "routetitle": "test route 2",
-      "routetype": "test type 2",
-      "routetime": "test time 2",
-      "routedistance": '2000',
-      "photos": [
-        "fake photo",
-        "another fake photo"
-      ],
-      "mapdata": {
-        "coordinates": [
-          200,
-          200
-        ],
-        "type": "Point"
-      }
-    }
-
-    var req = mockRequest({body: payload,
-      method: "POST",
-      headers: { "x-auth-username" : "aryastark" },
-      header : function(header) {
-        return this.headers[header]
-      }
-    });
-    var res = mockResponse({ hostname: 'tester',
-      status : function(statusCode) {
-        this.status = statusCode
-      },
-      json : function(body) {
-        this.json = body
-      },
-    });
-
-    var expectedResponse = {
-      "status": "400",
-      "success": "false",
-      "msg": "Bad Request"
-    }
-
-    return createRoute(req, res).then(data => {
-      expect(data.json.status).toBe(expectedResponse.status);
-      expect(data.json.success).toBe(expectedResponse.success);
-      expect(data.json.msg).toBe(expectedResponse.msg);
-    });
-  });
 
   test("Create a Route - No Route Distance", () => {
     jest.setTimeout(30000);

@@ -7,7 +7,7 @@ const {
   changepassword,
   getUserInformation,
   updateUserInformation,
-  getUserCurrentRoute
+  getUserCurrentRoute,
 } = require('../../../controllers/user.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
@@ -30,6 +30,7 @@ describe("User", () => {
         var password = "password"
         expect(encrypt(password)).toBe("5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8");
     });
+
 
 
     test("Current User Route - User Not on Route", () => {
