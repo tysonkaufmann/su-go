@@ -363,10 +363,7 @@ exports.createRoute = async (req, res) => {
 
   var { username, routetitle, routetype, routetime, routedescription, photos, mapdata, routedistance } = req.body
 
-  if(!username || !routetitle || !routetype || !routetime || !routedescription || !photos || !mapdata || !routedistance || typeof username != 'string' ||
-    typeof routetitle != 'string' || typeof routetype != 'string' ||typeof routetime != 'string' || typeof routedescription != 'string' || typeof photos != 'object'
-    ||typeof mapdata != 'object' ||typeof routedistance != 'number' || !mapdata['coordinates'] || !mapdata['type'] || typeof mapdata['coordinates'] != 'object' ||
-      typeof mapdata['type'] != 'string'){
+  if(!username || !routetitle || !routetype || !routetime || !routedescription || !photos || !mapdata || !routedistance){
     res.status(400);
     res.json({
       status: '400',
