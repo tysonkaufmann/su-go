@@ -1,4 +1,4 @@
-import React, {Component, useEffect, useRef} from 'react';
+import React, {Component} from 'react';
 import {
     updateUsername,
     updateEmail,
@@ -19,7 +19,10 @@ import {Form} from 'react-bootstrap/'
 import {FormControl} from 'react-bootstrap/'
 import {Button} from 'react-bootstrap/'
 import axios from "axios";
-
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import SortIcon from '@material-ui/icons/Sort';
+import MuiFormControl from '@material-ui/core/FormControl';
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 
@@ -80,6 +83,8 @@ class RoutePage extends Component {
             asc_routes: false,
             asc_title: false,
             asc_distance: false,
+            selectedType: "All",
+            selectedSort: "Default",
         }
     }
 
@@ -94,13 +99,19 @@ class RoutePage extends Component {
         if (prevState.currentRoute !== this.props.currentRoute) {
             this.setState({currentRoute: this.props.currentRoute})
         }
+        if (prevState.selectedType !== this.state.selectedType) {
+            this.filterByType()
+        }
+        if (prevState.selectedSort !== this.state.selectedSort) {
+            this.sortRoutes()
+        }
     }
 
     componentWillUnmount() {
     }
 
     setMapDetails = (key) => {
-        this.setState({route: key.route})
+        this.setState({route: key})
     }
 
     setCurrentRoute = (route, id) => {
@@ -193,13 +204,94 @@ class RoutePage extends Component {
 
     }
 
+    filterByType = () => {
+        let filteredRoutes = this.props.allRoutes
+        if (this.state.selectedType !== "All") {
+            filteredRoutes = this.props.allRoutes.filter(r => r.routetype === this.state.selectedType)
+        }
+
+
+        this.setState({Routes: filteredRoutes}, ()=> {
+            if (filteredRoutes.indexOf(this.state.route) === -1) {
+                this.setState({route: []})
+            }
+            this.sortRoutes()
+        })
+    }
+
+    handleType = (event) => {
+        this.setState({selectedType: event.target.value})
+    }
+
+    sortRoutes = () => {
+        let routesToSort = [...this.state.Routes]
+        if (this.state.selectedSort === "Default") {
+            let foundRoutes = []
+            this.props.allRoutes.forEach(r => {
+                if (routesToSort.indexOf(r) !== -1) {
+                    foundRoutes.push(r)
+                }
+            })            
+            routesToSort = foundRoutes
+        }
+        else if (this.state.selectedSort === "distance_asc") {
+            routesToSort.sort((a, b) => a.routedistance - b.routedistance)
+        }
+        else if (this.state.selectedSort === "distance_des") {
+            routesToSort.sort((a, b) => b.routedistance - a.routedistance)
+        }
+        else if (this.state.selectedSort === "time_asc") {
+            routesToSort.sort((a, b) => a.routetime - b.routetime)
+        }
+        else if (this.state.selectedSort === "time_des") {
+            routesToSort.sort((a, b) => b.routetime - a.routetime)
+        }
+        this.setState({Routes: routesToSort})
+    }
+
+    handleSortBy = (event) => {
+        this.setState({selectedSort: event.target.value})
+    }
+
     render() {
         return (
             <RoutePageContainer>
                 <UpperLeft>
-                    <Sort onClick={() => this.sortRoute("TYPE")}>TYPE</Sort>
-                    <Sort onClick={() => this.sortRoute("RATING")}>RATING</Sort>
-                    <Sort onClick={() => this.sortRoute("DISTANCE")}>DISTANCE</Sort>
+                    <MuiFormControl variant="outlined" margin='dense' style={{width: "45%", margin: "auto"}}>
+                        <InputLabel>Route Type</InputLabel>
+                        <Select
+                            native
+                            value={this.state.selectedType}
+                            onChange={this.handleType}
+                            label="Route Type"
+                            inputProps={{
+                                name: 'Route Type',
+                                id: 'route-type-select',
+                            }}>
+                        <option value="All">All</option>
+                        <option value="Walking">Footpath</option>
+                        <option value="Biking">Biking Route</option>
+                        <option value="Hiking">Hiking Trail</option>
+                        </Select>
+                    </MuiFormControl>
+                    <MuiFormControl variant="outlined" margin='dense' style={{width: "45%", margin: "auto"}}>
+                        <InputLabel>Sort by</InputLabel>
+                        <Select
+                            native
+                            value={this.state.selectedSort}
+                            onChange={this.handleSortBy}
+                            label="Sort by"
+                            inputProps={{
+                                name: 'Sort by',
+                                id: 'sort-by-select',
+                            }}>
+                        <option value="Default">Default</option>
+                        <option value="distance_asc">Distance up</option>
+                        <option value="distance_des">Distance down</option>
+                        <option value="time_asc">Time Up</option>
+                        <option value="time_des">Time down</option>
+                        </Select>
+                    </MuiFormControl>
                 </UpperLeft>
                 <UpperRight>
                     <div>
@@ -215,7 +307,7 @@ class RoutePage extends Component {
                     )}
                 </RouteLeft>
                 <RouteRight>
-                    <MapContainerComponent currentRoute={this.state.currentRoute.route} route={this.state.route} locate={true} allRoutes={this.props.allRoutes} />
+                    <MapContainerComponent currentRoute={this.state.currentRoute.route} route={this.state.route.route} locate={true} allRoutes={this.state.Routes} />
                 </RouteRight>
             </RoutePageContainer>
         );
@@ -306,9 +398,9 @@ const StartRouteButton = styled.button`
 const RouteNameText = styled.div`
     margin-top: 5px;
     margin-left: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     color: black;
-    font-weight: bold;
+    // font-weight: bold;
     height: fit-content;
 
 `
@@ -338,13 +430,17 @@ function MapDetailCard(props) {
     return (<MapDetailCardDiv style={props.currentRoute.routeid === props.route.routeid ? {backgroundColor: "#ffc2a3"} : {}}>
         <TrailImage image={image}/>
         <RouteTitleText>{props.route.routetitle}</RouteTitleText>
-        <RouteNameText>{props.route.routedescription}{" ("}{props.route.routedistance}{" KM)"}</RouteNameText>
-        <Rating
+        <RouteNameText>
+            <b>Description:</b> {props.route.routedescription}<br />
+            <b>Distance:</b> {props.route.routedistance}{" (km)"}<br />
+            <b>Time:</b> {props.route.routetime}{" (minutes)"}
+        </RouteNameText>
+        {/* <Rating
             name="hover-feedback"
             disabled={true}
             precision={1}
             value={props.route.rating}
-        />
+        /> */}
         <div style={{width: "100%",display: "inline-block"}}>
             <ViewMapButton onClick={() => props.setMapDetails(props.route)}>View Map</ViewMapButton>
             <StartRouteButton 

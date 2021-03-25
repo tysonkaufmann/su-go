@@ -16,7 +16,6 @@ function MapContainerComponent(props) {
 
     const prevRoute = usePrevious(props.route)
     const prevSelected = usePrevious(selectedRoute)
-    const prevCurrentRoute = usePrevious(props.currentRoute)
 
     useEffect(() => {
         if (prevRoute !== props.route || (props.route !== selectedRoute && selectedRoute === prevSelected)) {
