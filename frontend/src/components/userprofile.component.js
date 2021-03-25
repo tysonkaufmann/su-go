@@ -179,7 +179,7 @@ class UserProfile extends Component {
                     if (response.data.success === "true") {
                         let createdRoutes = []
                         for (let i = 0; i < response.data.data.length; i++) {
-                            let item = {...response.data.data[i], route:response.data.data[i].mapdata.coordinates.route}
+                            let item = {...response.data.data[i], route:response.data.data[i].mapdata.coordinates}
                             createdRoutes.push(item)
                         }
                         self.props.updateCreatedRoutes(createdRoutes)
@@ -317,7 +317,7 @@ function TabPanel(props) {
         >
             {value === index && (
                 <Box>
-                    <Typography>{children}</Typography>
+                    <Typography component={'span'}>{children}</Typography>
                 </Box>
             )}
         </div>
