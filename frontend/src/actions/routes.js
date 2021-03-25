@@ -28,3 +28,10 @@ export function removeCreatedRoute(item) {
         payload: item
     }
 }
+
+export function updateAllRoutes(item) {
+    return {
+        type: 'UPDATE_ALL_ROUTES',
+        payload: item
+    }
+}

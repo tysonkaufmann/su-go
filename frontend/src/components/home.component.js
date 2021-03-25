@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {updateUsername} from "../actions/userProfile";
+import {updateAllRoutes} from "../actions/routes";
 import {connect} from "react-redux";
 import styled from "styled-components";
 import background3 from "../assets/images/background3.png";
@@ -9,6 +10,7 @@ import {Form} from 'react-bootstrap/'
 import {FormControl} from 'react-bootstrap/'
 import {Button} from 'react-bootstrap/'
 import MapContainerComponent from "./mapContainer.component";
+import axios from "axios";
 //Home page components.
 const HomeContainer = styled.div`
     display: flex;
@@ -67,8 +69,38 @@ const JumboTextDiv = styled.div`
 
 class Home extends Component {
     componentDidMount() {
-        // Persists the data temporarily
+        // auto update data every 5 mins
+        var intervalId = setInterval(this.retrieveData, 60000 * 5);
+        this.setState({intervalId: intervalId});
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.state.intervalId);
+    }
+    
+    retrieveData = () => {
         this.props.updateUsername(localStorage.getItem("Username"))
+        let self = this;
+        axios.get(`http://localhost:5000/api/routes`, {
+            headers: {
+                "x-auth-username":
+                    localStorage.getItem("Username"),
+                "x-auth-token":
+                    JSON.parse(localStorage.getItem("token"))
+            }
+        }).then(function(response) {
+            // handle success
+            if (response.data.success === "true"){
+                let allRoutes = []
+                for (let index = 0; index < response.data.data.length; index++) {
+                    let item = {...response.data.data[index], route:response.data.data[index].mapdata.coordinates}
+                    allRoutes.push(item)
+                }
+                self.props.updateAllRoutes(allRoutes)
+            }
+        }).catch(function(error) {
+            console.error("error in getting all routes", error)
+        })
     }
 
     render() {
@@ -110,7 +142,9 @@ function mapDispatchToProps(dispatch) {
         updateUsername: (item) => {
             dispatch(updateUsername(item))
         },
-
+        updateAllRoutes: (item) => {
+            dispatch(updateAllRoutes(item))
+        },
     }
 }
 
