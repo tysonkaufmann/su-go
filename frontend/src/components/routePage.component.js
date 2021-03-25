@@ -131,7 +131,7 @@ class RoutePage extends Component {
                     self.props.updateCurrentRoute(route)
                     let traffic = [...self.props.traffic]
                     let trafficFound = traffic.find(t => t.routeid === id)
-                    traffic[traffic.indexOf(trafficFound)].traffic += 1
+                    traffic[traffic.indexOf(trafficFound)].count += 1
                     self.props.updateTraffic(traffic)
                 }
                 else {
@@ -155,7 +155,7 @@ class RoutePage extends Component {
                     self.props.updateCurrentRoute(route)
                     let traffic = [...self.props.traffic]
                     let trafficFound = traffic.find(t => t.routeid === id)
-                    traffic[traffic.indexOf(trafficFound)].traffic -= 1
+                    traffic[traffic.indexOf(trafficFound)].count -= 1
                     self.props.updateTraffic(traffic)
                 }
                 else {

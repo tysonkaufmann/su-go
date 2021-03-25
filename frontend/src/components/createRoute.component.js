@@ -12,7 +12,7 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 
 import CreateRouteDetails from "./createRouteDetails.component";
-import {updateCreateRouteDetails, addCreatedRoute} from "../actions/routes";
+import {updateCreateRouteDetails, addCreatedRoute, updateTraffic} from "../actions/routes";
 import axios from "axios";
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
@@ -100,6 +100,9 @@ function CreateRouteComponent(props) {
             .then(function (response) {
                 if(response.data.success === "true") {
                     props.addCreatedRoute({...response.data.data.route, route: response.data.data.route.mapdata.coordinates})
+                    let traffic = [...props.traffic]
+                    traffic.push({routeid: response.data.data.route.routeid, count: 0})
+                    props.updateTraffic(traffic)
                     props.handleClose();
                 }else{
                     window.alert("ERROR Please try again.")
@@ -146,6 +149,9 @@ function mapDispatchToProps(dispatch) {
         updateCreateRouteDetails: (item) => {
             dispatch(updateCreateRouteDetails(item))
         },
+        updateTraffic: (item) => {
+            dispatch(updateTraffic(item))
+        },
     }
 }
 
@@ -155,6 +161,7 @@ function mapStateToProps(state) {
         fullname: state.userProfile.fullname,
         email: state.userProfile.email,
         createRouteDetails: state.routesReducer.createRouteDetails,
+        traffic: state.routesReducer.traffic,
     }
 }
 

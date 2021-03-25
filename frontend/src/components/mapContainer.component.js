@@ -29,15 +29,17 @@ function MapContainerComponent(props) {
         let data = []
         props.allRoutes.forEach(r => {
             let trafficFound = props.traffic.find(t => t.routeid === r.routeid)
-            let count = trafficFound.count
-            if (maxTraffic < count) {
-                maxTraffic = count
+            if (trafficFound) {
+                let count = trafficFound.count || 0
+                if (maxTraffic < count) {
+                    maxTraffic = count
+                }
+                data.push({
+                    lat: r.route[0].lat,
+                    lng: r.route[0].lng,
+                    count: count
+                })
             }
-            data.push({
-                lat: r.route[0].lat,
-                lng: r.route[0].lng,
-                count: count
-            })
         })
     
         const trafficData = {

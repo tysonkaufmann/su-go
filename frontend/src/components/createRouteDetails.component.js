@@ -113,9 +113,9 @@ function CreateRouteDetails(props) {
                 }}
                 >
                 <option aria-label="None" value="" />
-                <option value={"Walking"}>Footpath</option>
-                <option value={"Biking"}>Biking Route</option>
-                <option value={"Hiking"}>Hiking Trail</option>
+                <option value="Walking">Footpath</option>
+                <option value="Biking">Biking Route</option>
+                <option value="Hiking">Hiking Trail</option>
                 </Select>
             </FormControl>
             Route Title:<Input value={routetitle} onChange={(event) => {
