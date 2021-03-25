@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {updateUsername} from "../actions/userProfile";
-import {updateAllRoutes} from "../actions/routes";
+import {updateAllRoutes, updateCurrentRoute} from "../actions/routes";
 import {connect} from "react-redux";
 import styled from "styled-components";
 import background3 from "../assets/images/background3.png";
@@ -72,6 +72,7 @@ class Home extends Component {
         // auto update data every 5 mins
         var intervalId = setInterval(this.retrieveData, 60000 * 5);
         this.setState({intervalId: intervalId});
+        this.retrieveData()
     }
 
     componentWillUnmount() {
@@ -80,6 +81,34 @@ class Home extends Component {
     
     retrieveData = () => {
         this.props.updateUsername(localStorage.getItem("Username"))
+        this.getRoutes()
+        this.getCurrentRoute()
+    }
+
+    getCurrentRoute() {
+        let self = this;
+        axios.get(`http://localhost:5000/api/user/${localStorage.getItem("Username")}/currentroute`, {
+                headers: {
+                    "x-auth-username":
+                        localStorage.getItem("Username"),
+                    "x-auth-token":
+                        JSON.parse(localStorage.getItem("token"))
+                }
+            }
+        ).then(function(response) {
+            // handle success
+            if (response.data.success === "true"){
+                self.props.updateCurrentRoute({...response.data.data.route, route:response.data.data.route.mapdata.coordinates})
+            }
+            else {
+                console.log(response.data.msg)
+            }
+        }).catch(function(error) {
+            console.error("error in getting user current route", error)
+        })
+    }
+
+    getRoutes() {
         let self = this;
         axios.get(`http://localhost:5000/api/routes`, {
             headers: {
@@ -97,6 +126,9 @@ class Home extends Component {
                     allRoutes.push(item)
                 }
                 self.props.updateAllRoutes(allRoutes)
+            }
+            else {
+                console.log(response.data.msg)
             }
         }).catch(function(error) {
             console.error("error in getting all routes", error)
@@ -144,6 +176,9 @@ function mapDispatchToProps(dispatch) {
         },
         updateAllRoutes: (item) => {
             dispatch(updateAllRoutes(item))
+        },
+        updateCurrentRoute: (item) => {
+            dispatch(updateCurrentRoute(item))
         },
     }
 }

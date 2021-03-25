@@ -35,3 +35,10 @@ export function updateAllRoutes(item) {
         payload: item
     }
 }
+
+export function updateCurrentRoute(item) {
+    return {
+        type: 'UPDATE_CURRENT_ROUTE',
+        payload: item
+    }
+}

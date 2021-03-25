@@ -8,7 +8,7 @@ import {
     updateTotalTime
 } from "../actions/userProfile";
 import {connect} from "react-redux";
-import {updateCreatedRoutes} from "../actions/routes";
+import {updateCreatedRoutes, updateCurrentRoute} from "../actions/routes";
 import styled from "styled-components";
 import MapContainerComponent from "./mapContainer.component";
 import jog from "../assets/jog.jpg";
@@ -18,7 +18,8 @@ import Rating from '@material-ui/lab/Rating';
 import {Form} from 'react-bootstrap/'
 import {FormControl} from 'react-bootstrap/'
 import {Button} from 'react-bootstrap/'
-import {Navbar} from "./navbar.component";
+import axios from "axios";
+
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 
@@ -73,9 +74,9 @@ class RoutePage extends Component {
     constructor() {
         super();
         this.state = {
-            currentRoute: -1,
             Routes: [],
             route: [],
+            currentRoute: {},
             asc_routes: false,
             asc_title: false,
             asc_distance: false,
@@ -83,12 +84,15 @@ class RoutePage extends Component {
     }
 
     componentDidMount() {
-        this.setState({currentRoute: this.props.created, Routes: this.props.allRoutes})
+        this.setState({currentRoute: this.props.currentRoute, Routes: this.props.allRoutes})
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if(prevProps.allRoutes !== this.props.allRoutes) {
             this.setState({Routes: this.props.allRoutes})
+        }
+        if (prevState.currentRoute !== this.props.currentRoute) {
+            this.setState({currentRoute: this.props.currentRoute})
         }
     }
 
@@ -97,6 +101,53 @@ class RoutePage extends Component {
 
     setMapDetails = (key) => {
         this.setState({route: key.route})
+    }
+
+    setCurrentRoute = (route, id) => {
+        let self = this;
+        let post_data = {
+            username: self.props.username
+        }
+        // start route
+        if (route.route) {
+            axios.post(`http://localhost:5000/api/routes/${id}/startroute`, post_data,{
+                headers: {
+                    "x-auth-username": self.props.username,
+                    "x-auth-token": JSON.parse(localStorage.getItem("token"))
+                }
+            }).then(function(response) {
+                if (response.data.success === "true") {
+                    window.alert("Route has been started")
+                    self.props.updateCurrentRoute(route)
+                }
+                else {
+                    window.alert("failed to start route", response.data.msg)
+                }
+            }).catch(function(error) {
+                console.log(error);
+                window.alert(error)
+            })
+        }
+        // end route
+        else {
+            axios.post(`http://localhost:5000/api/routes/${id}/endroute`, post_data,{
+                headers: {
+                    "x-auth-username": self.props.username,
+                    "x-auth-token": JSON.parse(localStorage.getItem("token"))
+                }
+            }).then(function(response) {
+                if (response.data.success === "true") {
+                    window.alert("Route has been ended")
+                    self.props.updateCurrentRoute(route)
+                }
+                else {
+                    window.alert("failed to end route", response.data.msg)
+                }
+            }).catch(function(error) {
+                console.log(error);
+                window.alert(error)
+            })
+        }
     }
     // sort the routes by the type of sort selected by the users and update the list.
     sortRoute = (sort) => {
@@ -152,11 +203,11 @@ class RoutePage extends Component {
                 </UpperRight>
                 <RouteLeft>
                     {this.state.Routes.map((route, i) =>
-                        <MapDetailCard image={route.image} key={i} route={route} setMapDetails={this.setMapDetails}/>
+                        <MapDetailCard image={route.image} key={i} route={route} setMapDetails={this.setMapDetails} setCurrentRoute={this.setCurrentRoute} currentRoute={this.state.currentRoute}/>
                     )}
                 </RouteLeft>
                 <RouteRight>
-                    <MapContainerComponent route={this.state.route} locate={true} allRoutes={this.props.allRoutes} />
+                    <MapContainerComponent currentRoute={this.state.currentRoute.route} route={this.state.route} locate={true} allRoutes={this.props.allRoutes} />
                 </RouteRight>
             </RoutePageContainer>
         );
@@ -188,7 +239,9 @@ function mapDispatchToProps(dispatch) {
         updateCreatedRoutes: (item) => {
             dispatch(updateCreatedRoutes(item))
         },
-
+        updateCurrentRoute: (item) => {
+            dispatch(updateCurrentRoute(item))
+        },
     }
 }
 
@@ -210,14 +263,33 @@ const ViewMapButton = styled.button`
       padding: 0.25em 1em;
       border: white;
       color: white;
-      width: 100%;
-      height: 50px;
+      width: 50%;
+      height: 40px;
       background: #00cddb;
-      align-self: flex-end;
+      align-self: flex-start;
       margin-bottom: 10px;
       margin-top:auto;
       &:hover {
         background: #89b6b9;
+      }
+`
+const StartRouteButton = styled.button`
+      text-align:center;
+      font-size: 1em;
+      padding: 0.25em 1em;
+      border: white;
+      color: white;
+      width: 50%;
+      height: 40px;
+      background: #ed6622;
+      align-self: flex-end;
+      margin-bottom: 10px;
+      margin-top:auto;
+      &:hover {
+        background: #c78f73;
+      }
+      &:disabled {
+          background: #a8a8a7;
       }
 `
 const RouteNameText = styled.div`
@@ -249,9 +321,10 @@ const TrailImage = styled.div`
 `
 
 function MapDetailCard(props) {
+
     // temp image selection.
-    let image = props.route.routetitle === "Biking Route" ? bike : props.route.routetitle === "Jogging" ? jog : undefined;
-    return (<MapDetailCardDiv>
+    let image = props.route.routetype === "Biking" ? bike : props.route.routetitle === "Walking" ? jog : undefined;
+    return (<MapDetailCardDiv style={props.currentRoute.routeid === props.route.routeid ? {backgroundColor: "#ffc2a3"} : {}}>
         <TrailImage image={image}/>
         <RouteTitleText>{props.route.routetitle}</RouteTitleText>
         <RouteNameText>{props.route.routedescription}{" ("}{props.route.routedistance}{" KM)"}</RouteNameText>
@@ -261,7 +334,20 @@ function MapDetailCard(props) {
             precision={1}
             value={props.route.rating}
         />
-        <ViewMapButton onClick={() => props.setMapDetails(props.route)}>View Map</ViewMapButton>
+        <div style={{width: "100%",display: "inline-block"}}>
+            <ViewMapButton onClick={() => props.setMapDetails(props.route)}>View Map</ViewMapButton>
+            <StartRouteButton 
+            onClick={() => {
+                if (props.currentRoute.routeid === props.route.routeid) {
+                    props.setCurrentRoute({}, props.route.routeid)
+                }
+                else {
+                    props.setCurrentRoute(props.route, props.route.routeid)
+                }
+            }}
+            disabled={props.currentRoute.routeid !== props.route.routeid && props.currentRoute.route}
+            >{props.currentRoute.routeid === props.route.routeid? "End Route" : "Start Route"}</StartRouteButton>
+        </div>
     </MapDetailCardDiv>)
 }
 
@@ -276,6 +362,7 @@ function mapStateToProps(state) {
         favouriteRoutes: state.routesReducer.favouriteRoutes,
         createdRoutes: state.routesReducer.createdRoutes,
         allRoutes: state.routesReducer.allRoutes,
+        currentRoute: state.routesReducer.currentRoute,
     }
 }
 

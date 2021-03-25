@@ -117,7 +117,7 @@ function UserCreatedRoutes(props){
             if (response.data.success === "true") {
                 let createdRoutes = []
                 for (let i = 0; i < response.data.data.length; i++) {
-                    let item = {...response.data.data[i], route:response.data.data[i].mapdata.coordinates.route}
+                    let item = {...response.data.data[i], route:response.data.data[i].mapdata.coordinates}
                     createdRoutes.push(item)
                 }
                 props.updateCreatedRoutes(createdRoutes)
@@ -135,9 +135,7 @@ function UserCreatedRoutes(props){
                     return (<div style={{borderBottom:"1px solid gray",marginBottom:"10px"}} key={index}>
                         <TitleDiv>{route.routetitle? route.routetitle.toUpperCase(): ""}</TitleDiv>
                         <RouteListItem key={route}>
-                        {/*stub map for now.*/}
-                        <MapContainerComponent route={
-                            route.route} lat={route.lat} long={route.long} locate={false}
+                        <MapContainerComponent route={route.route} lat={route.lat} long={route.long} locate={false}
                         />
                         <RouteButton onClick={()=>setAlert(true)} color={"#D40943"}>Delete</RouteButton>
                         <ConfirmAlert routeid={route.routeid} routedescription={route.routedescription} submitLoader={submitLoader} show={alert} handleDeleteRoute={handleDeleteRoute} handleClose={handleClose}/>
