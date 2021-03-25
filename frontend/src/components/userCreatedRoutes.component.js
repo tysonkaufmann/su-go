@@ -61,15 +61,31 @@ const TitleDiv = styled.div`
 `
 // List of user created routes.
 function UserCreatedRoutes(props){
-    let [confirm, setConfirm] = useState(false)
-    let [alert, setAlert] = useState(false)
-    const [submitLoader, setLoader] = useState(false);
+    return (
+        <>{
+            props.createdRoutes.map((route,index) => {
+                    return (<div style={{borderBottom:"1px solid gray",marginBottom:"10px"}} key={index}>
+                        <TitleDiv>{route.routetitle? route.routetitle.toUpperCase(): ""}</TitleDiv>
+                        <RouteListItem key={route}>
+                        <UserCreatedMapContainer updateCreatedRoutes={props.updateCreatedRoutes} removeCreatedRoute={props.removeCreatedRoute} route={route}/>
+                    </RouteListItem>
+                        <div>{"Route Description: "}{route.routedescription}</div>
+                        <div>{"Route Distance: "}{route.routedistance}{"(KM)"}</div>
+                    </div>)
+                }
+            )
+        }</>);
+}
 
+function UserCreatedMapContainer(props){
+    let [alert, setAlert] = useState(false)
+    let [confirm, setConfirm] = useState(false)
+    const [submitLoader, setLoader] = useState(false);
     let handleDeleteRoute = (routeid) => {
         setLoader(true)
-        axios.post(`http://localhost:5000/api/routes/${routeid}/delete`, {username:props.username},{
+        axios.post(`http://localhost:5000/api/routes/${routeid}/delete`, {username:props.route.username},{
             headers: {
-                "x-auth-username": props.username,
+                "x-auth-username": props.route.username,
                 "x-auth-token": JSON.parse(localStorage.getItem("token"))
             }
         })
@@ -101,10 +117,10 @@ function UserCreatedRoutes(props){
     let handleClose = () => {
         setAlert(false)
 
-        axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${props.username}`, {
+        axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${props.route.username}`, {
                 headers: {
                     "x-auth-username":
-                    props.username,
+                    props.route.username,
                     "x-auth-token":
                         JSON.parse(localStorage.getItem("token"))
                 }
@@ -126,28 +142,16 @@ function UserCreatedRoutes(props){
             })
     }
 
-    return (
-        <>{
-            props.createdRoutes.map((route,index) => {
-                    return (<div style={{borderBottom:"1px solid gray",marginBottom:"10px"}} key={index}>
-                        <TitleDiv>{route.routetitle? route.routetitle.toUpperCase(): ""}</TitleDiv>
-                        <RouteListItem key={route}>
-                        <MapContainerComponent route={route.route} lat={route.lat} long={route.long} locate={false}
-                        />
-                        <RouteButton onClick={()=>setAlert(true)} color={"#D40943"}>Delete</RouteButton>
-                        <ConfirmAlert routeid={route.routeid} routedescription={route.routedescription} submitLoader={submitLoader} show={alert} handleDeleteRoute={handleDeleteRoute} handleClose={handleClose}/>
-                    </RouteListItem>
-                        <div>{"Route Description: "}{route.routedescription}</div>
-                        <div>{"Route Distance: "}{route.routedistance}{"(KM)"}</div>
-                    </div>)
-                }
-            )
-        }</>);
+    let route = props.route;
+    return<>
+        <MapContainerComponent route={route.route} lat={route.lat} long={route.long} locate={false}
+        />
+        <RouteButton onClick={()=>setAlert(true)} color={"#D40943"}>Delete</RouteButton>
+        <ConfirmAlert routeid={route.routeid} routedescription={route.routedescription} submitLoader={submitLoader} show={alert} handleDeleteRoute={handleDeleteRoute} handleClose={handleClose}/>
+        </>
 }
 
 function ConfirmAlert(props){
-
-
     return        <Modal show={props.show} onHide={props.handleClose} centered>
         <Modal.Body>
             <div style={{fontWeight:"bold",fontSize:"20px"}}>
