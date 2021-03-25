@@ -29,7 +29,7 @@ const RoutePageContainer = styled.div`
     width: 100%;
     height: 90vh;
     display: grid;
-    grid-template-rows: 6% 95%;
+    grid-template-rows: 7% 94%;
     grid-template-columns: 30% 70%;
     z-index:0  ;
 `
