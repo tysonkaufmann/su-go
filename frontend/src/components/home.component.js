@@ -69,10 +69,10 @@ const JumboTextDiv = styled.div`
 
 class Home extends Component {
     componentDidMount() {
+        this.retrieveData()
         // auto update data every 5 mins
         var intervalId = setInterval(this.retrieveData, 60000 * 5);
         this.setState({intervalId: intervalId});
-        this.retrieveData()
     }
 
     componentWillUnmount() {
@@ -83,17 +83,16 @@ class Home extends Component {
         this.props.updateUsername(localStorage.getItem("Username"))
         this.getRoutes()
         this.getCurrentRoute()
-        this.getTraffic()
     }
 
-    getTraffic() {
+    getTraffic(allRoutes) {
         let self = this;
         let traffic = []
         let results = []
         let promises = []
         let routeids = []
-        if (self.props.allRoutes.length > 0 ) {
-            self.props.allRoutes.forEach(route => {
+        if (allRoutes.length > 0 ) {
+            allRoutes.forEach(route => {
                 results.push(
                     {
                         promise: 
@@ -123,8 +122,7 @@ class Home extends Component {
                         traffic.push(item)
                     }
                 }
-
-                if (traffic.length === self.props.allRoutes.length) {
+                if (traffic.length === allRoutes.length) {
 
                     self.props.updateTraffic(traffic)
                 }
@@ -177,6 +175,7 @@ class Home extends Component {
                     allRoutes.push(item)
                 }
                 self.props.updateAllRoutes(allRoutes)
+                self.getTraffic(allRoutes)
             }
             else {
                 console.log(response.data.msg)

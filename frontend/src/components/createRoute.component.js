@@ -236,10 +236,7 @@ function getStepContent(step, handleNext, handleBack, route,handleReset) {
                 </ColumnDiv>
             </ResponsiveDiv>;
         default:
-            return  <ResponsiveDiv>
-                An error occured.
-                <Button onClick={handleReset}>RESET</Button>
-            </ResponsiveDiv>;
+            return <></>
     }
 }
 
