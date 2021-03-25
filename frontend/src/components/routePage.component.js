@@ -22,6 +22,7 @@ import axios from "axios";
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MuiFormControl from '@material-ui/core/FormControl';
+import Chip from '@material-ui/core/Chip';
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 
@@ -404,6 +405,9 @@ const RouteNameText = styled.div`
 
 `
 const RouteTitleText = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
     color: #00cddb;
     font-weight: bold;
     margin-top: 10px;
@@ -425,10 +429,15 @@ const TrailImage = styled.div`
 function MapDetailCard(props) {
 
     // temp image selection.
-    let image = props.route.routetype === "Biking" ? bike : props.route.routetitle === "Walking" ? jog : undefined;
+    let image = props.route.routetype === "Biking" ? bike : props.route.routetype === "Walking" ? jog : undefined;
     return (<MapDetailCardDiv style={props.currentRoute.routeid === props.route.routeid ? {backgroundColor: "#ffc2a3"} : {}}>
         <TrailImage image={image}/>
-        <RouteTitleText>{props.route.routetitle}</RouteTitleText>
+        <RouteTitleText>
+            {props.route.routetitle}
+            {props.route.routetype === "Walking" && <Chip label="Footpath" style={{marginRight: "20px", color: "white", backgroundColor: "#00cddb"}}/>}
+            {props.route.routetype === "Biking" && <Chip label="Biking Route" style={{marginRight: "20px", color: "white", backgroundColor: "#00cddb"}}/>}
+            {props.route.routetype === "Hiking" && <Chip label="Hiking Trail" style={{marginRight: "20px", color: "white", backgroundColor: "#00cddb"}}/>}
+        </RouteTitleText>
         <RouteNameText>
             <b>Description:</b> {props.route.routedescription}<br />
             <b>Distance:</b> {props.route.routedistance}{" (km)"}<br />
