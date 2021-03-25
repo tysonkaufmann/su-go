@@ -2,7 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {updateEmail, updateUsername, updateFullname} from "../actions/userProfile";
 import {connect} from "react-redux";
 import styled from "styled-components";
-import {updateCreateRouteDetails, addCreatedRoute} from "../actions/routes";
+import {updateCreateRouteDetails} from "../actions/routes";
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 /* COMPONENTS USED FOR THE EDIT PROFILE UI*/
 const Input = styled.input`
@@ -18,7 +21,7 @@ const Input = styled.input`
   
   /* here we use the dynamically computed prop */
   margin-top: 0px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   padding:5px;
 `;
 const Button = styled.button`
@@ -33,16 +36,6 @@ const Button = styled.button`
         background: #89b6b9;
       }
 `;
-const ForgotPasswordButton = styled.button`
-      color: #00cddb;
-      background: white;
-      border: 0;
-      margin-top: 0;
-      margin-bottom: 20px;
-            &:hover {
-        color: #89b6b9;
-      }
-      `
 const ContainerDiv = styled.div`
     width: 100%;
     height: 100%;
@@ -50,53 +43,98 @@ const ContainerDiv = styled.div`
     flex-direction: column;
     padding: 50px 0px 50px 0px;
 `
+
+
 // Modal for Edit Profile.
 function CreateRouteDetails(props) {
     // States.
     const [routetitle, setRouteTitle] = useState("");
     const [routedescription, setRouteDescription] = useState("");
     const [routedistance, setRouteDistance] = useState("");
+    const [routetime, setRouteTime] = useState("");
+    const [routetype, setRouteType] = useState("");
 
-    //full name input handler
     const handleRouteTitle = (event) => {
         setRouteTitle(event.target.value);
     }
-    //full name input handler
     const handleRouteDescription = (event) => {
         setRouteDescription(event.target.value);
-
     }
-    //full name input handler
     const handleRouteDistance = (event) => {
         setRouteDistance(event.target.value);
-
+    }    
+    const handleRouteTime = (event) => {
+        setRouteTime(event.target.value);
+    }
+    const handleRouteType = (event) => {
+        setRouteType(event.target.value)
     }
 
 
     const handleNextClick = () => {
-        props.updateCreateRouteDetails({routetitle:routetitle,routedistance:routedistance,routedescription:routedescription,route:[]})
+        props.updateCreateRouteDetails({
+            routetitle: routetitle,
+            routedistance: routedistance,
+            routedescription: routedescription,
+            routetime: routetime,
+            routetype: routetype,
+            route: []
+        })
         props.handleNext()
     }
 
-    useEffect(()=> {
+    useEffect(() => {
             setRouteTitle(props.createRouteDetails.routetitle)
             setRouteDescription(props.createRouteDetails.routedescription)
             setRouteDistance(props.createRouteDetails.routedistance)
-        },[props]
+            setRouteTime(props.createRouteDetails.routetime)
+            setRouteType(props.createRouteDetails.routetype)
+        }, [props]
     )
+    
+    let disabled = routetitle === "" ||
+        routedescription === "" ||
+        routedistance === "" ||
+        routetime === "" ||
+        routetype === ""
 
     return (
         <ContainerDiv>
+            <FormControl variant="outlined" margin='dense' style={{marginBottom: "15px"}}>
+                <InputLabel>Route Type</InputLabel>
+                <Select
+                native
+                value={routetype}
+                onChange={handleRouteType}
+                label="Route Type"
+                inputProps={{
+                    name: 'Route Type',
+                    id: 'route-type-select',
+                }}
+                >
+                <option aria-label="None" value="" />
+                <option value="Walking">Footpath</option>
+                <option value="Biking">Biking Route</option>
+                <option value="Hiking">Hiking Trail</option>
+                </Select>
+            </FormControl>
             Route Title:<Input value={routetitle} onChange={(event) => {
-            handleRouteTitle(event)
-        }} placeholder={"Enter Route Title"}/>
+                handleRouteTitle(event)
+            }} placeholder={"Enter Route Title"} />
             Route Description:<Input value={routedescription} onChange={(event) => {
-            handleRouteDescription(event)
-        }} placeholder={"Enter Route Description"}/>
-            Enter Distance:<Input value={routedistance} type={"number"} onChange={(event) => {
-            handleRouteDistance(event)
-        }} placeholder={"Enter Distance (KM)"}/>
-        <Button onClick={()=>handleNextClick()}>Next</Button>
+                handleRouteDescription(event)
+            }} placeholder={"Enter Route Description"} />
+            Enter Distance (KM):<Input value={routedistance} type={"number"} onChange={(event) => {
+                handleRouteDistance(event)
+            }} placeholder={"Enter Distance (KM)"} />
+            Enter Approximate Time taken (Minutes):<Input value={routetime} type={"number"} onChange={(event) => {
+                handleRouteTime(event)
+            }} placeholder={"Enter Time (Minutes)"} />
+            <Button
+                style={{ background: disabled ? '#89b6b9' : '#00cddb' , marginTop: "10px"}}
+                disabled={
+                    disabled
+                } onClick={() => handleNextClick()}>Next</Button>
         </ContainerDiv>
     );
 }

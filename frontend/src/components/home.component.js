@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {updateUsername} from "../actions/userProfile";
+import {updateAllRoutes, updateCurrentRoute, updateTraffic} from "../actions/routes";
 import {connect} from "react-redux";
 import styled from "styled-components";
 import background3 from "../assets/images/background3.png";
@@ -9,6 +10,7 @@ import {Form} from 'react-bootstrap/'
 import {FormControl} from 'react-bootstrap/'
 import {Button} from 'react-bootstrap/'
 import MapContainerComponent from "./mapContainer.component";
+import axios from "axios";
 //Home page components.
 const HomeContainer = styled.div`
     display: flex;
@@ -67,8 +69,120 @@ const JumboTextDiv = styled.div`
 
 class Home extends Component {
     componentDidMount() {
-        // Persists the data temporarily
+        this.retrieveData()
+        // auto update data every 5 mins
+        var intervalId = setInterval(this.retrieveData, 60000 * 5);
+        this.setState({intervalId: intervalId});
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.state.intervalId);
+    }
+    
+    retrieveData = () => {
         this.props.updateUsername(localStorage.getItem("Username"))
+        this.getRoutes()
+        this.getCurrentRoute()
+    }
+
+    getTraffic(allRoutes) {
+        let self = this;
+        let traffic = []
+        let results = []
+        let promises = []
+        let routeids = []
+        if (allRoutes.length > 0 ) {
+            allRoutes.forEach(route => {
+                results.push(
+                    {
+                        promise: 
+                            axios.get(`http://localhost:5000/api/routes/${route.routeid}/traffic`, {
+                                headers: {
+                                    "x-auth-username":
+                                        localStorage.getItem("Username"),
+                                    "x-auth-token":
+                                        JSON.parse(localStorage.getItem("token"))
+                                }
+                            }),
+                        routeid: route.routeid
+                    }
+
+                )
+            })
+
+            results.forEach(result => {
+                routeids.push(result.routeid)
+                promises.push(result.promise)
+            })
+
+            Promise.all(promises).then(function (results) {
+                for (let index = 0; index < results.length; index++) {
+                    if (results[index].data.success === "true") {
+                        let item = { routeid: routeids[index], count: results[index].data.data.traffic }
+                        traffic.push(item)
+                    }
+                }
+                if (traffic.length === allRoutes.length) {
+
+                    self.props.updateTraffic(traffic)
+                }
+                else{
+                    console.log("Failed to find traffic for all routes")
+                }
+            })
+
+        }
+    }
+
+    getCurrentRoute() {
+        let self = this;
+        axios.get(`http://localhost:5000/api/user/${localStorage.getItem("Username")}/currentroute`, {
+                headers: {
+                    "x-auth-username":
+                        localStorage.getItem("Username"),
+                    "x-auth-token":
+                        JSON.parse(localStorage.getItem("token"))
+                }
+            }
+        ).then(function(response) {
+            // handle success
+            if (response.data.success === "true"){
+                self.props.updateCurrentRoute({...response.data.data.route, route:response.data.data.route.mapdata.coordinates})
+            }
+            else {
+                console.log(response.data.msg)
+            }
+        }).catch(function(error) {
+            console.error("error in getting user current route", error)
+        })
+    }
+
+    getRoutes() {
+        let self = this;
+        axios.get(`http://localhost:5000/api/routes`, {
+            headers: {
+                "x-auth-username":
+                    localStorage.getItem("Username"),
+                "x-auth-token":
+                    JSON.parse(localStorage.getItem("token"))
+            }
+        }).then(function(response) {
+            // handle success
+            if (response.data.success === "true"){
+                let allRoutes = []
+                for (let index = 0; index < response.data.data.length; index++) {
+                    let item = {...response.data.data[index], route:response.data.data[index].mapdata.coordinates}
+                    allRoutes.push(item)
+                }
+                self.props.updateAllRoutes(allRoutes)
+                self.getTraffic(allRoutes)
+            }
+            else {
+                console.log(response.data.msg)
+            }
+        }).catch(function(error) {
+            console.error("error in getting all routes", error)
+        })
     }
 
     render() {
@@ -110,13 +224,22 @@ function mapDispatchToProps(dispatch) {
         updateUsername: (item) => {
             dispatch(updateUsername(item))
         },
-
+        updateAllRoutes: (item) => {
+            dispatch(updateAllRoutes(item))
+        },
+        updateCurrentRoute: (item) => {
+            dispatch(updateCurrentRoute(item))
+        },
+        updateTraffic: (item) => {
+            dispatch(updateTraffic(item))
+        },
     }
 }
 
 function mapStateToProps(state) {
     return {
         username: state.userProfile.username,
+        allRoutes: state.routesReducer.allRoutes,
     }
 }
 

@@ -162,7 +162,6 @@ class UserProfile extends Component {
             // handle success
             if (response.data.success === "true") {
                 // Update user profile information
-                console.log(response)
                 self.props.updateUsername(response.data.data.username)
                 self.props.updateFullname(response.data.data.fullname)
                 self.props.updateEmail(response.data.data.email)
@@ -178,7 +177,12 @@ class UserProfile extends Component {
                 ).then(function (response) {
                     // handle success and update routes.
                     if (response.data.success === "true") {
-                        self.props.updateCreatedRoutes(response.data.data)
+                        let createdRoutes = []
+                        for (let i = 0; i < response.data.data.length; i++) {
+                            let item = {...response.data.data[i], route:response.data.data[i].mapdata.coordinates}
+                            createdRoutes.push(item)
+                        }
+                        self.props.updateCreatedRoutes(createdRoutes)
                     }
                 })
                     .catch(function (error) {
@@ -195,7 +199,6 @@ class UserProfile extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log(this.props)
     }
 
     componentWillUnmount() {
@@ -206,8 +209,6 @@ class UserProfile extends Component {
         this.setState({editProfile: false})
     }
     render() {
-        console.log(this.props)
-
         return (
             <UserProfileContainer>
                 <CoverPhoto/>
@@ -265,7 +266,6 @@ function UserProfileTabs(props) {
         boxShadow: "0px 0px 20px #c1c1c1",
         borderRadius: "15px 15px 0px 0px"
     }
-    console.log(props)
     return (<div style={{width: "100"}}>
             <div><BottomNavigation
                 value={value}
@@ -317,7 +317,7 @@ function TabPanel(props) {
         >
             {value === index && (
                 <Box>
-                    <Typography>{children}</Typography>
+                    <Typography component={'span'}>{children}</Typography>
                 </Box>
             )}
         </div>
