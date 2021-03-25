@@ -84,8 +84,8 @@ function CreateRouteComponent(props) {
             routedescription:props.createRouteDetails.routedescription,
             routedistance: parseInt(props.createRouteDetails.routedistance),
             username:props.username,
-            mapdata: {coordinates: {route:props.createRouteDetails.route}, type:"Point"},
-            routetype:"Point",
+            mapdata: {coordinates: props.createRouteDetails.route},
+            routetype: props.createRouteDetails.routetype,
             photos:[
                 "fake photo",
                 "another fake photo"
@@ -99,7 +99,7 @@ function CreateRouteComponent(props) {
         })
             .then(function (response) {
                 if(response.data.success === "true") {
-                    props.addCreatedRoute({...response.data.data.route,route: response.data.data.route.mapdata.coordinates.route})
+                    props.addCreatedRoute({...response.data.data.route, route: response.data.data.route.mapdata.coordinates})
                     props.handleClose();
                 }else{
                     window.alert("ERROR Please try again.")
@@ -284,7 +284,7 @@ function HorizontalLinearStepper(props) {
             </Stepper>
             <div>
                     <div>
-                        <Typography className={classes.instructions}>{getStepContent(activeStep,handleNext,handleBack,props.routeDetails,handleReset)}</Typography>
+                        <Typography component={'span'} className={classes.instructions}>{getStepContent(activeStep,handleNext,handleBack,props.routeDetails,handleReset)}</Typography>
                         <div>
                             {
                                 activeStep == 2 && <><Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>

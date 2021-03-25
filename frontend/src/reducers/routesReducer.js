@@ -214,6 +214,8 @@ const initialState = {
         routetitle: "",
         routedescription: "",
         routedistance: 0,
+        routetime: "",
+        routetype: "",
         route: []
     }
 };
