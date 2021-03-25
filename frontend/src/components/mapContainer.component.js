@@ -3,7 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents, MapConsumer, Poly
 import HeatmapOverlay from "leaflet-heatmap"
 import {useLeafletContext} from '@react-leaflet/core'
 import L from 'leaflet';
-import logo from "../assets/images/logoMarker.png";
+import logo from "../assets/images/logoMarker.png"
+import logo2 from "../assets/images/logoMarker2.png"
 import {updateTraffic} from "../actions/routes";
 import {connect} from "react-redux";
 
@@ -88,7 +89,7 @@ function MapContainerComponent(props) {
                     <LayersControl.Overlay name="Show Routes">
                         <LayerGroup>
                             {props.allRoutes.map((r, i) => {
-                                return <Marker icon = {L.icon({
+                                return <><Marker icon = {L.icon({
                                         iconUrl: logo,
                                         iconSize: [30, 45],
                                         iconAnchor: [15, 41]
@@ -99,7 +100,7 @@ function MapContainerComponent(props) {
                                         click: (e) => {
                                             setSelectedRoute(r.route)
                                         }
-                                    }}></Marker>
+                                    }}></Marker></>
                             })}
                         </LayerGroup>
                     </LayersControl.Overlay>
@@ -113,11 +114,19 @@ function MapContainerComponent(props) {
             {props.locate && <LocationMarker popupTitle={"You are here"} />}
             {selectedRoute && selectedRoute.length > 0 && <> 
                 <Marker icon = {L.icon({
-                                        iconUrl: logo,
-                                        iconSize: [30, 45],
-                                        iconAnchor: [15, 41]
-                                    })}
-                                    position={[selectedRoute[0].lat, selectedRoute[0].lng]} ></Marker></>}
+                            iconUrl: logo,
+                            iconSize: [30, 45],
+                            iconAnchor: [15, 41]
+                        })}
+                        position={[selectedRoute[0].lat, selectedRoute[0].lng]} >
+                </Marker>
+                <Marker icon = {L.icon({
+                            iconUrl: logo2,
+                            iconSize: [18, 38],
+                            iconAnchor: [10, 36]
+                        })}
+                        position={[selectedRoute[selectedRoute.length - 1].lat, selectedRoute[selectedRoute.length - 1].lng]} >
+                </Marker></>}
             {selectedRoute ? <Polyline pathOptions={{ color: '#2678c8', dashArray: '8 5'}} positions={selectedRoute} /> : null}
             {props.currentRoute ? <Polyline pathOptions={{ color: '#ed6622', dashArray: '8 5'}} positions={props.currentRoute} /> : null}
         </MapContainer>

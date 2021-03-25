@@ -21,7 +21,6 @@ import {Button} from 'react-bootstrap/'
 import axios from "axios";
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
-import SortIcon from '@material-ui/icons/Sort';
 import MuiFormControl from '@material-ui/core/FormControl';
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
@@ -286,10 +285,10 @@ class RoutePage extends Component {
                                 id: 'sort-by-select',
                             }}>
                         <option value="Default">Default</option>
-                        <option value="distance_asc">Distance up</option>
-                        <option value="distance_des">Distance down</option>
-                        <option value="time_asc">Time Up</option>
-                        <option value="time_des">Time down</option>
+                        <option value="distance_asc">Distance &#10835;</option>
+                        <option value="distance_des">Distance &#10836;</option>
+                        <option value="time_asc">Time &#10835;</option>
+                        <option value="time_des">Time &#10836;</option>
                         </Select>
                     </MuiFormControl>
                 </UpperLeft>
