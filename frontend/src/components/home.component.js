@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {updateUsername} from "../actions/userProfile";
-import {updateAllRoutes, updateCurrentRoute} from "../actions/routes";
+import {updateAllRoutes, updateCurrentRoute, updateTraffic} from "../actions/routes";
 import {connect} from "react-redux";
 import styled from "styled-components";
 import background3 from "../assets/images/background3.png";
@@ -83,6 +83,57 @@ class Home extends Component {
         this.props.updateUsername(localStorage.getItem("Username"))
         this.getRoutes()
         this.getCurrentRoute()
+        this.getTraffic()
+    }
+
+    getTraffic() {
+        let self = this;
+        let traffic = []
+        let results = []
+        let promises = []
+        let routeids = []
+        if (self.props.allRoutes.length > 0 ) {
+            self.props.allRoutes.forEach(route => {
+                results.push(
+                    {
+                        promise: 
+                            axios.get(`http://localhost:5000/api/routes/${route.routeid}/traffic`, {
+                                headers: {
+                                    "x-auth-username":
+                                        localStorage.getItem("Username"),
+                                    "x-auth-token":
+                                        JSON.parse(localStorage.getItem("token"))
+                                }
+                            }),
+                        routeid: route.routeid
+                    }
+
+                )
+            })
+
+            results.forEach(result => {
+                routeids.push(result.routeid)
+                promises.push(result.promise)
+            })
+
+            Promise.all(promises).then(function (results) {
+                for (let index = 0; index < results.length; index++) {
+                    if (results[index].data.success === "true") {
+                        let item = { routeid: routeids[index], count: results[index].data.data.traffic }
+                        traffic.push(item)
+                    }
+                }
+
+                if (traffic.length === self.props.allRoutes.length) {
+
+                    self.props.updateTraffic(traffic)
+                }
+                else{
+                    console.log("Failed to find traffic for all routes")
+                }
+            })
+
+        }
     }
 
     getCurrentRoute() {
@@ -180,12 +231,16 @@ function mapDispatchToProps(dispatch) {
         updateCurrentRoute: (item) => {
             dispatch(updateCurrentRoute(item))
         },
+        updateTraffic: (item) => {
+            dispatch(updateTraffic(item))
+        },
     }
 }
 
 function mapStateToProps(state) {
     return {
         username: state.userProfile.username,
+        allRoutes: state.routesReducer.allRoutes,
     }
 }
 

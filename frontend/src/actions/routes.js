@@ -42,3 +42,10 @@ export function updateCurrentRoute(item) {
         payload: item
     }
 }
+
+export function updateTraffic(item) {
+    return {
+        type: 'UPDATE_TRAFFIC',
+        payload: item
+    }
+}

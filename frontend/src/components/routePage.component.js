@@ -8,7 +8,7 @@ import {
     updateTotalTime
 } from "../actions/userProfile";
 import {connect} from "react-redux";
-import {updateCreatedRoutes, updateCurrentRoute} from "../actions/routes";
+import {updateCreatedRoutes, updateCurrentRoute, updateTraffic} from "../actions/routes";
 import styled from "styled-components";
 import MapContainerComponent from "./mapContainer.component";
 import jog from "../assets/jog.jpg";
@@ -119,6 +119,10 @@ class RoutePage extends Component {
                 if (response.data.success === "true") {
                     window.alert("Route has been started")
                     self.props.updateCurrentRoute(route)
+                    let traffic = [...self.props.traffic]
+                    let trafficFound = traffic.find(t => t.routeid === id)
+                    traffic[traffic.indexOf(trafficFound)].traffic += 1
+                    self.props.updateTraffic(traffic)
                 }
                 else {
                     window.alert("failed to start route", response.data.msg)
@@ -139,6 +143,10 @@ class RoutePage extends Component {
                 if (response.data.success === "true") {
                     window.alert("Route has been ended")
                     self.props.updateCurrentRoute(route)
+                    let traffic = [...self.props.traffic]
+                    let trafficFound = traffic.find(t => t.routeid === id)
+                    traffic[traffic.indexOf(trafficFound)].traffic -= 1
+                    self.props.updateTraffic(traffic)
                 }
                 else {
                     window.alert("failed to end route", response.data.msg)
@@ -241,6 +249,9 @@ function mapDispatchToProps(dispatch) {
         },
         updateCurrentRoute: (item) => {
             dispatch(updateCurrentRoute(item))
+        },
+        updateTraffic: (item) => {
+            dispatch(updateTraffic(item))
         },
     }
 }
@@ -363,6 +374,7 @@ function mapStateToProps(state) {
         createdRoutes: state.routesReducer.createdRoutes,
         allRoutes: state.routesReducer.allRoutes,
         currentRoute: state.routesReducer.currentRoute,
+        traffic: state.routesReducer.traffic,
     }
 }
 

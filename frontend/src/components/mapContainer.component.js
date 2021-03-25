@@ -4,6 +4,9 @@ import HeatmapOverlay from "leaflet-heatmap"
 import {useLeafletContext} from '@react-leaflet/core'
 import L from 'leaflet';
 import logo from "../assets/images/logoMarker.png";
+import {updateTraffic} from "../actions/routes";
+import {connect} from "react-redux";
+
 
 
 function MapContainerComponent(props) {
@@ -19,27 +22,26 @@ function MapContainerComponent(props) {
         if (prevRoute !== props.route || (props.route !== selectedRoute && selectedRoute === prevSelected)) {
             setSelectedRoute(props.route)
         }
-        if (prevCurrentRoute !== props.currentRoute && prevCurrentRoute) {
-            if (props.currentRoute) {
-                setSelectedRoute(prevCurrentRoute)
-            }
-            else {
-                setSelectedRoute(props.currentRoute)
-            }
-        }
     })
 
     if (props.allRoutes) {
-        const data = props.allRoutes.map(r => {
-            return {
+        let maxTraffic = -1
+        let data = []
+        props.allRoutes.forEach(r => {
+            let trafficFound = props.traffic.find(t => t.routeid === r.routeid)
+            let count = trafficFound.count
+            if (maxTraffic < count) {
+                maxTraffic = count
+            }
+            data.push({
                 lat: r.route[0].lat,
                 lng: r.route[0].lng,
-                count: Math.floor(Math.random() * 10) // TODO: replace with API call to get traffic
-            }
+                count: count
+            })
         })
     
         const trafficData = {
-            max: 10,
+            max: maxTraffic < 5 ? 5 : maxTraffic,
             data: data
         }
     
@@ -53,9 +55,6 @@ function MapContainerComponent(props) {
             lngField: 'lng',
             valueField: 'count',
             gradient: {
-                // '0.1': '#5eff6b',
-                // '0.2': '#47ff56',
-                // '0.3': '#30ff41',
                 '0.4': '#00ff15',
                 '0.5': '#dcff5e',
                 '0.6': '#ffd500',
@@ -178,4 +177,18 @@ function HeatmapLayer(props) {
     return null
 }
 
-export default MapContainerComponent;
+function mapDispatchToProps(dispatch) {
+    return {
+        updateTraffic: (item) => {
+            dispatch(updateTraffic(item))
+        },
+    }
+}
+
+function mapStateToProps(state) {
+    return {
+        traffic: state.routesReducer.traffic
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MapContainerComponent);

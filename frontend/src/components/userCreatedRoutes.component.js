@@ -7,9 +7,6 @@ import {
 } from "../actions/routes";
 import MapContainerComponent from "./mapContainer.component";
 import Modal from "react-bootstrap/Modal";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTimesCircle} from "@fortawesome/free-solid-svg-icons";
-import ForgotPassword from "./forgotPassword.component";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
 
