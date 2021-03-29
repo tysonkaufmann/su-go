@@ -3,7 +3,8 @@ const User = require('../../../models/user')
 const {encrypt} = require('../../../controllers/user.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 
-beforeAll(() => {
+beforeAll( async () => {
+  jest.setTimeout(30000);
   const uri = process.env.ATLAS_URI;
   mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
   const connection = mongoose.connection;
@@ -12,12 +13,42 @@ beforeAll(() => {
   })
   // to suppress errors on edge test cases that are meant to throw errors for produciton teams
   console.error = function() {}
+  thePassword = "8308651804facb7b9af8ffc53a33a22d6a1c8ac2"
+  userdata = {
+    username:"Mitul2",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@gmail.com",
+    password:thePassword
+  }
+  var newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"aryastark",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@gmail.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"Cheng",
+    fullname:"C L",
+    email:"test@test.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
 });
 
 describe("User", () => {
   test('Successfully Authenticate Username and Password', async () => {
     jest.setTimeout(30000);
-    username = "aryastark"
+    username = "Mitul2"
     password = "Test123"
     const user = await User.findOne({ username })
     const encryptedPassword = encrypt(password)
@@ -74,6 +105,11 @@ describe("User", () => {
 
 });
 
-afterAll(() => {
+afterAll(async () => {
+  jest.setTimeout(30000);
+  var newUserInfo = await User.deleteOne({ username : "Mitul2"});
+  newUserInfo = await User.deleteOne({ username : "Cheng"});
+  newUserInfo = await User.deleteOne({ username : "aryastark"});
+
   mongoose.connection.close()
 });

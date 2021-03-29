@@ -1,14 +1,98 @@
 const mongoose = require('mongoose'); // Connects to mongodb
 const Route = require('./../../models/route')
 const Traffic = require('./../../models/traffic')
+const User = require('./../../models/user')
 process.env.PORT=9000
 const supertest = require('supertest');
 const app = require('./../../server.js') // Link to your server file
 const request = supertest(app)
 
-beforeAll(() => {
+beforeAll(async () => {
   // to suppress errors on edge test cases that are meant to throw errors for produciton teams
   console.error = function() {}
+
+  jest.setTimeout(30000);
+  thePassword = "8308651804facb7b9af8ffc53a33a22d6a1c8ac2"
+
+  var userdata = {
+    username:"aryastark",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@gmail.com",
+    password:thePassword
+  }
+  var newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"Cheng",
+    fullname:"C L",
+    email:"test@test.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"sansastark",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@stark.com",
+    password:"2a285235a5a1678db258fe3a9540b64a04786808"
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  var routeData = {
+    "routeid": "1",
+    "routedescription": "test description 2",
+    "username": "Cheng",
+    "routetitle": "test route 2",
+    "routetype": "test type 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var newRouteInfo = new Route(routeData);
+  // save userAuth and UserInfo to DB
+  await newRouteInfo.save();
+
+  routeData = {
+    "routeid": "0",
+    "routedescription": "test description 1",
+    "username": "Cheng",
+    "routetitle": "test route 1",
+    "routetype": "test type 1",
+    "routetime": "test time 1",
+    "routedistance": 1000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        100,
+        100
+      ],
+      "type": "Point"
+    }
+  }
+
+  newRouteInfo = new Route(routeData);
+  // save userAuth and UserInfo to DB
+  await newRouteInfo.save();
 });
 
 
@@ -1548,20 +1632,21 @@ it('Get User Created Routes - Successful', async done => {
 
   expect(response.body.status).toBe(expectedResponse.status);
   expect(response.body.success).toBe(expectedResponse.success);
-  expect(response.body.data[0].username).toBe(expectedResponse.data[0].username);
-  expect(response.body.data[0].routeid).toBe(expectedResponse.data[0].routeid);
-  expect(response.body.data[0].routedescription).toBe(expectedResponse.data[0].routedescription);
-  expect(response.body.data[0].routetitle).toBe(expectedResponse.data[0].routetitle);
-  expect(response.body.data[0].routetype).toBe(expectedResponse.data[0].routetype);
-  expect(response.body.data[0].routetime).toBe(expectedResponse.data[0].routetime);
-  expect(response.body.data[0].routedistance).toBe(expectedResponse.data[0].routedistance);
-  expect(response.body.data[1].username).toBe(expectedResponse.data[1].username);
-  expect(response.body.data[1].routeid).toBe(expectedResponse.data[1].routeid);
-  expect(response.body.data[1].routedescription).toBe(expectedResponse.data[1].routedescription);
-  expect(response.body.data[1].routetitle).toBe(expectedResponse.data[1].routetitle);
-  expect(response.body.data[1].routetype).toBe(expectedResponse.data[1].routetype);
-  expect(response.body.data[1].routetime).toBe(expectedResponse.data[1].routetime);
-  expect(response.body.data[1].routedistance).toBe(expectedResponse.data[1].routedistance);
+  expect(response.body.data[1].username).toBe(expectedResponse.data[0].username);
+  expect(response.body.data[1].routeid).toBe(expectedResponse.data[0].routeid);
+  expect(response.body.data[1].routedescription).toBe(expectedResponse.data[0].routedescription);
+  expect(response.body.data[1].routetitle).toBe(expectedResponse.data[0].routetitle);
+  expect(response.body.data[1].routetype).toBe(expectedResponse.data[0].routetype);
+  expect(response.body.data[1].routetime).toBe(expectedResponse.data[0].routetime);
+  expect(response.body.data[1].routedistance).toBe(expectedResponse.data[0].routedistance);
+
+  expect(response.body.data[0].username).toBe(expectedResponse.data[1].username);
+  expect(response.body.data[0].routeid).toBe(expectedResponse.data[1].routeid);
+  expect(response.body.data[0].routedescription).toBe(expectedResponse.data[1].routedescription);
+  expect(response.body.data[0].routetitle).toBe(expectedResponse.data[1].routetitle);
+  expect(response.body.data[0].routetype).toBe(expectedResponse.data[1].routetype);
+  expect(response.body.data[0].routetime).toBe(expectedResponse.data[1].routetime);
+  expect(response.body.data[0].routedistance).toBe(expectedResponse.data[1].routedistance);
 
   done()
 })
@@ -1630,7 +1715,15 @@ it('Get Routes - No Route Found', async done => {
 })
 
 
-afterAll(() => {
+afterAll(async () => {
+  jest.setTimeout(30000);
+  var newUserInfo = await User.deleteOne({ username : "Cheng"});
+  newUserInfo = await User.deleteOne({ username : "aryastark"});
+  newUserInfo = await User.deleteOne({ username : "sansastark"});
+  routeInfo =  await Route.deleteOne({  routeid: "1"});
+  routeInfo =  await Route.deleteOne({  routeid: "0"});
+
   mongoose.connection.close()
   process.env.PORT=5000
+
 });
