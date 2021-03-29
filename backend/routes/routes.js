@@ -4,6 +4,7 @@ const router = require('express').Router();
 
 // import controller
 const { getAllRoutes, createRoute, getRoute, getUserCreatedRoutes, deleteRoute, startRoute, endRoute, routeTraffic } = require('../controllers/routes');
+const { vote } = require('../controllers/vote');
 
 // import middleware
 const { auth } = require('../middleware/auth')
@@ -47,6 +48,11 @@ router.get('/:routeid/traffic', routeTraffic);
 // @desc    Gets all routes
 // @access  Public
 router.get('', getAllRoutes);
+
+// @route   POST /api/routes/:routeid/vote
+// @desc    Adds a vote to a route
+// @access  Private - Auth needed
+router.post('/:routeid/vote', auth, vote);
 
 
 module.exports = router;

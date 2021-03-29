@@ -35,7 +35,8 @@ const routeSchema = new Schema({
   photos: [String],
   // using GeoJSON Point schema to store mapdata for now
   // will update once finalize details
-  mapdata: {}
+  mapdata: {},
+  votes: []
 }, {
     timestamps: true,
 });
