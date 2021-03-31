@@ -307,7 +307,9 @@ class RoutePage extends Component {
                     )}
                 </RouteLeft>
                 <RouteRight>
-                    <MapContainerComponent currentRoute={this.state.currentRoute.route} route={this.state.route.route} locate={true} allRoutes={this.state.Routes} />
+                    {/* <MapContainerComponent currentRoute={this.state.currentRoute.route} route={this.state.route.route} locate={true} allRoutes={this.state.Routes} /> */}
+                    <MapContainerComponent route={this.state.route.route || []} locate={true} />
+
                 </RouteRight>
             </RoutePageContainer>
         );
