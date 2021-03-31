@@ -1,4 +1,4 @@
-import React, {Component, useState} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {MapContainer, TileLayer, Marker, Popup, useMapEvents, MapConsumer, Polyline} from 'react-leaflet'
 import MarkerComponent from "./markerComponent.component";
 
@@ -31,6 +31,7 @@ function MapContainerComponent(props) {
 
 function LocationMarker(props) {
     const [position, setPosition] = useState(null)
+    const [mount, setMount] = useState(true)
 
     const map = useMapEvents({
         click() {
@@ -38,9 +39,15 @@ function LocationMarker(props) {
         },
         locationfound(e) {
             setPosition(e.latlng)
-            map.flyTo(e.latlng, map.getZoom())
+            if(mount){
+                map.flyTo(e.latlng, map.getZoom())
+            }
         },
     })
+
+    useEffect(()=>{
+        setTimeout(()=>setMount(false), 3000)
+    },[])
 
     return position === null ? null : (
         <Marker position={position}>

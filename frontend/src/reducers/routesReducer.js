@@ -11,6 +11,7 @@ const initialState = {
         route: []
     },
     currentRoute: {},
+    selectedRoute: {},
     traffic: []
 };
 
@@ -26,6 +27,8 @@ export default function routesReducer(state = initialState, action) {
             return { ...state, createRouteDetails: action.payload }
         case "UPDATE_CURRENT_ROUTE":
             return { ...state, currentRoute: action.payload }
+        case "UPDATE_SELECTED_ROUTE":
+            return { ...state, selectedRoute: action.payload }
         case "UPDATE_TRAFFIC":
             return { ...state, traffic: action.payload }
         case "ADD_CREATED_ROUTE":
