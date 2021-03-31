@@ -457,7 +457,7 @@ function MapDetailCard(props) {
         id={'mapcard-' + props.route.routeid}
         style={props.currentRoute.routeid === props.route.routeid 
         ? {backgroundColor: "#ffc2a3"}
-        : (props.selectedRoute.routeid === props.route.routeid ? {backgroundColor: "#dbfeff"} : {})}
+        : (props.selectedRoute.routeid === props.route.routeid ? {backgroundColor: "#ccfeff"} : {})}
         >
         <TrailImage image={image}/>
         <RouteTitleText>
