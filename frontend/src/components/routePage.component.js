@@ -100,6 +100,9 @@ class RoutePage extends Component {
         }
         if (prevState.currentRoute !== this.props.currentRoute) {
             this.setState({currentRoute: this.props.currentRoute})
+            if (!this.props.currentRoute.routeid) {
+                this.filterByType()
+            }
         }
         if (prevState.selectedType !== this.state.selectedType) {
             this.filterByType()
@@ -219,6 +222,10 @@ class RoutePage extends Component {
         let filteredRoutes = this.props.allRoutes
         if (this.state.selectedType !== "All") {
             filteredRoutes = this.props.allRoutes.filter(r => r.routetype === this.state.selectedType)
+            if (this.props.currentRoute.routeid && 
+                !filteredRoutes.find(r => r.routeid === this.props.currentRoute.routeid)) {
+                filteredRoutes.push(this.props.currentRoute)
+            }
         }
 
 
