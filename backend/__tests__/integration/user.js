@@ -8,9 +8,73 @@ const supertest = require('supertest');
 const app = require('./../../server.js') // Link to your server file
 const request = supertest(app)
 
-beforeAll(() => {
+beforeAll(async () => {
   // to suppress errors on edge test cases that are meant to throw errors for produciton teams
   console.error = function() {}
+
+  jest.setTimeout(30000);
+  thePassword = "8308651804facb7b9af8ffc53a33a22d6a1c8ac2"
+  userdata = {
+    username:"Mitul2",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@gmail.com",
+    password:thePassword
+  }
+  var newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"aryastark",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@gmail.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"Cheng",
+    fullname:"C L",
+    email:"test@test.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"jonsnow2",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@stark.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"Mitul",
+    fullname:"Jon Snow",
+    email:"Jon.Sno@w@gmail.com",
+    password:"a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"sansastark",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@stark.com",
+    password:"2a285235a5a1678db258fe3a9540b64a04786808"
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+
 });
 
 it('Get Current User Route - User Not On Any route', async done => {
@@ -827,7 +891,7 @@ it('Update User Information - Conflicting x-auth-username and POST body.data.use
 
   loginPaylod = {
     username: "Mitul2",
-    password: "test"
+    password: "Test123"
   }
   payload = {
     username: "Cheng",
@@ -907,7 +971,16 @@ it('Update User Information - Successful', async done => {
 
 
 
-afterAll(() => {
+afterAll(async () => {
+  jest.setTimeout(30000);
+  var newUserInfo = await User.deleteOne({ username : "Mitul2"});
+  newUserInfo = await User.deleteOne({ username : "Cheng"});
+  newUserInfo = await User.deleteOne({ username : "aryastark"});
+  newUserInfo = await User.deleteOne({ username : "jonsnow2"});
+  newUserInfo = await User.deleteOne({ username : "Mitul"});
+  newUserInfo = await User.deleteOne({ username : "sansastark"});
+
   mongoose.connection.close()
   process.env.PORT=5000
+
 });

@@ -9,11 +9,12 @@ const {
   updateUserInformation,
   getUserCurrentRoute,
 } = require('../../../controllers/user.js')
+const User = require('../../../models/user')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
 const Verification = require('../../../models/verification')
 
-beforeAll(() => {
+beforeAll(async () => {
   const uri = process.env.ATLAS_URI;
   mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
   const connection = mongoose.connection;
@@ -22,6 +23,59 @@ beforeAll(() => {
   })
   // to suppress errors on edge test cases that are meant to throw errors for produciton teams
   console.error = function() {}
+
+  jest.setTimeout(30000);
+  thePassword = "8308651804facb7b9af8ffc53a33a22d6a1c8ac2"
+  userdata = {
+    username:"Mitul2",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@gmail.com",
+    password:thePassword
+  }
+  var newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"aryastark",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@gmail.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"Cheng",
+    fullname:"C L",
+    email:"test@test.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"jonsnow2",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@stark.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"Mitul",
+    fullname:"Jon Snow",
+    email:"Jon.Sno@w@gmail.com",
+    password:"a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
 });
 
 describe("User", () => {
@@ -927,6 +981,13 @@ describe("User", () => {
 
 });
 
-afterAll(() => {
+afterAll(async () => {
+  jest.setTimeout(30000);
+  var newUserInfo = await User.deleteOne({ username : "Mitul2"});
+  newUserInfo = await User.deleteOne({ username : "Cheng"});
+  newUserInfo = await User.deleteOne({ username : "aryastark"});
+  newUserInfo = await User.deleteOne({ username : "jonsnow2"});
+  newUserInfo = await User.deleteOne({ username : "Mitul"});
+
   mongoose.connection.close()
 });

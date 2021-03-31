@@ -2,8 +2,10 @@
 const { getUserCreatedRoutes, getAllRoutes, getRoute, createRoute, deleteRoute, startRoute, endRoute, routeTraffic } = require('../../../controllers/routes.js')
 const mongoose = require('mongoose'); // Connects to mongodb
 const { mockRequest, mockResponse } = require('mock-req-res')
+const User = require('../../../models/user')
+const Route = require('../../../models/route');
 
-beforeAll(() => {
+beforeAll(async () => {
   const uri = process.env.ATLAS_URI;
   mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
   const connection = mongoose.connection;
@@ -12,6 +14,89 @@ beforeAll(() => {
   })
   // to suppress errors on edge test cases that are meant to throw errors for produciton teams
   console.error = function() {}
+
+  jest.setTimeout(30000);
+  thePassword = "8308651804facb7b9af8ffc53a33a22d6a1c8ac2"
+  userdata = {
+    username:"Mitul2",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@gmail.com",
+    password:thePassword
+  }
+  var newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"aryastark",
+    fullname:"Jon Snow",
+    email:"Jon.Snow@gmail.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  userdata = {
+    username:"Cheng",
+    fullname:"C L",
+    email:"test@test.com",
+    password:thePassword
+  }
+  newUserInfo = new User(userdata);
+  // save userAuth and UserInfo to DB
+  await newUserInfo.save();
+
+  var routeData = {
+    "routeid": "1",
+    "routedescription": "test description 2",
+    "username": "Cheng",
+    "routetitle": "test route 2",
+    "routetype": "test type 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  var newRouteInfo = new Route(routeData);
+  // save userAuth and UserInfo to DB
+  await newRouteInfo.save();
+
+  routeData = {
+    "routeid": "0",
+    "routedescription": "test description 2",
+    "username": "Cheng",
+    "routetitle": "test route 2",
+    "routetype": "test type 2",
+    "routetime": "test time 2",
+    "routedistance": 2000,
+    "photos": [
+      "fake photo",
+      "another fake photo"
+    ],
+    "mapdata": {
+      "coordinates": [
+        200,
+        200
+      ],
+      "type": "Point"
+    }
+  }
+
+  newRouteInfo = new Route(routeData);
+  // save userAuth and UserInfo to DB
+  await newRouteInfo.save();
+
 });
 
 describe("Route", () => {
@@ -906,7 +991,7 @@ describe("Route", () => {
       "success": "true",
       "data": [
         {
-          "routeid": "0",
+          "routeid": "1",
           "routedescription": "test description 1",
           "username": "Cheng",
           "routetitle": "test route 1",
@@ -926,7 +1011,7 @@ describe("Route", () => {
           }
         },
         {
-          "routeid": "1",
+          "routeid": "0",
           "routedescription": "test description 2",
           "username": "Cheng",
           "routetitle": "test route 2",
@@ -1130,6 +1215,13 @@ describe("Route", () => {
 
 });
 
-afterAll(() => {
+afterAll(async () => {
+  jest.setTimeout(30000);
+  var newUserInfo = await User.deleteOne({ username : "Mitul2"});
+  newUserInfo = await User.deleteOne({ username : "Cheng"});
+  newUserInfo = await User.deleteOne({ username : "aryastark"});
+  routeInfo =  await Route.deleteOne({  routeid: "1"});
+  routeInfo =  await Route.deleteOne({  routeid: "0"});
+
   mongoose.connection.close()
 });
