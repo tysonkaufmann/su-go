@@ -14,6 +14,6 @@
 | Name | GitHub Handle | Role
 | --- | --- | --- |
 | Tyson Kaufmann | tysonkaufmann | Team Lead
-| Cheng Li | chucklee9693 | Back-end Developer
+| Cheng Li | chucklee9693 | Full-Stack Developer
 | Harsh Patel | Harsh071 | Front-end Developer
-| Mitul Patel | mitul264 | Full-Stack Developer
+| Mitul Patel | mitul264 | Back-end Developer

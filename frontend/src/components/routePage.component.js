@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useRef} from 'react';
 import {
     updateUsername,
     updateEmail,
@@ -8,9 +8,10 @@ import {
     updateTotalTime
 } from "../actions/userProfile";
 import {connect} from "react-redux";
-import {updateCreatedRoutes, updateCurrentRoute, updateTraffic} from "../actions/routes";
+import {updateCreatedRoutes, updateCurrentRoute, updateTraffic, updateSelectedRoute} from "../actions/routes";
 import styled from "styled-components";
 import MapContainerComponent from "./mapContainer.component";
+import OverviewMap from "./overviewMap.component"
 import jog from "../assets/jog.jpg";
 import bike from "../assets/bike.jpg";
 import background3 from "../assets/images/background2.png";
@@ -86,6 +87,7 @@ class RoutePage extends Component {
             selectedType: "All",
             selectedSort: "Default",
         }
+        this.mapCardDiv = React.createRef([])
     }
 
     componentDidMount() {
@@ -98,12 +100,23 @@ class RoutePage extends Component {
         }
         if (prevState.currentRoute !== this.props.currentRoute) {
             this.setState({currentRoute: this.props.currentRoute})
+            if (!this.props.currentRoute.routeid) {
+                this.filterByType()
+            }
         }
         if (prevState.selectedType !== this.state.selectedType) {
             this.filterByType()
         }
         if (prevState.selectedSort !== this.state.selectedSort) {
             this.sortRoutes()
+        }
+        if (prevProps.selectedRoute !== this.props.selectedRoute) {
+            if (this.props.selectedRoute.routeid) {
+                const scrollTo = document.getElementById('mapcard-' + this.props.selectedRoute.routeid)
+                if (scrollTo) {
+                    scrollTo.scrollIntoView({ block: "nearest", behavior: 'smooth' })
+                }
+            }
         }
     }
 
@@ -112,6 +125,7 @@ class RoutePage extends Component {
 
     setMapDetails = (key) => {
         this.setState({route: key})
+        this.props.updateSelectedRoute(key)
     }
 
     setCurrentRoute = (route, id) => {
@@ -208,12 +222,17 @@ class RoutePage extends Component {
         let filteredRoutes = this.props.allRoutes
         if (this.state.selectedType !== "All") {
             filteredRoutes = this.props.allRoutes.filter(r => r.routetype === this.state.selectedType)
+            if (this.props.currentRoute.routeid && 
+                !filteredRoutes.find(r => r.routeid === this.props.currentRoute.routeid)) {
+                filteredRoutes.push(this.props.currentRoute)
+            }
         }
 
 
         this.setState({Routes: filteredRoutes}, ()=> {
             if (filteredRoutes.indexOf(this.state.route) === -1) {
                 this.setState({route: []})
+                this.props.updateSelectedRoute({})
             }
             this.sortRoutes()
         })
@@ -303,11 +322,19 @@ class RoutePage extends Component {
                 </UpperRight>
                 <RouteLeft>
                     {this.state.Routes.map((route, i) =>
-                        <MapDetailCard image={route.image} key={i} route={route} setMapDetails={this.setMapDetails} setCurrentRoute={this.setCurrentRoute} currentRoute={this.state.currentRoute}/>
+                        <MapDetailCard 
+                            
+                            image={route.image} 
+                            key={i} route={route} 
+                            setMapDetails={this.setMapDetails} 
+                            setCurrentRoute={this.setCurrentRoute} 
+                            currentRoute={this.state.currentRoute}
+                            selectedRoute={this.props.selectedRoute}
+                        />
                     )}
                 </RouteLeft>
                 <RouteRight>
-                    <MapContainerComponent currentRoute={this.state.currentRoute.route} route={this.state.route.route} locate={true} allRoutes={this.state.Routes} />
+                    <OverviewMap locate={true} allRoutes={this.state.Routes}/>
                 </RouteRight>
             </RoutePageContainer>
         );
@@ -345,6 +372,9 @@ function mapDispatchToProps(dispatch) {
         updateTraffic: (item) => {
             dispatch(updateTraffic(item))
         },
+        updateSelectedRoute: (item) => {
+          dispatch(updateSelectedRoute(item))
+        }
     }
 }
 
@@ -430,7 +460,12 @@ function MapDetailCard(props) {
 
     // temp image selection.
     let image = props.route.routetype === "Biking" ? bike : props.route.routetype === "Walking" ? jog : undefined;
-    return (<MapDetailCardDiv style={props.currentRoute.routeid === props.route.routeid ? {backgroundColor: "#ffc2a3"} : {}}>
+    return (<MapDetailCardDiv 
+        id={'mapcard-' + props.route.routeid}
+        style={props.currentRoute.routeid === props.route.routeid 
+        ? {backgroundColor: "#ffc2a3"}
+        : (props.selectedRoute.routeid === props.route.routeid ? {backgroundColor: "#ccfeff"} : {})}
+        >
         <TrailImage image={image}/>
         <RouteTitleText>
             {props.route.routetitle}
@@ -479,6 +514,7 @@ function mapStateToProps(state) {
         allRoutes: state.routesReducer.allRoutes,
         currentRoute: state.routesReducer.currentRoute,
         traffic: state.routesReducer.traffic,
+        selectedRoute: state.routesReducer.selectedRoute,
     }
 }
 
