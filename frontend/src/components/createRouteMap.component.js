@@ -6,6 +6,7 @@ import {updateEmail, updateFullname, updateUsername} from "../actions/userProfil
 import {updateCreateRouteDetails} from "../actions/routes";
 import {connect} from "react-redux";
 // CREATE ROUTE USER INTERFACE.
+// This is the draggable marker that the user can use to modify the created route.
 function DraggableMarker(props) {
     const [position, setPosition] = useState(props.center)
     const markerRef = useRef(null)
@@ -21,7 +22,7 @@ function DraggableMarker(props) {
         }),
         [],
     )
-    useEffect(()=>props.setLatLng(position) ,[position])
+    useEffect(()=>props.setLatLng(position) ,[position]) // Updates the poly line when the position of a marker is updated
     return (
         <Marker
             draggable={true}
@@ -31,6 +32,7 @@ function DraggableMarker(props) {
         </Marker>
     )
 }
+// Styling for componenets
 const Button = styled.button`
       text-align:center;
       font-size: 1em;
@@ -51,7 +53,7 @@ const ButtonDiv = styled.div`
     justify-content: space=between;
     
 `
-
+// This is the map the user uses to create the route.
 function CreateRouteMapComponent(props) {
     let [lat, setLat] = useState(0)
     let [long, setLong] = useState(0)
@@ -73,7 +75,7 @@ function CreateRouteMapComponent(props) {
     const handleClear = () => {
         setRoute([])
     }
-
+    // Persists the route data once created
     useEffect(
         ()=>{
             if(props.createRouteDetails.route.length > 1){setRoute(props.createRouteDetails.route)}
@@ -132,14 +134,14 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateRouteMapComponent);
 
-const fillBlueOptions = { fillColor: 'blue' }
+const fillBlueOptions = { fillColor: 'blue' } // Polyline color
 
-
+// Polyline that is displayed on the map
 function PolyLineRoute(props) {
     const [position, setPosition] = useState(null)
     const [mount, setMount] = useState(true)
     const [markerArray, setMarkerArray] = useState([])
-
+    // Map events used for the functionality
     const map_c = useMapEvents({
         click(e) {
             let latLong = map_c.mouseEventToLatLng(e.originalEvent)
@@ -156,7 +158,7 @@ function PolyLineRoute(props) {
             }
         },
     })
-
+    // Hooks used to update the map when mounted
     useEffect(()=>{
         setTimeout(()=>setMount(false), 3000)
     },[])
@@ -172,7 +174,7 @@ function PolyLineRoute(props) {
         }
     },[])
 
-
+    // Update the polyline once the user drags.
     const updateMarkerLatLng = (LatLong, index) => {
         if(index > -1 && LatLong) {
             let temp = _.cloneDeep(markerArray)

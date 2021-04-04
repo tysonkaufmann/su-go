@@ -76,8 +76,11 @@ const MapContainer = styled.div`
 
 function CreateRouteComponent(props) {
     //ADDS IT TO THE REDUX STORE
+
+    // Once the user has created the map send a request to the backend.
     const handleFinish = () => {
         props.updateCreateRouteDetails({})
+        // Data to be sent to the backend.
         let post_data = {
             routetitle:props.createRouteDetails.routetitle,
             routetime:props.createRouteDetails.routetime.toString(),
@@ -98,6 +101,7 @@ function CreateRouteComponent(props) {
             }
         })
             .then(function (response) {
+                // If successful adds it to the backend.
                 if(response.data.success === "true") {
                     props.addCreatedRoute({...response.data.data.route, route: response.data.data.route.mapdata.coordinates})
                     let traffic = [...props.traffic]
@@ -105,6 +109,7 @@ function CreateRouteComponent(props) {
                     props.updateTraffic(traffic)
                     props.handleClose();
                 }else{
+                    // If error
                     window.alert("ERROR Please try again.")
                     window.alert(response.msg)
                 }
@@ -216,7 +221,7 @@ const ColumnDiv = styled.div`
 function getSteps() {
     return ['Enter Map Information', 'Create the route', 'Confirm Route Details'];
 }
-
+// Gets the steps for the create route map. Allows user to navigate through the create route.
 function getStepContent(step, handleNext, handleBack, route,handleReset) {
     switch (step) {
         case 0:
