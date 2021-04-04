@@ -6,8 +6,8 @@ import {updateEmail, updateFullname, updateUsername} from "../actions/userProfil
 import {updateCreateRouteDetails} from "../actions/routes";
 import {connect} from "react-redux";
 // CREATE ROUTE USER INTERFACE.
+// This is the draggable marker that the user can use to modify the created route.
 function DraggableMarker(props) {
-    const [draggable, setDraggable] = useState(false)
     const [position, setPosition] = useState(props.center)
     const markerRef = useRef(null)
 
@@ -22,27 +22,17 @@ function DraggableMarker(props) {
         }),
         [],
     )
-    const toggleDraggable = useCallback(() => {
-        setDraggable((d) => !d)
-
-    }, [])
-    useEffect(()=>props.setLatLng(position) ,[draggable])
+    useEffect(()=>props.setLatLng(position) ,[position]) // Updates the poly line when the position of a marker is updated
     return (
         <Marker
-            draggable={draggable}
+            draggable={true}
             eventHandlers={eventHandlers}
             position={position}
             ref={markerRef}>
-            <Popup minWidth={90}>
-        <span onClick={toggleDraggable}>
-          {draggable
-              ? 'Marker is draggable'
-              : 'Click here to make marker draggable'}
-        </span>
-            </Popup>
         </Marker>
     )
 }
+// Styling for componenets
 const Button = styled.button`
       text-align:center;
       font-size: 1em;
@@ -63,7 +53,7 @@ const ButtonDiv = styled.div`
     justify-content: space=between;
     
 `
-
+// This is the map the user uses to create the route.
 function CreateRouteMapComponent(props) {
     let [lat, setLat] = useState(0)
     let [long, setLong] = useState(0)
@@ -75,13 +65,20 @@ function CreateRouteMapComponent(props) {
         )
         props.handleNext()
     }
+
+    const handleBackClick = () => {
+        props.updateCreateRouteDetails(
+            {...props.createRouteDetails, route: route}
+        )
+        props.handleBack()
+    }
     const handleClear = () => {
         setRoute([])
     }
-
+    // Persists the route data once created
     useEffect(
         ()=>{
-            if(props.route.length < 1){setRoute(props.route)}
+            if(props.createRouteDetails.route.length > 1){setRoute(props.createRouteDetails.route)}
         },[]
     )
 
@@ -90,17 +87,17 @@ function CreateRouteMapComponent(props) {
             style={{width: "100%", height: "100%"}} center={[lat, long]} zoom={13} scrollWheelZoom={false}>
             <MapConsumer>
                 {(map) => {
-                    props.locate ? map.locate() : map.locate()
+                    map.locate()
                     return null
                 }}
             </MapConsumer>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {<PolyLineRoute clear={route.length===0} setRoute={(route)=>setRoute(route)} popupTitle={"You are here"}/>}
+            {<PolyLineRoute route={route} clear={route.length===0} setRoute={(route)=>setRoute(route)} popupTitle={"You are here"}/>}
         </MapContainer>
             <ButtonDiv>
-                <Button onClick={()=>{props.handleBack()}}>Back</Button>
+                <Button onClick={()=>handleBackClick()}>Back</Button>
                 <Button style={{background: route.length < 2 ? '#89b6b9' : '#00cddb'}} disabled={route.length<2} onClick={()=>handleNextClick()}>Next</Button>
                 <Button style={{background: route.length < 2 ? '#89b6b9' : '#00cddb'}} disabled={route.length<2} onClick={()=>handleClear()}>Clear</Button>
             </ButtonDiv>
@@ -137,14 +134,14 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateRouteMapComponent);
 
-const fillBlueOptions = { fillColor: 'blue' }
+const fillBlueOptions = { fillColor: 'blue' } // Polyline color
 
-
+// Polyline that is displayed on the map
 function PolyLineRoute(props) {
     const [position, setPosition] = useState(null)
     const [mount, setMount] = useState(true)
     const [markerArray, setMarkerArray] = useState([])
-
+    // Map events used for the functionality
     const map_c = useMapEvents({
         click(e) {
             let latLong = map_c.mouseEventToLatLng(e.originalEvent)
@@ -161,7 +158,7 @@ function PolyLineRoute(props) {
             }
         },
     })
-
+    // Hooks used to update the map when mounted
     useEffect(()=>{
         setTimeout(()=>setMount(false), 3000)
     },[])
@@ -170,7 +167,14 @@ function PolyLineRoute(props) {
         setMarkerArray([])
     },[props.clear])
 
+    useEffect(()=>{
+        if(props.route.length > 0){
+            setMarkerArray(props.route)
+            setTimeout(()=>map_c.flyTo(props.route[0],map_c.getZoom()),1000)
+        }
+    },[])
 
+    // Update the polyline once the user drags.
     const updateMarkerLatLng = (LatLong, index) => {
         if(index > -1 && LatLong) {
             let temp = _.cloneDeep(markerArray)

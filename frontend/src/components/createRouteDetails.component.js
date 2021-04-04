@@ -53,7 +53,7 @@ function CreateRouteDetails(props) {
     const [routedistance, setRouteDistance] = useState("");
     const [routetime, setRouteTime] = useState("");
     const [routetype, setRouteType] = useState("");
-
+    // Handles information input by the user
     const handleRouteTitle = (event) => {
         setRouteTitle(event.target.value);
     }
@@ -70,7 +70,7 @@ function CreateRouteDetails(props) {
         setRouteType(event.target.value)
     }
 
-
+    // update store when next clicked
     const handleNextClick = () => {
         props.updateCreateRouteDetails({
             routetitle: routetitle,
@@ -78,7 +78,7 @@ function CreateRouteDetails(props) {
             routedescription: routedescription,
             routetime: routetime,
             routetype: routetype,
-            route: []
+            route: props.createRouteDetails.route
         })
         props.handleNext()
     }
