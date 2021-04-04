@@ -78,7 +78,7 @@ function CreateRouteDetails(props) {
             routedescription: routedescription,
             routetime: routetime,
             routetype: routetype,
-            route: []
+            route: props.createRouteDetails.route
         })
         props.handleNext()
     }

@@ -7,7 +7,6 @@ import {updateCreateRouteDetails} from "../actions/routes";
 import {connect} from "react-redux";
 // CREATE ROUTE USER INTERFACE.
 function DraggableMarker(props) {
-    const [draggable, setDraggable] = useState(false)
     const [position, setPosition] = useState(props.center)
     const markerRef = useRef(null)
 
@@ -22,24 +21,13 @@ function DraggableMarker(props) {
         }),
         [],
     )
-    const toggleDraggable = useCallback(() => {
-        setDraggable((d) => !d)
-
-    }, [])
-    useEffect(()=>props.setLatLng(position) ,[draggable])
+    useEffect(()=>props.setLatLng(position) ,[position])
     return (
         <Marker
-            draggable={draggable}
+            draggable={true}
             eventHandlers={eventHandlers}
             position={position}
             ref={markerRef}>
-            <Popup minWidth={90}>
-        <span onClick={toggleDraggable}>
-          {draggable
-              ? 'Marker is draggable'
-              : 'Click here to make marker draggable'}
-        </span>
-            </Popup>
         </Marker>
     )
 }
@@ -75,13 +63,20 @@ function CreateRouteMapComponent(props) {
         )
         props.handleNext()
     }
+
+    const handleBackClick = () => {
+        props.updateCreateRouteDetails(
+            {...props.createRouteDetails, route: route}
+        )
+        props.handleBack()
+    }
     const handleClear = () => {
         setRoute([])
     }
 
     useEffect(
         ()=>{
-            if(props.route.length < 1){setRoute(props.route)}
+            if(props.createRouteDetails.route.length > 1){setRoute(props.createRouteDetails.route)}
         },[]
     )
 
@@ -90,17 +85,17 @@ function CreateRouteMapComponent(props) {
             style={{width: "100%", height: "100%"}} center={[lat, long]} zoom={13} scrollWheelZoom={false}>
             <MapConsumer>
                 {(map) => {
-                    props.locate ? map.locate() : map.locate()
+                    map.locate()
                     return null
                 }}
             </MapConsumer>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {<PolyLineRoute clear={route.length===0} setRoute={(route)=>setRoute(route)} popupTitle={"You are here"}/>}
+            {<PolyLineRoute route={route} clear={route.length===0} setRoute={(route)=>setRoute(route)} popupTitle={"You are here"}/>}
         </MapContainer>
             <ButtonDiv>
-                <Button onClick={()=>{props.handleBack()}}>Back</Button>
+                <Button onClick={()=>handleBackClick()}>Back</Button>
                 <Button style={{background: route.length < 2 ? '#89b6b9' : '#00cddb'}} disabled={route.length<2} onClick={()=>handleNextClick()}>Next</Button>
                 <Button style={{background: route.length < 2 ? '#89b6b9' : '#00cddb'}} disabled={route.length<2} onClick={()=>handleClear()}>Clear</Button>
             </ButtonDiv>
@@ -169,6 +164,13 @@ function PolyLineRoute(props) {
     useEffect(()=>{
         setMarkerArray([])
     },[props.clear])
+
+    useEffect(()=>{
+        if(props.route.length > 0){
+            setMarkerArray(props.route)
+            setTimeout(()=>map_c.flyTo(props.route[0],map_c.getZoom()),1000)
+        }
+    },[])
 
 
     const updateMarkerLatLng = (LatLong, index) => {
