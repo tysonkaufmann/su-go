@@ -5,6 +5,7 @@ import styled from "styled-components";
 import {updateEmail, updateFullname, updateUsername} from "../actions/userProfile";
 import {updateCreateRouteDetails} from "../actions/routes";
 import {connect} from "react-redux";
+import userProfileReducer from "../reducers/userProfileReducer";
 // CREATE ROUTE USER INTERFACE.
 // This is the draggable marker that the user can use to modify the created route.
 function DraggableMarker(props) {
@@ -58,22 +59,40 @@ function CreateRouteMapComponent(props) {
     let [lat, setLat] = useState(0)
     let [long, setLong] = useState(0)
     let [route , setRoute] = useState([])
+    let [distance , setDistance] = useState(0)
 
     const handleNextClick = () => {
         props.updateCreateRouteDetails(
-            {...props.createRouteDetails, route: route}
+            {...props.createRouteDetails, route: route, routedistance:distance/1000}
         )
         props.handleNext()
     }
 
     const handleBackClick = () => {
         props.updateCreateRouteDetails(
-            {...props.createRouteDetails, route: route}
+            {...props.createRouteDetails, route: route, routedistance:distance/1000}
         )
         props.handleBack()
     }
     const handleClear = () => {
         setRoute([])
+        setDistance(0)
+    }
+    const setLatLngs = (polylineRef) => {
+        if(polylineRef.current) {
+            console.log(polylineRef.current.getLatLngs())
+            let tempDistance = 0;
+            let previousPoint;
+            // http://leafletjs.com/reference.html#polyline-getlatlngs
+            polylineRef.current.getLatLngs().forEach((latLng) => {
+                console.log(latLng)
+                if (previousPoint) {
+                    tempDistance += parseInt(previousPoint.distanceTo(latLng).toFixed(2))
+                }
+                previousPoint = latLng;
+            });
+            setDistance(tempDistance)
+        }
     }
     // Persists the route data once created
     useEffect(
@@ -94,14 +113,14 @@ function CreateRouteMapComponent(props) {
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {<PolyLineRoute route={route} clear={route.length===0} setRoute={(route)=>setRoute(route)} popupTitle={"You are here"}/>}
+            {<PolyLineRoute setLatLngs={(polylineRef)=>setLatLngs(polylineRef)}  route={route} clear={route.length===0} setRoute={(route)=>setRoute(route)} popupTitle={"You are here"}/>}
         </MapContainer>
+            {"Distance: "}{distance/1000}{" KM(s)"}
             <ButtonDiv>
                 <Button onClick={()=>handleBackClick()}>Back</Button>
                 <Button style={{background: route.length < 2 ? '#89b6b9' : '#00cddb'}} disabled={route.length<2} onClick={()=>handleNextClick()}>Next</Button>
                 <Button style={{background: route.length < 2 ? '#89b6b9' : '#00cddb'}} disabled={route.length<2} onClick={()=>handleClear()}>Clear</Button>
             </ButtonDiv>
-
         </>
 
 );
@@ -142,6 +161,8 @@ function PolyLineRoute(props) {
     const [mount, setMount] = useState(true)
     const [markerArray, setMarkerArray] = useState([])
     // Map events used for the functionality
+    const polylineRef = useRef()
+
     const map_c = useMapEvents({
         click(e) {
             let latLong = map_c.mouseEventToLatLng(e.originalEvent)
@@ -149,6 +170,8 @@ function PolyLineRoute(props) {
             temp.push(latLong)
             setMarkerArray(temp)
             props.setRoute(temp)
+            props.setLatLngs(polylineRef)
+
 
         },
         locationfound(e) {
@@ -181,8 +204,10 @@ function PolyLineRoute(props) {
             temp[index] = LatLong
             setMarkerArray(temp)
             props.setRoute(temp)
+            props.setLatLngs(polylineRef)
         }
     }
+
 
     return position === null ? null : (
         markerArray.length < 1 ?
@@ -194,7 +219,7 @@ function PolyLineRoute(props) {
                     </DraggableMarker>
                 })
             }
-            <Polyline positions={markerArray} pathOptions={fillBlueOptions} />
+            <Polyline ref={polylineRef} positions={markerArray} pathOptions={fillBlueOptions} />
             </>
     )
 

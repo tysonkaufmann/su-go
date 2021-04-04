@@ -79,13 +79,13 @@ function CreateRouteComponent(props) {
 
     // Once the user has created the map send a request to the backend.
     const handleFinish = () => {
-        props.updateCreateRouteDetails({})
+        // props.updateCreateRouteDetails({})
         // Data to be sent to the backend.
         let post_data = {
             routetitle:props.createRouteDetails.routetitle,
             routetime:props.createRouteDetails.routetime.toString(),
             routedescription:props.createRouteDetails.routedescription,
-            routedistance: parseInt(props.createRouteDetails.routedistance),
+            routedistance: props.createRouteDetails.routedistance,
             username:props.username,
             mapdata: {coordinates: props.createRouteDetails.route},
             routetype: props.createRouteDetails.routetype,
@@ -107,14 +107,39 @@ function CreateRouteComponent(props) {
                     let traffic = [...props.traffic]
                     traffic.push({routeid: response.data.data.route.routeid, count: 0})
                     props.updateTraffic(traffic)
+                    props.updateCreateRouteDetails({
+                        routetitle: "",
+                        routedescription: "",
+                        routedistance: 0,
+                        routetime: "",
+                        routetype: "",
+                        route: []
+                    })
+
                     props.handleClose();
                 }else{
+                    props.updateCreateRouteDetails({
+                        routetitle: "",
+                        routedescription: "",
+                        routedistance: 0,
+                        routetime: "",
+                        routetype: "",
+                        route: []
+                    })
                     // If error
                     window.alert("ERROR Please try again.")
                     window.alert(response.msg)
                 }
             })
             .catch(function (error) {
+                props.updateCreateRouteDetails({
+                    routetitle: "",
+                    routedescription: "",
+                    routedistance: 0,
+                    routetime: "",
+                    routetype: "",
+                    route: []
+                })
                 console.log(error);
                 window.alert(error)
 
@@ -223,6 +248,7 @@ function getSteps() {
 }
 // Gets the steps for the create route map. Allows user to navigate through the create route.
 function getStepContent(step, handleNext, handleBack, route,handleReset) {
+    console.log(route)
     switch (step) {
         case 0:
             return <ResponsiveDiv>
