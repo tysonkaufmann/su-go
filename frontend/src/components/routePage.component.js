@@ -8,7 +8,7 @@ import {
     updateTotalTime
 } from "../actions/userProfile";
 import {connect} from "react-redux";
-import {updateCreatedRoutes, updateCurrentRoute, updateTraffic, updateSelectedRoute} from "../actions/routes";
+import {updateCreatedRoutes, updateCurrentRoute, updateTraffic, updateSelectedRoute, updateExpiryTime} from "../actions/routes";
 import styled from "styled-components";
 import MapContainerComponent from "./mapContainer.component";
 import OverviewMap from "./overviewMap.component"
@@ -24,6 +24,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MuiFormControl from '@material-ui/core/FormControl';
 import Chip from '@material-ui/core/Chip';
+import Countdown from "react-countdown"
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 
@@ -128,6 +129,27 @@ class RoutePage extends Component {
         this.props.updateSelectedRoute(key)
     }
 
+    timerOnComplete = (routeid) => {
+        let self = this;
+        self.props.updateCurrentRoute({})
+        self.updateTraffic(routeid, false)
+        self.props.updateExpiryTime(0)
+    }
+
+    updateTraffic = (routeid, routeStart) => {
+        let self = this;
+        let traffic = [...self.props.traffic]
+        let trafficFound = traffic.find(t => t.routeid === routeid)
+        if (trafficFound) {
+            let index = traffic.indexOf(trafficFound)
+            routeStart 
+            ? traffic[index].count += 1
+            : traffic[index].count -= 1
+
+            self.props.updateTraffic(traffic)
+        }
+    }
+
     setCurrentRoute = (route, id) => {
         let self = this;
         let post_data = {
@@ -144,10 +166,8 @@ class RoutePage extends Component {
                 if (response.data.success === "true") {
                     window.alert("Route has been started")
                     self.props.updateCurrentRoute(route)
-                    let traffic = [...self.props.traffic]
-                    let trafficFound = traffic.find(t => t.routeid === id)
-                    traffic[traffic.indexOf(trafficFound)].count += 1
-                    self.props.updateTraffic(traffic)
+                    self.updateTraffic(id, true)
+                    self.props.updateExpiryTime(Date.now() + 1000*60*60*6)
                 }
                 else {
                     window.alert("failed to start route", response.data.msg)
@@ -168,10 +188,7 @@ class RoutePage extends Component {
                 if (response.data.success === "true") {
                     window.alert("Route has been ended")
                     self.props.updateCurrentRoute(route)
-                    let traffic = [...self.props.traffic]
-                    let trafficFound = traffic.find(t => t.routeid === id)
-                    traffic[traffic.indexOf(trafficFound)].count -= 1
-                    self.props.updateTraffic(traffic)
+                    self.updateTraffic(id, false)
                 }
                 else {
                     window.alert("failed to end route", response.data.msg)
@@ -330,6 +347,8 @@ class RoutePage extends Component {
                             setCurrentRoute={this.setCurrentRoute} 
                             currentRoute={this.state.currentRoute}
                             selectedRoute={this.props.selectedRoute}
+                            timerOnComplete={this.timerOnComplete}
+                            routeExpiryTime={this.props.routeExpiryTime}
                         />
                     )}
                 </RouteLeft>
@@ -374,7 +393,10 @@ function mapDispatchToProps(dispatch) {
         },
         updateSelectedRoute: (item) => {
           dispatch(updateSelectedRoute(item))
-        }
+        },
+        updateExpiryTime: (item) => {
+            dispatch(updateExpiryTime(item))
+        },
     }
 }
 
@@ -426,6 +448,7 @@ const StartRouteButton = styled.button`
       }
 `
 const RouteNameText = styled.div`
+    width: 100%;
     margin-top: 5px;
     margin-left: 10px;
     margin-bottom: 5px;
@@ -434,6 +457,13 @@ const RouteNameText = styled.div`
     height: fit-content;
 
 `
+
+const RouteTime = styled.div`
+    display: flex;
+    justify-content: space-between;
+    margin-right: 20px;
+`
+
 const RouteTitleText = styled.div`
     width: 100%;
     display: flex;
@@ -476,7 +506,18 @@ function MapDetailCard(props) {
         <RouteNameText>
             <b>Description:</b> {props.route.routedescription}<br />
             <b>Distance:</b> {props.route.routedistance}{" (km)"}<br />
-            <b>Time:</b> {props.route.routetime}{" (minutes)"}
+            <RouteTime>
+                <span><b>Time:</b> {props.route.routetime}{" (minutes)"}</span>
+                {
+                    props.currentRoute.routeid === props.route.routeid && props.routeExpiryTime !== 0 &&
+                        <div style={{color:"white", fontFamily: "sans-serif", fontWeight: "bold", fontSize:"large"}}>
+                            <span>Expires in </span>
+                            <Countdown date={props.routeExpiryTime} onComplete={() => props.timerOnComplete(props.route.routeid)} daysInHours>
+                                <div />
+                            </Countdown>
+                        </div>
+                }
+            </RouteTime>
         </RouteNameText>
         {/* <Rating
             name="hover-feedback"
@@ -496,7 +537,9 @@ function MapDetailCard(props) {
                 }
             }}
             disabled={props.currentRoute.routeid !== props.route.routeid && props.currentRoute.route}
-            >{props.currentRoute.routeid === props.route.routeid? "End Route" : "Start Route"}</StartRouteButton>
+            >
+                {props.currentRoute.routeid === props.route.routeid? "End Route" : "Start Route"}
+            </StartRouteButton>
         </div>
     </MapDetailCardDiv>)
 }
@@ -515,6 +558,7 @@ function mapStateToProps(state) {
         currentRoute: state.routesReducer.currentRoute,
         traffic: state.routesReducer.traffic,
         selectedRoute: state.routesReducer.selectedRoute,
+        routeExpiryTime: state.routesReducer.routeExpiryTime,
     }
 }
 

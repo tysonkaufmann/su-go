@@ -56,3 +56,10 @@ export function updateTraffic(item) {
         payload: item
     }
 }
+
+export function updateExpiryTime(item) {
+    return {
+        type: 'UPDATE_ROUTE_EXPIRY_TIME',
+        payload: item
+    }
+}
