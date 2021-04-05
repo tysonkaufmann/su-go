@@ -50,7 +50,6 @@ function CreateRouteDetails(props) {
     // States.
     const [routetitle, setRouteTitle] = useState("");
     const [routedescription, setRouteDescription] = useState("");
-    const [routedistance, setRouteDistance] = useState("");
     const [routetime, setRouteTime] = useState("");
     const [routetype, setRouteType] = useState("");
     // Handles information input by the user
@@ -60,9 +59,6 @@ function CreateRouteDetails(props) {
     const handleRouteDescription = (event) => {
         setRouteDescription(event.target.value);
     }
-    const handleRouteDistance = (event) => {
-        setRouteDistance(event.target.value);
-    }    
     const handleRouteTime = (event) => {
         setRouteTime(event.target.value);
     }
@@ -74,7 +70,6 @@ function CreateRouteDetails(props) {
     const handleNextClick = () => {
         props.updateCreateRouteDetails({
             routetitle: routetitle,
-            routedistance: routedistance,
             routedescription: routedescription,
             routetime: routetime,
             routetype: routetype,
@@ -86,7 +81,6 @@ function CreateRouteDetails(props) {
     useEffect(() => {
             setRouteTitle(props.createRouteDetails.routetitle)
             setRouteDescription(props.createRouteDetails.routedescription)
-            setRouteDistance(props.createRouteDetails.routedistance)
             setRouteTime(props.createRouteDetails.routetime)
             setRouteType(props.createRouteDetails.routetype)
         }, [props]
@@ -94,7 +88,6 @@ function CreateRouteDetails(props) {
     
     let disabled = routetitle === "" ||
         routedescription === "" ||
-        routedistance === "" ||
         routetime === "" ||
         routetype === ""
 
@@ -124,9 +117,6 @@ function CreateRouteDetails(props) {
             Route Description:<Input value={routedescription} onChange={(event) => {
                 handleRouteDescription(event)
             }} placeholder={"Enter Route Description"} />
-            Enter Distance (KM):<Input value={routedistance} type={"number"} onChange={(event) => {
-                handleRouteDistance(event)
-            }} placeholder={"Enter Distance (KM)"} />
             Enter Approximate Time taken (Minutes):<Input value={routetime} type={"number"} onChange={(event) => {
                 handleRouteTime(event)
             }} placeholder={"Enter Time (Minutes)"} />
