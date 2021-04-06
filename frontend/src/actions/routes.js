@@ -63,3 +63,10 @@ export function updateExpiryTime(item) {
         payload: item
     }
 }
+
+export function updateRating(item) {
+    return {
+        type: 'UPDATE_RATING',
+        payload: item
+    }
+}

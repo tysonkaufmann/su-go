@@ -63,6 +63,7 @@ exports.vote = async (req, res) => {
       route.votes.push({"username": username, "score": score})
     }
 
+    route.markModified('votes')
     await route.save();
 
     // return the data

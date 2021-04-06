@@ -1,4 +1,4 @@
-import React, {Component, useRef} from 'react';
+import React, {Component, useRef, useState} from 'react';
 import {
     updateUsername,
     updateEmail,
@@ -8,9 +8,8 @@ import {
     updateTotalTime
 } from "../actions/userProfile";
 import {connect} from "react-redux";
-import {updateCreatedRoutes, updateCurrentRoute, updateTraffic, updateSelectedRoute, updateExpiryTime} from "../actions/routes";
+import {updateCreatedRoutes, updateCurrentRoute, updateTraffic, updateSelectedRoute, updateExpiryTime, updateRating} from "../actions/routes";
 import styled from "styled-components";
-import MapContainerComponent from "./mapContainer.component";
 import OverviewMap from "./overviewMap.component"
 import jog from "../assets/jog.jpg";
 import bike from "../assets/bike.jpg";
@@ -24,7 +23,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MuiFormControl from '@material-ui/core/FormControl';
 import Chip from '@material-ui/core/Chip';
-import Countdown from "react-countdown"
+import Countdown from "react-countdown";
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
 
 /* STYLED COMPONENTS USED FOR THE PAGE.*/
 
@@ -88,7 +89,6 @@ class RoutePage extends Component {
             selectedType: "All",
             selectedSort: "Default",
         }
-        this.mapCardDiv = React.createRef([])
     }
 
     componentDidMount() {
@@ -199,6 +199,30 @@ class RoutePage extends Component {
             })
         }
     }
+
+    rateRoute = (routeid, score) => {
+        let self = this
+        let postData = {
+            username: self.props.username,
+            score: score
+        }
+        axios.post(`http://localhost:5000/api/routes/${routeid}/vote`, postData, {
+            headers: {
+                "x-auth-username": self.props.username,
+                "x-auth-token": JSON.parse(localStorage.getItem("token"))
+            }
+        }).then(function(response) {
+            if (response.data.success === "true") {
+                self.props.updateRating(response.data.data.route)
+            }
+            else {
+                console.log("rate route failed")
+            }
+        }).catch(function(error) {
+            console.log(error)
+        })
+    }
+
     // sort the routes by the type of sort selected by the users and update the list.
     sortRoute = (sort) => {
 
@@ -349,6 +373,7 @@ class RoutePage extends Component {
                             selectedRoute={this.props.selectedRoute}
                             timerOnComplete={this.timerOnComplete}
                             routeExpiryTime={this.props.routeExpiryTime}
+                            rateRoute={this.rateRoute}
                         />
                     )}
                 </RouteLeft>
@@ -397,6 +422,9 @@ function mapDispatchToProps(dispatch) {
         updateExpiryTime: (item) => {
             dispatch(updateExpiryTime(item))
         },
+        updateRating: (item) => {
+            dispatch(updateRating(item))
+        }
     }
 }
 
@@ -447,6 +475,7 @@ const StartRouteButton = styled.button`
           background: #a8a8a7;
       }
 `
+
 const RouteNameText = styled.div`
     width: 100%;
     margin-top: 5px;
@@ -458,10 +487,23 @@ const RouteNameText = styled.div`
 
 `
 
-const RouteTime = styled.div`
+const RouteInfo = styled.div`
+    height: 25px;
     display: flex;
     justify-content: space-between;
     margin-right: 20px;
+`
+
+const RatingValue = styled.span`
+    font-weight: bold;
+    font-size: 15px;
+    font-family: sans-serif;
+`
+const RatingSpan = styled.span`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 `
 
 const RouteTitleText = styled.div`
@@ -486,10 +528,99 @@ const TrailImage = styled.div`
     background-size: cover;
 `
 
-function MapDetailCard(props) {
+const RouteRatingDiv = styled.div`
+    width: 500px;
+    padding: 20px 65px;
+    text-align: center;
+`
 
-    // temp image selection.
+const RouteRatingButton = styled.button`
+    text-align:center;
+    font-size: 1em;
+    padding: 0.25em 1em;
+    border: white;
+    color: white;
+    background: #ed6622;
+    align-self: flex-end;
+    margin: 0px 10px 10px;
+    border-radius: 8px;
+`
+
+const getAvgRating = (votes) => {
+    let sum = 0
+    let avg = -1
+    if(votes && votes.length > 0) {
+        votes.forEach(vote => {
+            sum += vote.score
+        })
+        avg = Math.round((sum / votes.length) * 10) / 10
+    }
+
+    return avg
+}
+
+function RateRouteDialog(props) {
+    let [value, setValue] = useState(0)
+
+    const handleClose = () => {
+        props.onClose()
+    }
+
+    const handleSubmit = () => {
+        props.rateRoute(value)
+        props.onClose()
+    }
+
+    return (
+        <Dialog onClose={handleClose} aria-labelledby="dialog-title" open={props.open}>
+            <DialogTitle id="dialog-title" style={{textAlign:"center", backgroundColor:"#00cddb", color:"white"}}>
+                <b>How would you like to rate this route?</b>
+            </DialogTitle>
+            <RouteRatingDiv>
+                <div style={{marginBottom:"30px"}}>
+                    <div style={{color:"#00cddb", fontSize:"25px", fontWeight:"bold", marginBottom:"10px"}}>{props.route.routetitle}</div>
+                    <div><b>Description: </b>{props.route.routedescription}</div>
+                    <div><b>Distance: </b>{`${props.route.routedistance} (km)`}</div>
+                    <div><b>Time: </b>{`${props.route.routetime} (minutes)`}</div>
+                </div>
+                <Rating 
+                    name="hover-feedback"
+                    size="large" 
+                    value={value}
+                    onChange={(_, newValue) => {
+                        setValue(newValue ? newValue : 0)
+                    }}
+                />
+                <div style={{color:"#ffb504"}}>
+                    <span style={{fontSize:"50px"}}><b>{value}</b></span>
+                    <span><b>{"/5"}</b></span>
+                </div>
+            </RouteRatingDiv>
+            <RouteRatingButton onClick={handleSubmit}>Submit</RouteRatingButton>
+        </Dialog>
+    )
+}
+
+function MapDetailCard(props) {
+    let [dialogOpen, setdialogOpen] = useState(false)
+
+    // image selection.
     let image = props.route.routetype === "Biking" ? bike : props.route.routetype === "Walking" ? jog : undefined;
+    let ratingAvg = getAvgRating(props.route.votes)
+
+
+    const openDialog = () => {
+        setdialogOpen(true)
+    }
+
+    const closeDialog = () => {
+        setdialogOpen(false)
+    }
+
+    const rateRoute = (score) => {
+        props.rateRoute(props.route.routeid, score)
+    }
+
     return (<MapDetailCardDiv 
         id={'mapcard-' + props.route.routeid}
         style={props.currentRoute.routeid === props.route.routeid 
@@ -504,9 +635,18 @@ function MapDetailCard(props) {
             {props.route.routetype === "Hiking" && <Chip label="Hiking Trail" style={{marginRight: "20px", color: "white", backgroundColor: "#00cddb"}}/>}
         </RouteTitleText>
         <RouteNameText>
-            <b>Description:</b> {props.route.routedescription}<br />
-            <b>Distance:</b> {props.route.routedistance}{" (km)"}<br />
-            <RouteTime>
+            <RouteInfo>
+                <span><b>Description:</b> {props.route.routedescription}</span>
+                <RatingSpan onClick={openDialog}>
+                    <Rating name="rating-read-only" precision={0.1} value={ratingAvg === -1 ? 0 : ratingAvg} readOnly/>
+                    <RatingValue>
+                        &nbsp;{ratingAvg === -1 ? "N/A" : ratingAvg}
+                    </RatingValue>
+                </RatingSpan>
+                <RateRouteDialog open={dialogOpen} onClose={closeDialog} route={props.route} rateRoute={rateRoute} />
+            </RouteInfo>
+            <b>Distance:</b> {props.route.routedistance}{" (km)"}
+            <RouteInfo>
                 <span><b>Time:</b> {props.route.routetime}{" (minutes)"}</span>
                 {
                     props.currentRoute.routeid === props.route.routeid && props.routeExpiryTime !== 0 &&
@@ -517,14 +657,8 @@ function MapDetailCard(props) {
                             </Countdown>
                         </div>
                 }
-            </RouteTime>
+            </RouteInfo>
         </RouteNameText>
-        {/* <Rating
-            name="hover-feedback"
-            disabled={true}
-            precision={1}
-            value={props.route.rating}
-        /> */}
         <div style={{width: "100%",display: "inline-block"}}>
             <ViewMapButton onClick={() => props.setMapDetails(props.route)}>View Map</ViewMapButton>
             <StartRouteButton 

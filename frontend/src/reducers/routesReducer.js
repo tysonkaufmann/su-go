@@ -34,6 +34,13 @@ export default function routesReducer(state = initialState, action) {
             return { ...state, traffic: action.payload }
         case "UPDATE_ROUTE_EXPIRY_TIME":
             return { ...state, routeExpiryTime: action.payload }
+        case "UPDATE_RATING":
+            let tempAllRoutes = [...state.allRoutes]
+            let routeFound = tempAllRoutes.find(r => r.routeid === action.payload.routeid)
+            if (routeFound) {
+                routeFound.votes = [...action.payload.votes]
+            }
+            return { ...state, allRoutes: tempAllRoutes}
         case "ADD_CREATED_ROUTE":
             let addCreatedRoutes = state.createdRoutes.slice()
             let addAllRoutes = state.allRoutes.slice()
