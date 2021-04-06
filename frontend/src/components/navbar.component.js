@@ -145,7 +145,7 @@ function NavbarComponent(props) {
                         <UsernameText>{props.username}</UsernameText>
                     </Button>
                     <Menu
-                        style={{marginTop:"20px"}}
+                        style={{marginTop:"20px", zIndex:1000001}}
                         id="menu-appbar"
                         anchorEl={anchorEl}
                         anchorOrigin={{

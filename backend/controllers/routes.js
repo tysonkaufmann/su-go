@@ -500,7 +500,8 @@ exports.getAllRoutes = async (req, res) => {
         routetime: route.routetime,
         routedistance: route.routedistance,
         photos: route.photos,
-        mapdata: route.mapdata
+        mapdata: route.mapdata,
+        votes: route.votes
       }
     })
 

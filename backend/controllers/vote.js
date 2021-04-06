@@ -8,7 +8,7 @@ exports.vote = async (req, res) => {
   var { routeid } = req.params
   var { username, score } = req.body
 
-  if(!routeid || !username || !score || !Number.isInteger(score) || score < 0 || score > 5)
+  if(!routeid || !username || (!score && score!==0) || !Number.isInteger(score) || score < 0 || score > 5)
   {
     res.status(400);
     res.json({
@@ -63,6 +63,7 @@ exports.vote = async (req, res) => {
       route.votes.push({"username": username, "score": score})
     }
 
+    route.markModified('votes')
     await route.save();
 
     // return the data
