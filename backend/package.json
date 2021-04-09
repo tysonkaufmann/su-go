@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --coverage --forceExit --setupFiles dotenv/config --silent",
+    "test": "jest --coverage --forceExit --setupFiles dotenv/config --silent --maxWorkers=1",
     "start": "nodemon server"
   },
   "keywords": [],
