@@ -1,23 +1,20 @@
 // Boilerplate https://github.com/Intro-to-SE-Spring-2020/Chirpr/blob/master/backend/controllers/auth.js
-const jwt = require('jsonwebtoken');
-const sha1 = require('sha1');
-const {Email} = require('../services/email')
+const jwt = require('jsonwebtoken')
+const sha1 = require('sha1')
+const { Email } = require('../services/email')
 // import models
 const User = require('../models/user')
 const Verification = require('../models/verification')
 const Traffic = require('../models/traffic')
 const Route = require('../models/route')
-//import validators
+// import validators
 const { validateUsername, validatePassword, validateEmail } = require('../helpers/validators')
 
-
 exports.getUserCurrentRoute = async (req, res) => {
+  const { username } = req.params
 
-  var { username } = req.params
-
-  if(!username)
-  {
-    res.status(400);
+  if (!username) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -27,9 +24,8 @@ exports.getUserCurrentRoute = async (req, res) => {
   }
 
   // prevents bypassing auth with another usename
-  if(username != req.header('x-auth-username'))
-  {
-    res.status(400);
+  if (username !== req.header('x-auth-username')) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -40,9 +36,9 @@ exports.getUserCurrentRoute = async (req, res) => {
 
   try {
     // check if route exists
-    const traffic = await Traffic.findOne({ username: username})
+    const traffic = await Traffic.findOne({ username: username })
     if (!traffic) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -50,10 +46,10 @@ exports.getUserCurrentRoute = async (req, res) => {
       })
       return res
     }
-    const route = await Route.findOne({ routeid:traffic.routeid })
+    const route = await Route.findOne({ routeid: traffic.routeid })
 
     if (!route) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -63,21 +59,20 @@ exports.getUserCurrentRoute = async (req, res) => {
     }
 
     // return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
       data: {
         username: username,
-        route: route,
+        route: route
       },
       msg: 'Route found successfully'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -87,16 +82,13 @@ exports.getUserCurrentRoute = async (req, res) => {
   }
 }
 
-
-
 // Handles the /login endpoint
 exports.login = async (req, res) => {
   // destruct email and password
   const { username, password } = req.body
 
-  if(!username || !password)
-  {
-    res.status(400);
+  if (!username || !password) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -110,7 +102,7 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ username })
     // authenticate user
     if (!user || !user.authenticate(encrypt(password))) { // authenticate with user schema method
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -120,7 +112,7 @@ exports.login = async (req, res) => {
     }
     // create payload
     const payload = {
-        username: username
+      username: username
     }
 
     // generate a token to send to client/react
@@ -129,9 +121,9 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '10h' },
       (err, token) => {
-        if (err){
+        if (err) {
           console.error(err)
-          res.status(500);
+          res.status(500)
           res.json({
             status: '500',
             success: 'false',
@@ -139,7 +131,7 @@ exports.login = async (req, res) => {
           })
           return res
         }
-        res.status(200);
+        res.status(200)
         res.json({
           status: '200',
           success: 'true',
@@ -152,7 +144,7 @@ exports.login = async (req, res) => {
     )
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -163,12 +155,10 @@ exports.login = async (req, res) => {
 }
 
 exports.signup = async (req, res) => {
+  let { username, password, email, fullname, profilepic } = req.body
 
-  var { username, password, email, fullname, profilepic } = req.body
-
-  if(!username || !password || !email || !fullname)
-  {
-    res.status(400);
+  if (!username || !password || !email || !fullname) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -180,7 +170,7 @@ exports.signup = async (req, res) => {
   try {
     // check to see if username is valid
     if (!validateUsername(username)) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -192,7 +182,7 @@ exports.signup = async (req, res) => {
     // check to see if username is in use
     const user = await User.findOne({ username })
     if (user) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -203,7 +193,7 @@ exports.signup = async (req, res) => {
 
     // check to see if password is valid
     if (!validatePassword(password)) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -214,7 +204,7 @@ exports.signup = async (req, res) => {
 
     // check to see if email is valid
     if (!validateEmail(email)) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -224,24 +214,24 @@ exports.signup = async (req, res) => {
     }
 
     // create new user
-    password = encrypt(password);
-    const newUserInfo = new User({ username, fullname, email, password });
+    password = encrypt(password)
+    const newUserInfo = new User({ username, fullname, email, password })
     if (profilepic) {
       newUserInfo.profilepic = profilepic
     }
 
     // save userAuth and UserInfo to DB
-    await newUserInfo.save();
+    await newUserInfo.save()
 
-    res.status(200);
+    res.status(200)
     return res.json({
       status: '200',
       success: 'true',
       msg: 'Registration success! Please sign in'
     })
   } catch (err) {
-    console.error(err);
-    res.status(500);
+    console.error(err)
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -250,248 +240,14 @@ exports.signup = async (req, res) => {
     return res
   }
 }
-
 
 // Handles the /resetpassword endpoint
 exports.resetpassword = async (req, res) => {
   // destruct email and password
-  const { username } = req.body;
+  const { username } = req.body
 
-  if(!username)
-  {
-    res.status(400);
-    res.json({
-      status: '400',
-      success: 'false',
-      msg: 'Bad Request'
-    })
-    return res;
-  }
-
-  try {
-    // check if user exists
-    const user = await User.findOne({ username });
-
-    if (user) {
-        // check if a previous verification exists
-        const userVerify = await Verification.findOne({ username });
-
-        if(userVerify){
-          // delete the current verification code
-          userVerify.deleteOne({ username: username }, function (err) {
-            if(err){
-              console.error(err);
-              res.status(200);
-              res.json({
-                status: '200',
-                success: 'false',
-                msg: "User already has a verification code, request to try again in 5 mins"
-              })
-              return res;
-            }
-          });
-        }
-
-
-        // generate a new verification code and send it
-        try {
-          var emailService = new Email();
-          var code = await emailService.send(user.email)
-        } catch (e) {
-          console.error(e);
-          res.status(200);
-          res.json({
-            status: '200',
-            success: 'false',
-            msg: "Error sending email, user might have an invalid email on file"
-          })
-          return res;
-        }
-
-        // this error has been logged in email service already
-        if(code == null)
-        {
-          res.status(200);
-          res.json({
-            status: '200',
-            success: 'false',
-            msg: 'An error occured with the email service unable to send email'
-          })
-        }
-
-        // save verification code and respond to API request
-        const newUserVerification = new Verification({ username, code });
-        newUserVerification.save((err, success) => {
-          if (err) {
-            console.error(err);
-            res.status(200);
-            res.json({
-              status: '200',
-              success: 'false',
-              msg: err
-            })
-            return res
-          }
-          res.status(200);
-          res.json({
-            status: '200',
-            success: 'true',
-            msg: 'Verification email sent successfully'
-          })
-          return res
-        })
-
-    }else {
-      res.status(200);
-      res.json({
-        status: '200',
-        success: 'false',
-        msg: 'User does not exist'
-      })
-      return res
-    }
-
-  } catch (err) {
-    console.error(err)
-    res.status(500);
-    res.json({
-      status: '500',
-      success: 'false',
-      msg: 'Internal Server error'
-    })
-    return res
-  }
-}
-
-
-// Handles the /changepassword endpoint
-exports.changepassword = async (req, res) => {
-  // destruct email and password
-  const { username, verificationcode ,newpassword } = req.body;
-
-  if(!username || !verificationcode || !newpassword)
-  {
-    res.status(400);
-    res.json({
-      status: '400',
-      success: 'false',
-      msg: 'Bad Request'
-    })
-    return res;
-  }
-
-  try {
-    // check if user exists
-    const user = await User.findOne({ username });
-
-    if (user) {
-        // check if a previous verification exists
-        const userVerify = await Verification.findOne({ username });
-
-        if(!userVerify || verificationcode != userVerify.code){
-          res.status(200);
-          res.json({
-            status: '200',
-            success: 'false',
-            msg: "Verification Code is incorrect, expired or already used"
-          })
-          return res;
-        }
-
-        // check to see if the new password is valid
-        if (!validatePassword(newpassword)) {
-          res.status(200);
-          res.json({
-            status: '200',
-            success: 'false',
-            msg: 'New password is invalid'
-          })
-          return res
-        }
-
-        // change the users password
-        user.changepassword(encrypt(newpassword));
-
-        user.save((err, success) => {
-          if (err) {
-            console.error(err);
-            res.status(200);
-            res.json({
-              status: '200',
-              success: 'false',
-              msg: 'An error occured while changing the password'
-            })
-            return res
-          }
-        })
-
-        // lets try to delete the verification code so user cannot use it again incase it has not expired
-        userVerify.deleteOne({ username: username }, function (err) {
-          if(err){
-            console.error(err);
-            // verificaiton code was possibly autodeleted as it expired
-            // no need to respond with an error message as password already changed
-          }
-        })
-
-        res.status(200);
-        res.json({
-          status: '200',
-          success: 'true',
-          msg: 'Password Changed Successfully, please log in'
-        })
-        return res
-
-
-    }else {
-      res.status(200);
-      res.json({
-        status: '200',
-        success: 'false',
-        msg: 'User does not exist'
-      })
-      return res
-    }
-
-  } catch (err) {
-    console.error(err)
-    res.status(500);
-    res.json({
-      status: '500',
-      success: 'false',
-      msg: 'Internal Server error'
-    })
-    return res
-  }
-}
-
-
-
-
-
-
-// Handles the /login endpoint
-exports.getUserInformation = async (req, res) => {
-
-  // get the username from the URL
-  const { username } = req.params
-
-  // prevents bypassing auth with another usename
-  if(!username)
-  {
-    res.status(404);
-    res.json({
-      status: '404',
-      success: 'false',
-      msg: 'Resource Not Found'
-    })
-    return res
-  }
-
-  // prevents bypassing auth with another usename
-  if(username != req.header('x-auth-username'))
-  {
-    res.status(400);
+  if (!username) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -503,9 +259,224 @@ exports.getUserInformation = async (req, res) => {
   try {
     // check if user exists
     const user = await User.findOne({ username })
+
+    if (user) {
+      // check if a previous verification exists
+      const userVerify = await Verification.findOne({ username })
+
+      if (userVerify) {
+        // delete the current verification code
+        userVerify.deleteOne({ username: username }, function (err) {
+          if (err) {
+            console.error(err)
+            res.status(200)
+            res.json({
+              status: '200',
+              success: 'false',
+              msg: 'User already has a verification code, request to try again in 5 mins'
+            })
+            return res
+          }
+        })
+      }
+
+      // generate a new verification code and send it
+      try {
+        var emailService = new Email()
+        var code = await emailService.send(user.email)
+      } catch (e) {
+        console.error(e)
+        res.status(200)
+        res.json({
+          status: '200',
+          success: 'false',
+          msg: 'Error sending email, user might have an invalid email on file'
+        })
+        return res
+      }
+
+      // this error has been logged in email service already
+      if (code == null) {
+        res.status(200)
+        res.json({
+          status: '200',
+          success: 'false',
+          msg: 'An error occured with the email service unable to send email'
+        })
+      }
+
+      // save verification code and respond to API request
+      const newUserVerification = new Verification({ username, code })
+      newUserVerification.save((err, success) => {
+        if (err) {
+          console.error(err)
+          res.status(200)
+          res.json({
+            status: '200',
+            success: 'false',
+            msg: err
+          })
+          return res
+        }
+        res.status(200)
+        res.json({
+          status: '200',
+          success: 'true',
+          msg: 'Verification email sent successfully'
+        })
+        return res
+      })
+    } else {
+      res.status(200)
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'User does not exist'
+      })
+      return res
+    }
+  } catch (err) {
+    console.error(err)
+    res.status(500)
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
+// Handles the /changepassword endpoint
+exports.changepassword = async (req, res) => {
+  // destruct email and password
+  const { username, verificationcode, newpassword } = req.body
+
+  if (!username || !verificationcode || !newpassword) {
+    res.status(400)
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  try {
+    // check if user exists
+    const user = await User.findOne({ username })
+
+    if (user) {
+      // check if a previous verification exists
+      const userVerify = await Verification.findOne({ username })
+
+      if (!userVerify || verificationcode !== userVerify.code) {
+        res.status(200)
+        res.json({
+          status: '200',
+          success: 'false',
+          msg: 'Verification Code is incorrect, expired or already used'
+        })
+        return res
+      }
+
+      // check to see if the new password is valid
+      if (!validatePassword(newpassword)) {
+        res.status(200)
+        res.json({
+          status: '200',
+          success: 'false',
+          msg: 'New password is invalid'
+        })
+        return res
+      }
+
+      // change the users password
+      user.changepassword(encrypt(newpassword))
+
+      user.save((err, success) => {
+        if (err) {
+          console.error(err)
+          res.status(200)
+          res.json({
+            status: '200',
+            success: 'false',
+            msg: 'An error occured while changing the password'
+          })
+          return res
+        }
+      })
+
+      // lets try to delete the verification code so user cannot use it again incase it has not expired
+      userVerify.deleteOne({ username: username }, function (err) {
+        if (err) {
+          console.error(err)
+          // verificaiton code was possibly autodeleted as it expired
+          // no need to respond with an error message as password already changed
+        }
+      })
+
+      res.status(200)
+      res.json({
+        status: '200',
+        success: 'true',
+        msg: 'Password Changed Successfully, please log in'
+      })
+      return res
+    } else {
+      res.status(200)
+      res.json({
+        status: '200',
+        success: 'false',
+        msg: 'User does not exist'
+      })
+      return res
+    }
+  } catch (err) {
+    console.error(err)
+    res.status(500)
+    res.json({
+      status: '500',
+      success: 'false',
+      msg: 'Internal Server error'
+    })
+    return res
+  }
+}
+
+// Handles the /login endpoint
+exports.getUserInformation = async (req, res) => {
+  // get the username from the URL
+  const { username } = req.params
+
+  // prevents bypassing auth with another usename
+  if (!username) {
+    res.status(404)
+    res.json({
+      status: '404',
+      success: 'false',
+      msg: 'Resource Not Found'
+    })
+    return res
+  }
+
+  // prevents bypassing auth with another usename
+  if (username !== req.header('x-auth-username')) {
+    res.status(400)
+    res.json({
+      status: '400',
+      success: 'false',
+      msg: 'Bad Request'
+    })
+    return res
+  }
+
+  try {
+    // check if user exists was this the one changed from var? no the changes show on the left
+    const user = await User.findOne({ username })
     // find user
     if (!user) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -515,26 +486,25 @@ exports.getUserInformation = async (req, res) => {
     }
 
     // userExists, return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
       data: {
-        username : user.username,
+        username: user.username,
         fullname: user.fullname,
         email: user.email,
         totaldistancecomplete: user.totaldistancecomplete,
         totalroutescomplete: user.totalroutescomplete,
         totalroutetime: user.totalroutetime,
-        profilepic: user.profilepic,
-    },
+        profilepic: user.profilepic
+      },
       msg: 'User information sent'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -546,21 +516,21 @@ exports.getUserInformation = async (req, res) => {
 
 // Handles the /updateuserinformation endpoint
 exports.updateUserInformation = async (req, res) => {
-  const { username, fullname, email, profilepic } = req.body;
+  const { username, fullname, email, profilepic } = req.body
 
   if (!username || !fullname || !email || !profilepic) {
-    res.status(400);
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
       msg: 'Bad Request'
     })
-    return res;
+    return res
   }
 
   // prevents bypassing auth with another usename
-  if(username != req.header('x-auth-username')) {
-    res.status(400);
+  if (username !== req.header('x-auth-username')) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -570,9 +540,8 @@ exports.updateUserInformation = async (req, res) => {
   }
 
   try {
-
     if (!validateEmail(email)) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -581,7 +550,7 @@ exports.updateUserInformation = async (req, res) => {
       return res
     }
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username })
 
     if (user) {
       const userInfo = {
@@ -590,12 +559,12 @@ exports.updateUserInformation = async (req, res) => {
         profilepic: profilepic
       }
 
-      user.updateInfo(userInfo);
+      user.updateInfo(userInfo)
 
       user.save((err, success) => {
         if (err) {
-          console.error(err);
-          res.status(200);
+          console.error(err)
+          res.status(200)
           res.json({
             status: '200',
             success: 'false',
@@ -605,16 +574,15 @@ exports.updateUserInformation = async (req, res) => {
         }
       })
 
-      res.status(200);
-        res.json({
-          status: '200',
-          success: 'true',
-          msg: 'User profile updated successfully'
-        })
+      res.status(200)
+      res.json({
+        status: '200',
+        success: 'true',
+        msg: 'User profile updated successfully'
+      })
       return res
-    }
-    else {
-      res.status(200);
+    } else {
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -624,7 +592,7 @@ exports.updateUserInformation = async (req, res) => {
     }
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -634,14 +602,13 @@ exports.updateUserInformation = async (req, res) => {
   }
 }
 
-function encrypt(password)
-{
-    if (!password) return ''
-    try {
-      var encryptedPassword = sha1(password);
-      return encryptedPassword;
-    } catch (error) {
-      return ''
-    }
+function encrypt (password) {
+  if (!password) return ''
+  try {
+    const encryptedPassword = sha1(password)
+    return encryptedPassword
+  } catch (error) {
+    return ''
+  }
 }
-exports.encrypt = encrypt;
+exports.encrypt = encrypt

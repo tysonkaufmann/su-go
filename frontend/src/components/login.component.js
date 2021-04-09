@@ -1,14 +1,14 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react'
 import styled from 'styled-components'
-import background3 from "../assets/images/background1.png";
-import {connect} from "react-redux";
-import {updateEmail, updateFullname, updateUsername} from "../actions/userProfile"
-import ForgotPassword from "./forgotPassword.component";
-import SignUp from "./signup.component";
-import {Link} from "react-router-dom";
-import axios from "axios";
+import background3 from '../assets/images/background1.png'
+import { connect } from 'react-redux'
+import { updateEmail, updateFullname, updateUsername } from '../actions/userProfile'
+import ForgotPassword from './forgotPassword.component'
+import SignUp from './signup.component'
+import { Link } from 'react-router-dom'
+import axios from 'axios'
 
-/* STYLED COMPONENTS USED FOR THE PAGE.*/
+/* STYLED COMPONENTS USED FOR THE PAGE. */
 const LoginContainer = styled.div`
       display: flex;
       flex-direction: column;
@@ -31,7 +31,7 @@ const Button = styled.button`
       &:hover {
         background: #89b6b9;
       }
-`;
+`
 const LoginText = styled.p`
         font-weight: bolder;
         font-size: 26px;
@@ -89,135 +89,136 @@ const UsernameInput = styled.input`
   margin-top: 0px;
   margin-bottom: 20px;
   padding:5px;
-`;
+`
 const PasswordInput = styled(UsernameInput).attrs({
-    type: "password",
+  type: 'password'
 })`
           border: 2px solid black;
           margin-bottom: 10px;
-`;
+`
 
 /********************************/
 
 class Login extends Component {
-    constructor() {
-        super();
-        this.state = {username: "", password: "", showForgotPasswordModal: false, showSignUp:false,
-        };
-    }
-    componentDidMount() {
+  constructor () {
+    super()
+    this.state = { username: '', password: '', showForgotPasswordModal: false, showSignUp: false }
+  }
 
-    }
+  componentDidMount () {
 
-    //Username handler
+  }
+
+    // Username handler
     handleUsername = (event) => {
-        this.setState({username: event.target.value})
+      this.setState({ username: event.target.value })
     }
-    //Password handler
+
+    // Password handler
     handlePassword = (event) => {
-        this.setState({password: event.target.value})
+      this.setState({ password: event.target.value })
     }
 
     // Validation of username and password ( mocked for now. )
     handleSubmit = () => {
-        //Axios call to verify username and password
-        //Setting mock user token
-        // If successful login update redux state username. (user profile)
-        var self = this;
-        this.props.updateUsername(this.state.username)
-        axios.post('http://localhost:5000/api/user/login', {
-            username: this.state.username,
-            password: this.state.password,
+      // Axios call to verify username and password
+      // Setting mock user token
+      // If successful login update redux state username. (user profile)
+      var self = this
+      this.props.updateUsername(this.state.username)
+      axios.post('http://localhost:5000/api/user/login', {
+        username: this.state.username,
+        password: this.state.password
+      })
+        .then(function (response) {
+          if (response.data.success === 'true') {
+            localStorage.setItem('Username', self.state.username)
+            localStorage.setItem('Expires', response.data.expiresin)
+            self.props.setToken(response.data.token)
+          } else {
+            window.alert(response.data.msg)
+          }
         })
-            .then(function (response) {
-                if(response.data.success === "true") {
-                    localStorage.setItem("Username", self.state.username)
-                    localStorage.setItem("Expires", response.data.expiresin)
-                    self.props.setToken(response.data.token);
-                }else{
-                    window.alert(response.data.msg)
-                }
-
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        .catch(function (error) {
+          console.log(error)
+        })
     }
-    //Handle modal close.
+
+    // Handle modal close.
     handleForgotPasswordClose = () => {
-        this.setState({showForgotPasswordModal: false})
+      this.setState({ showForgotPasswordModal: false })
     }
 
     handleSignUpClose = () => {
-        this.setState({showSignUp: false})
-    }
-    // handling forgotten password. ( TODO: update endpoint )
-    handleForgotPassword = () => {
-        // check if email sent is successful
-        // if true set Login Verification true
-        window.alert("Your password has been changed you may now login")
+      this.setState({ showSignUp: false })
     }
 
-    render() {
-        let isInputValid = this.state.username.trim() === "" || this.state.password.trim() === ""
-        return (
+    // handling forgotten password. ( TODO: update endpoint )
+    handleForgotPassword = () => {
+      // check if email sent is successful
+      // if true set Login Verification true
+      window.alert('Your password has been changed you may now login')
+    }
+
+    render () {
+      const isInputValid = this.state.username.trim() === '' || this.state.password.trim() === ''
+      return (
             <>
-                <BackgroundDiv style={{display: "flex", flexDirection: "column"}}>
+                <BackgroundDiv style={{ display: 'flex', flexDirection: 'column' }}>
                     <Title>STAND UP; GET OUT</Title>
                     <LoginContainer>
                         <LoginText>Log In</LoginText>
                         Your Account
                         <UsernameInput value={this.state.username} onChange={this.handleUsername.bind(this)}
-                                       placeholder={"Enter Username"}/>
+                                       placeholder={'Enter Username'}/>
                         Password
-                        <PasswordInput placeholder={"Enter Password"} onChange={this.handlePassword.bind(this)}/>
+                        <PasswordInput placeholder={'Enter Password'} onChange={this.handlePassword.bind(this)}/>
                         <ForgotPasswordButton onClick={() => {
-                            this.setState({showForgotPasswordModal: true})
+                          this.setState({ showForgotPasswordModal: true })
                         }}>Forgot your password?</ForgotPasswordButton>
                         <ForgotPassword show={this.state.showForgotPasswordModal}
                                         handleForgotPassword={this.handleForgotPassword}
                                         handleClose={this.handleForgotPasswordClose}
                         />
 
-                        <Button style={{background: isInputValid ? "#89b6b9" : "#00cddb"}}
-                                                   disabled={isInputValid} onClick={this.handleSubmit.bind(this)}><Link to={"/home"} style={{color:"white"}}>Log In</Link></Button>
+                        <Button style={{ background: isInputValid ? '#89b6b9' : '#00cddb' }}
+                                                   disabled={isInputValid} onClick={this.handleSubmit.bind(this)}><Link to={'/home'} style={{ color: 'white' }}>Log In</Link></Button>
                         <div
-                            style={{margin: "20px", display: "flex", justifyContent: "center", alignContent: "center"}}>
+                            style={{ margin: '20px', display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
                             <Line/>
-                            <div style={{color: "#659699", fontWeight: "bold"}}>OR</div>
+                            <div style={{ color: '#659699', fontWeight: 'bold' }}>OR</div>
                             <Line/>
                         </div>
-                        <Button onClick={()=>this.setState({showSignUp:true})}>Sign Up</Button>
-                        <SignUp  show={this.state.showSignUp}  handleClose={this.handleSignUpClose}/>
+                        <Button onClick={() => this.setState({ showSignUp: true })}>Sign Up</Button>
+                        <SignUp show={this.state.showSignUp} handleClose={this.handleSignUpClose}/>
                     </LoginContainer>
                 </BackgroundDiv>
             </>
-        );
+      )
     }
 }
 
-
-function mapDispatchToProps(dispatch) {
-    return {
-        updateUsername: (item) => {
-            dispatch(updateUsername(item))
-        },
-        updateEmail: (item) => {
-            dispatch(updateEmail(item))
-        },
-        updateFullname: (item) => {
-            dispatch(updateFullname(item))
-        },
-
+function mapDispatchToProps (dispatch) {
+  return {
+    updateUsername: (item) => {
+      dispatch(updateUsername(item))
+    },
+    updateEmail: (item) => {
+      dispatch(updateEmail(item))
+    },
+    updateFullname: (item) => {
+      dispatch(updateFullname(item))
     }
+
+  }
 }
 
-function mapStateToProps(state) {
-    return {
-        username: state,
-        fullname: state.userProfile.fullname,
-        email: state.userProfile.email,
-    }
+function mapStateToProps (state) {
+  return {
+    username: state,
+    fullname: state.userProfile.fullname,
+    email: state.userProfile.email
+  }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login)

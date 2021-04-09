@@ -1,30 +1,30 @@
-import React, {Component, useEffect, useRef} from 'react';
+import React, { Component, useEffect, useRef } from 'react'
 import {
-    updateUsername,
-    updateEmail,
-    updateRoutesCompleted,
-    updateDistanceCompleted,
-    updateFullname,
-    updateTotalTime
-} from "../actions/userProfile";
-import PropTypes from 'prop-types';
-import {connect} from "react-redux";
-import styled from "styled-components";
-import background3 from "../assets/images/background3.png";
-import background2 from "../assets/images/background2.png";
-import {makeStyles} from '@material-ui/core/styles';
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import EditProfile from "./editProfile.component";
-import UserCreatedRoutes from "./userCreatedRoutes.component";
-import BottomNavigation from "@material-ui/core/BottomNavigation";
-import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
-import FavouriteRoutes from "./favouriteRoutes.component";
-import axios from "axios";
-import {updateCreatedRoutes} from "../actions/routes";
-/* STYLED COMPONENTS USED FOR THE PAGE.*/
+  updateUsername,
+  updateEmail,
+  updateRoutesCompleted,
+  updateDistanceCompleted,
+  updateFullname,
+  updateTotalTime
+} from '../actions/userProfile'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import styled from 'styled-components'
+import background3 from '../assets/images/background3.png'
+import background2 from '../assets/images/background2.png'
+import { makeStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
+import Box from '@material-ui/core/Box'
+import EditProfile from './editProfile.component'
+import UserCreatedRoutes from './userCreatedRoutes.component'
+import BottomNavigation from '@material-ui/core/BottomNavigation'
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import FavouriteRoutes from './favouriteRoutes.component'
+import axios from 'axios'
+import { updateCreatedRoutes } from '../actions/routes'
+/* STYLED COMPONENTS USED FOR THE PAGE. */
 
 const UserProfileContainer = styled.div`
     display: flex;
@@ -51,7 +51,7 @@ const ProfilePicture = styled.div`
         border: 5px solid white;
         width:200px;
         height:200px;
- `;
+ `
 
 const UserInformationContainer = styled.div`
     height:200px;
@@ -87,7 +87,7 @@ const Button = styled.button`
       &:hover {
         background: #89b6b9;
       }
-`;
+`
 
 const InnerContainer = styled.div`
     height: 950px;
@@ -138,139 +138,139 @@ const TabLabel = styled.div`
 `
 
 class UserProfile extends Component {
-    constructor() {
-        super();
-        this.state = {
-            editProfile: false,
+  constructor () {
+    super()
+    this.state = {
+      editProfile: false
 
-        }
     }
+  }
 
-    componentDidMount() {
-        // Get user information
-        this.props.updateUsername(localStorage.getItem("Username"))
-        let self = this;
-        axios.get(`http://localhost:5000/api/userprofile/userinformation/${localStorage.getItem("Username")}`, {
-                headers: {
-                    "x-auth-username":
-                        localStorage.getItem("Username"),
-                    "x-auth-token":
-                        JSON.parse(localStorage.getItem("token"))
-                }
-            }
-        ).then(function (response) {
-            // handle success
-            if (response.data.success === "true") {
-                // Update user profile information
-                self.props.updateUsername(response.data.data.username)
-                self.props.updateFullname(response.data.data.fullname)
-                self.props.updateEmail(response.data.data.email)
-                // Get routes if profile information is successful
-                axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${self.props.username}`, {
-                        headers: {
-                            "x-auth-username":
+  componentDidMount () {
+    // Get user information
+    this.props.updateUsername(localStorage.getItem('Username'))
+    const self = this
+    axios.get(`http://localhost:5000/api/userprofile/userinformation/${localStorage.getItem('Username')}`, {
+      headers: {
+        'x-auth-username':
+                        localStorage.getItem('Username'),
+        'x-auth-token':
+                        JSON.parse(localStorage.getItem('token'))
+      }
+    }
+    ).then(function (response) {
+      // handle success
+      if (response.data.success === 'true') {
+        // Update user profile information
+        self.props.updateUsername(response.data.data.username)
+        self.props.updateFullname(response.data.data.fullname)
+        self.props.updateEmail(response.data.data.email)
+        // Get routes if profile information is successful
+        axios.get(`http://localhost:5000/api/routes/usercreatedroutes/${self.props.username}`, {
+          headers: {
+            'x-auth-username':
                             self.props.username,
-                            "x-auth-token":
-                                JSON.parse(localStorage.getItem("token"))
-                        }
-                    }
-                ).then(function (response) {
-                    // handle success and update routes.
-                    if (response.data.success === "true") {
-                        let createdRoutes = []
-                        for (let i = 0; i < response.data.data.length; i++) {
-                            let item = {...response.data.data[i], route:response.data.data[i].mapdata.coordinates}
-                            createdRoutes.push(item)
-                        }
-                        self.props.updateCreatedRoutes(createdRoutes)
-                    }
-                })
-                    .catch(function (error) {
-                        // handle
-                        console.log(error);
-                    })
+            'x-auth-token':
+                                JSON.parse(localStorage.getItem('token'))
+          }
+        }
+        ).then(function (response) {
+          // handle success and update routes.
+          if (response.data.success === 'true') {
+            const createdRoutes = []
+            for (let i = 0; i < response.data.data.length; i++) {
+              const item = { ...response.data.data[i], route: response.data.data[i].mapdata.coordinates }
+              createdRoutes.push(item)
             }
+            self.props.updateCreatedRoutes(createdRoutes)
+          }
         })
-            .catch(function (error) {
-                // handle
-                console.log(error);
-            })
+          .catch(function (error) {
+            // handle
+            console.log(error)
+          })
+      }
+    })
+      .catch(function (error) {
+        // handle
+        console.log(error)
+      })
+  }
 
-    }
+  componentDidUpdate (prevProps, prevState, snapshot) {
+  }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-    }
+  componentWillUnmount () {
+  }
 
-    componentWillUnmount() {
-    }
+  // Close edit profile modal
+  handleCloseEditProfile (successful) {
+    this.setState({ editProfile: false })
+  }
 
-    //Close edit profile modal
-    handleCloseEditProfile(successful) {
-        this.setState({editProfile: false})
-    }
-    render() {
-        return (
+  render () {
+    return (
             <UserProfileContainer>
                 <CoverPhoto/>
                 <UserInformationContainer>
-                    <div style={{display: "flex", flexDirection: "column", margin: "auto", alignItems: "center"}}>
+                    <div style={{ display: 'flex', flexDirection: 'column', margin: 'auto', alignItems: 'center' }}>
                         <ProfilePicture image={background2}>
                         </ProfilePicture>
                         <UserFullname>{this.props.fullname}
                         </UserFullname>
                         <Username>{this.props.username}
                         </Username>
-                        <CardItem style={{margin: "auto"}}><CardTitle><FontAwesomeIcon icon={faEnvelope} size="lg"/>
+                        <CardItem style={{ margin: 'auto' }}><CardTitle><FontAwesomeIcon icon={faEnvelope} size="lg"/>
                         </CardTitle><CardText>{this.props.email}</CardText></CardItem>
-                        <Button style={{marginTop: "10px"}} onClick={() => this.setState({editProfile: true})}>Edit
+                        <Button style={{ marginTop: '10px' }} onClick={() => this.setState({ editProfile: true })}>Edit
                             Profile</Button>
                     </div>
                 </UserInformationContainer>
-                <TabDiv style={{width: "100%", marginTop: "5%"}}>
+                <TabDiv style={{ width: '100%', marginTop: '5%' }}>
                     <UserProfileTabs createdRoutes={this.props.createdRoutes}
                                      favouriteRoutes={this.props.favouriteRoutes}/>
                 </TabDiv>
                 <EditProfile show={this.state.editProfile} handleClose={this.handleCloseEditProfile.bind(this)}/>
             </UserProfileContainer>
-        );
-    }
+    )
+  }
 }
 
 // Styling for material UI
 const useStyles = makeStyles({
-    root: {
-        margin: "0",
-        borderRadius: "50%",
-        fontSize: "50px"
-    },
+  root: {
+    margin: '0',
+    borderRadius: '50%',
+    fontSize: '50px'
+  }
 
-});
+})
 
 // previous props hooks
-function usePrevious(value) {
-    const ref = useRef();
-    useEffect(() => {
-        ref.current = value;
-    });
-    return ref.current;
+function usePrevious (value) {
+  const ref = useRef()
+  useEffect(() => {
+    ref.current = value
+  })
+  return ref.current
 }
 
 // Tabs for the user profile page.
-function UserProfileTabs(props) {
-    const classes = useStyles();
-    const [value, setValue] = React.useState(0);
-    // Tab styling.
-    const SelectedTabStyle = {
-        background: "#ed6622",
-        color: "white",
-        boxShadow: "0px 0px 20px #c1c1c1",
-        borderRadius: "15px 15px 0px 0px"
-    }
-    return (<div style={{width: "100"}}>
+function UserProfileTabs (props) {
+  const classes = useStyles()
+  const [value, setValue] = React.useState(0)
+  // Tab styling.
+  const SelectedTabStyle = {
+    background: '#ed6622',
+    color: 'white',
+    boxShadow: '0px 0px 20px #c1c1c1',
+    borderRadius: '15px 15px 0px 0px'
+  }
+  return (<div style={{ width: '100' }}>
             <div><BottomNavigation
                 value={value}
                 onChange={(event, newValue) => {
-                    setValue(newValue);
+                  setValue(newValue)
                 }}
                 showLabels
                 className={classes.root}
@@ -284,35 +284,37 @@ function UserProfileTabs(props) {
             <TabPanel value={value} index={0}>
                 <div>
                     <InnerContainer>
-                        {props.createdRoutes.length > 0 ? <UserCreatedRoutes/> :
-                            <EmptyListText>No Routes Created</EmptyListText>}
+                        {props.createdRoutes.length > 0
+                          ? <UserCreatedRoutes/>
+                          : <EmptyListText>No Routes Created</EmptyListText>}
                     </InnerContainer>
                 </div>
             </TabPanel>
             <TabPanel value={value} index={1}>
                 <InnerContainer>
-                    {props.favouriteRoutes.length > 0 ? <FavouriteRoutes/> :
-                        <EmptyListText>No Favourite Routes</EmptyListText>}
+                    {props.favouriteRoutes.length > 0
+                      ? <FavouriteRoutes/>
+                      : <EmptyListText>No Favourite Routes</EmptyListText>}
 
                 </InnerContainer>
             </TabPanel>
         </div>
-    );
+  )
 }
 
 // Material UI Tab panel.
-function TabPanel(props) {
-    const {children, value, index, ...other} = props;
-    const classes = useStyles();
+function TabPanel (props) {
+  const { children, value, index, ...other } = props
+  const classes = useStyles()
 
-    return (
+  return (
         <div
             role="tabpanel"
             hidden={value !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
-            style={{width: "100%", margin: "0"}}
+            style={{ width: '100%', margin: '0' }}
             className={classes.root}
         >
             {value === index && (
@@ -321,62 +323,62 @@ function TabPanel(props) {
                 </Box>
             )}
         </div>
-    );
+  )
 }
 
 TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-};
-
-function a11yProps(index) {
-    return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-    };
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired
 }
 
-// Redux functions. 
-function mapDispatchToProps(dispatch) {
-    return {
-        updateUsername: (item) => {
-            dispatch(updateUsername(item))
-        },
-        updateFullname: (item) => {
-            dispatch(updateFullname(item))
-        },
-        updateEmail: (item) => {
-            dispatch(updateEmail(item))
-        },
-        updateRoutesCompleted: (item) => {
-            dispatch(updateRoutesCompleted(item))
-        },
-        updateDistanceCompleted: (item) => {
-            dispatch(updateDistanceCompleted(item))
-        },
-        updateTotalTime: (item) => {
-            dispatch(updateTotalTime(item))
-        },
-        updateCreatedRoutes: (item) => {
-            dispatch(updateCreatedRoutes(item))
-        },
+function a11yProps (index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`
+  }
+}
 
+// Redux functions.
+function mapDispatchToProps (dispatch) {
+  return {
+    updateUsername: (item) => {
+      dispatch(updateUsername(item))
+    },
+    updateFullname: (item) => {
+      dispatch(updateFullname(item))
+    },
+    updateEmail: (item) => {
+      dispatch(updateEmail(item))
+    },
+    updateRoutesCompleted: (item) => {
+      dispatch(updateRoutesCompleted(item))
+    },
+    updateDistanceCompleted: (item) => {
+      dispatch(updateDistanceCompleted(item))
+    },
+    updateTotalTime: (item) => {
+      dispatch(updateTotalTime(item))
+    },
+    updateCreatedRoutes: (item) => {
+      dispatch(updateCreatedRoutes(item))
     }
+
+  }
 }
 
-function mapStateToProps(state) {
-    return {
-        username: state.userProfile.username,
-        fullname: state.userProfile.fullname,
-        email: state.userProfile.email,
-        routesCompleted: state.userProfile.routesCompleted,
-        distanceCompleted: state.userProfile.distanceCompleted,
-        totalTime: state.userProfile.totalTime,
-        favouriteRoutes: state.routesReducer.favouriteRoutes,
-        createdRoutes: state.routesReducer.createdRoutes,
+function mapStateToProps (state) {
+  return {
+    username: state.userProfile.username,
+    fullname: state.userProfile.fullname,
+    email: state.userProfile.email,
+    routesCompleted: state.userProfile.routesCompleted,
+    distanceCompleted: state.userProfile.distanceCompleted,
+    totalTime: state.userProfile.totalTime,
+    favouriteRoutes: state.routesReducer.favouriteRoutes,
+    createdRoutes: state.routesReducer.createdRoutes
 
-    }
+  }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfile)

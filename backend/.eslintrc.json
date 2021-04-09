@@ -1,0 +1,23 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true,
+        "jest": true,
+        "commonjs": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "rules": {
+        "no-undef": "off",
+        "no-unused-vars": "off",
+        "prefer-regex-literals": "off",
+        "no-useless-escape": "off",
+        "no-var": "off"
+    }
+}

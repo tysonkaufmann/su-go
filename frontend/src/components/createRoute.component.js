@@ -1,21 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import Modal from "react-bootstrap/Modal";
-import {updateEmail, updateUsername, updateFullname} from "../actions/userProfile";
-import {connect} from "react-redux";
-import styled from "styled-components";
-import MapContainerComponent from "./mapContainer.component";
-import CreateRouteMapComponent from "./createRouteMap.component";
-import {makeStyles} from "@material-ui/core/styles";
-import Stepper from "@material-ui/core/Stepper";
-import Typography from "@material-ui/core/Typography";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
+import React, { useEffect, useState } from 'react'
+import Modal from 'react-bootstrap/Modal'
+import { updateEmail, updateUsername, updateFullname } from '../actions/userProfile'
+import { connect } from 'react-redux'
+import styled from 'styled-components'
+import MapContainerComponent from './mapContainer.component'
+import CreateRouteMapComponent from './createRouteMap.component'
+import { makeStyles } from '@material-ui/core/styles'
+import Stepper from '@material-ui/core/Stepper'
+import Typography from '@material-ui/core/Typography'
+import Step from '@material-ui/core/Step'
+import StepLabel from '@material-ui/core/StepLabel'
 
-import CreateRouteDetails from "./createRouteDetails.component";
-import {updateCreateRouteDetails, addCreatedRoute, updateTraffic} from "../actions/routes";
-import axios from "axios";
+import CreateRouteDetails from './createRouteDetails.component'
+import { updateCreateRouteDetails, addCreatedRoute, updateTraffic } from '../actions/routes'
+import axios from 'axios'
 
-/* STYLED COMPONENTS USED FOR THE PAGE.*/
+/* STYLED COMPONENTS USED FOR THE PAGE. */
 const SignUpContainer = styled.div`
       display: flex;
       flex-direction: column;
@@ -38,7 +38,7 @@ const Button = styled.button`
       &:hover {
         background: #89b6b9;
       }
-`;
+`
 const SignUpText = styled.p`
         font-weight: bolder;
         font-size: 26px;
@@ -59,13 +59,13 @@ const UsernameInput = styled.input`
   margin-top: 0px;
   margin-bottom: 20px;
   padding:5px;
-`;
+`
 const PasswordInput = styled(UsernameInput).attrs({
-    type: "password",
+  type: 'password'
 })`
           border: 2px solid black;
           margin-bottom: 10px;
-`;
+`
 
 const MapContainer = styled.div`
     height: 60vh;
@@ -74,80 +74,78 @@ const MapContainer = styled.div`
 
 /********************************/
 
-function CreateRouteComponent(props) {
-    //ADDS IT TO THE REDUX STORE
+function CreateRouteComponent (props) {
+  // ADDS IT TO THE REDUX STORE
 
-    // Once the user has created the map send a request to the backend.
-    const handleFinish = () => {
-        // props.updateCreateRouteDetails({})
-        // Data to be sent to the backend.
-        let post_data = {
-            routetitle:props.createRouteDetails.routetitle,
-            routetime:props.createRouteDetails.routetime.toString(),
-            routedescription:props.createRouteDetails.routedescription,
-            routedistance: props.createRouteDetails.routedistance,
-            username:props.username,
-            mapdata: {coordinates: props.createRouteDetails.route},
-            routetype: props.createRouteDetails.routetype,
-            photos:[
-                "fake photo",
-                "another fake photo"
-            ],
-        }
-        axios.post('http://localhost:5000/api/routes/createroute', post_data,{
-            headers: {
-                "x-auth-username": props.username,
-                "x-auth-token": JSON.parse(localStorage.getItem("token"))
-            }
-        })
-            .then(function (response) {
-                // If successful adds it to the backend.
-                if(response.data.success === "true") {
-                    props.addCreatedRoute({...response.data.data.route, route: response.data.data.route.mapdata.coordinates})
-                    let traffic = [...props.traffic]
-                    traffic.push({routeid: response.data.data.route.routeid, count: 0})
-                    props.updateTraffic(traffic)
-                    props.updateCreateRouteDetails({
-                        routetitle: "",
-                        routedescription: "",
-                        routedistance: 0,
-                        routetime: "",
-                        routetype: "",
-                        route: []
-                    })
-
-                    props.handleClose();
-                }else{
-                    props.updateCreateRouteDetails({
-                        routetitle: "",
-                        routedescription: "",
-                        routedistance: 0,
-                        routetime: "",
-                        routetype: "",
-                        route: []
-                    })
-                    // If error
-                    window.alert("ERROR Please try again.")
-                    window.alert(response.msg)
-                }
-            })
-            .catch(function (error) {
-                props.updateCreateRouteDetails({
-                    routetitle: "",
-                    routedescription: "",
-                    routedistance: 0,
-                    routetime: "",
-                    routetype: "",
-                    route: []
-                })
-                console.log(error);
-                window.alert(error)
-
-            });
-
+  // Once the user has created the map send a request to the backend.
+  const handleFinish = () => {
+    // props.updateCreateRouteDetails({})
+    // Data to be sent to the backend.
+    const post_data = {
+      routetitle: props.createRouteDetails.routetitle,
+      routetime: props.createRouteDetails.routetime.toString(),
+      routedescription: props.createRouteDetails.routedescription,
+      routedistance: props.createRouteDetails.routedistance,
+      username: props.username,
+      mapdata: { coordinates: props.createRouteDetails.route },
+      routetype: props.createRouteDetails.routetype,
+      photos: [
+        'fake photo',
+        'another fake photo'
+      ]
     }
-    return (
-        <Modal onHide={props.handleClose} size={"lg"} show={props.show} centered>
+    axios.post('http://localhost:5000/api/routes/createroute', post_data, {
+      headers: {
+        'x-auth-username': props.username,
+        'x-auth-token': JSON.parse(localStorage.getItem('token'))
+      }
+    })
+      .then(function (response) {
+        // If successful adds it to the backend.
+        if (response.data.success === 'true') {
+          props.addCreatedRoute({ ...response.data.data.route, route: response.data.data.route.mapdata.coordinates })
+          const traffic = [...props.traffic]
+          traffic.push({ routeid: response.data.data.route.routeid, count: 0 })
+          props.updateTraffic(traffic)
+          props.updateCreateRouteDetails({
+            routetitle: '',
+            routedescription: '',
+            routedistance: 0,
+            routetime: '',
+            routetype: '',
+            route: []
+          })
+
+          props.handleClose()
+        } else {
+          props.updateCreateRouteDetails({
+            routetitle: '',
+            routedescription: '',
+            routedistance: 0,
+            routetime: '',
+            routetype: '',
+            route: []
+          })
+          // If error
+          window.alert('ERROR Please try again.')
+          window.alert(response.msg)
+        }
+      })
+      .catch(function (error) {
+        props.updateCreateRouteDetails({
+          routetitle: '',
+          routedescription: '',
+          routedistance: 0,
+          routetime: '',
+          routetype: '',
+          route: []
+        })
+        console.log(error)
+        window.alert(error)
+      })
+  }
+  return (
+        <Modal onHide={props.handleClose} size={'lg'} show={props.show} centered>
             <Modal.Header>
                 <Modal.Title>CREATE ROUTE</Modal.Title>
             </Modal.Header>
@@ -159,40 +157,40 @@ function CreateRouteComponent(props) {
                 </MapContainer>
             </Modal.Body>
         </Modal>
-    );
+  )
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        updateUsername: (item) => {
-            dispatch(updateUsername(item))
-        },
-        updateEmail: (item) => {
-            dispatch(updateEmail(item))
-        },
-        updateFullname: (item) => {
-            dispatch(updateFullname(item))
-        },
-        addCreatedRoute: (item) => {
-            dispatch(addCreatedRoute(item))
-        },
-        updateCreateRouteDetails: (item) => {
-            dispatch(updateCreateRouteDetails(item))
-        },
-        updateTraffic: (item) => {
-            dispatch(updateTraffic(item))
-        },
+function mapDispatchToProps (dispatch) {
+  return {
+    updateUsername: (item) => {
+      dispatch(updateUsername(item))
+    },
+    updateEmail: (item) => {
+      dispatch(updateEmail(item))
+    },
+    updateFullname: (item) => {
+      dispatch(updateFullname(item))
+    },
+    addCreatedRoute: (item) => {
+      dispatch(addCreatedRoute(item))
+    },
+    updateCreateRouteDetails: (item) => {
+      dispatch(updateCreateRouteDetails(item))
+    },
+    updateTraffic: (item) => {
+      dispatch(updateTraffic(item))
     }
+  }
 }
 
-function mapStateToProps(state) {
-    return {
-        username: state.userProfile.username,
-        fullname: state.userProfile.fullname,
-        email: state.userProfile.email,
-        createRouteDetails: state.routesReducer.createRouteDetails,
-        traffic: state.routesReducer.traffic,
-    }
+function mapStateToProps (state) {
+  return {
+    username: state.userProfile.username,
+    fullname: state.userProfile.fullname,
+    email: state.userProfile.email,
+    createRouteDetails: state.routesReducer.createRouteDetails,
+    traffic: state.routesReducer.traffic
+  }
 }
 
 const Input = styled.input`
@@ -210,20 +208,20 @@ const Input = styled.input`
   margin-top: 0px;
   margin-bottom: 20px;
   padding:5px;
-`;
+`
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        width: '100%',
-    },
-    button: {
-        marginRight: theme.spacing(1),
-    },
-    instructions: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-}));
+  root: {
+    width: '100%'
+  },
+  button: {
+    marginRight: theme.spacing(1)
+  },
+  instructions: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1)
+  }
+}))
 
 const ResponsiveDiv = styled.div`
     width: 100%;
@@ -243,86 +241,86 @@ const ColumnDiv = styled.div`
     height:100%
     `
 
-function getSteps() {
-    return ['Enter Map Information', 'Create the route', 'Confirm Route Details'];
+function getSteps () {
+  return ['Enter Map Information', 'Create the route', 'Confirm Route Details']
 }
 // Gets the steps for the create route map. Allows user to navigate through the create route.
-function getStepContent(step, handleNext, handleBack, route,handleReset) {
-    console.log(route)
-    switch (step) {
-        case 0:
-            return <ResponsiveDiv>
+function getStepContent (step, handleNext, handleBack, route, handleReset) {
+  console.log(route)
+  switch (step) {
+    case 0:
+      return <ResponsiveDiv>
                 <CreateRouteDetails handleNext={handleNext}/>
             </ResponsiveDiv>
-        case 1:
-            return <ResponsiveDiv>
-                <CreateRouteMapComponent route={route.route.length < 1 ?  [] : route.route} handleBack={handleBack} handleNext={handleNext}/></ResponsiveDiv>;
-        case 2:
-            return <ResponsiveDiv>
+    case 1:
+      return <ResponsiveDiv>
+                <CreateRouteMapComponent route={route.route.length < 1 ? [] : route.route} handleBack={handleBack} handleNext={handleNext}/></ResponsiveDiv>
+    case 2:
+      return <ResponsiveDiv>
                 <ColumnDiv>
-                    <RowDiv>{"Route Title: "}{route.routetitle}</RowDiv>
-                    <RowDiv>{"Route Description: "}{route.routedescription}</RowDiv>
-                    <RowDiv>{"Route Distance: "}{route.routedistance}(KM)</RowDiv>
-                    <MapContainerComponent route={route.route.length < 1 ?  [] : route.route} locate={false}/>
+                    <RowDiv>{'Route Title: '}{route.routetitle}</RowDiv>
+                    <RowDiv>{'Route Description: '}{route.routedescription}</RowDiv>
+                    <RowDiv>{'Route Distance: '}{route.routedistance}(KM)</RowDiv>
+                    <MapContainerComponent route={route.route.length < 1 ? [] : route.route} locate={false}/>
                 </ColumnDiv>
-            </ResponsiveDiv>;
-        default:
-            return <></>
-    }
+            </ResponsiveDiv>
+    default:
+      return <></>
+  }
 }
 
-function HorizontalLinearStepper(props) {
-    const classes = useStyles();
-    const [activeStep, setActiveStep] = React.useState(0);
-    const [skipped, setSkipped] = React.useState(new Set());
-    const steps = getSteps();
+function HorizontalLinearStepper (props) {
+  const classes = useStyles()
+  const [activeStep, setActiveStep] = React.useState(0)
+  const [skipped, setSkipped] = React.useState(new Set())
+  const steps = getSteps()
 
-    const isStepSkipped = (step) => {
-        return skipped.has(step);
-    };
+  const isStepSkipped = (step) => {
+    return skipped.has(step)
+  }
 
-    const handleNext = () => {
-        if(activeStep === steps.length-1){
-            props.handleClose();
-        }
+  const handleNext = () => {
+    if (activeStep === steps.length - 1) {
+      props.handleClose()
+    }
 
-        let newSkipped = skipped;
-        if (isStepSkipped(activeStep)) {
-            newSkipped = new Set(newSkipped.values());
-            newSkipped.delete(activeStep);
-        }
+    let newSkipped = skipped
+    if (isStepSkipped(activeStep)) {
+      newSkipped = new Set(newSkipped.values())
+      newSkipped.delete(activeStep)
+    }
 
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        setSkipped(newSkipped);
-    };
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    setSkipped(newSkipped)
+  }
 
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
 
-    const handleReset = () => {
-        setActiveStep(0);
-    };
+  const handleReset = () => {
+    setActiveStep(0)
+  }
 
-    return (
+  return (
         <ResponsiveDiv className={classes.root}>
             <Stepper activeStep={activeStep}>
                 {steps.map((label, index) => {
-                    const stepProps = {};
-                    const labelProps = {};
-                    return (
+                  const stepProps = {}
+                  const labelProps = {}
+                  return (
                         <Step key={label} {...stepProps}>
                             <StepLabel {...labelProps}>{label}</StepLabel>
                         </Step>
-                    );
+                  )
                 })}
             </Stepper>
             <div>
                     <div>
-                        <Typography component={'span'} className={classes.instructions}>{getStepContent(activeStep,handleNext,handleBack,props.routeDetails,handleReset)}</Typography>
+                        <Typography component={'span'} className={classes.instructions}>{getStepContent(activeStep, handleNext, handleBack, props.routeDetails, handleReset)}</Typography>
                         <div>
                             {
-                                activeStep == 2 && <><Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
+                                activeStep === 2 && <><Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
                                 Back
                             </Button>
                                 <Button
@@ -337,7 +335,7 @@ function HorizontalLinearStepper(props) {
                     </div>
             </div>
         </ResponsiveDiv>
-    );
+  )
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateRouteComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateRouteComponent)

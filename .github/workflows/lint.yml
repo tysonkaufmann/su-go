@@ -1,0 +1,35 @@
+name: Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    env:
+      ATLAS_URI: ${{secrets.ATLAS_URI}}
+      JWT_SECRET: ${{secrets.JWT_SECRET}}
+      EMAIL: ${{secrets.EMAIL}}
+      EMAIL_PASSWORD: ${{secrets.EMAIL_PASSWORD}}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+    - name: Install packages back-end
+      run: npm ci
+      working-directory: ./backend
+    - name: Run ESLint back-end
+      run: npx eslint .
+      working-directory: ./backend
+    - name: Install packages front-end
+      run: npm ci
+      working-directory: ./frontend
+    - name: Run ESLint front-end
+      run: npx eslint .
+      working-directory: ./frontend
