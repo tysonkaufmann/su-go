@@ -2,18 +2,15 @@
 
 // import
 const User = require('../models/user')
-const Route = require('../models/route');
-const Traffic = require('../models/traffic');
-const {v4 : uuidv4} = require('uuid')
-
+const Route = require('../models/route')
+const Traffic = require('../models/traffic')
+const { v4: uuidv4 } = require('uuid')
 
 exports.routeTraffic = async (req, res) => {
+  const { routeid } = req.params
 
-  var { routeid } = req.params
-
-  if(!routeid)
-  {
-    res.status(400);
+  if (!routeid) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -24,10 +21,10 @@ exports.routeTraffic = async (req, res) => {
 
   try {
     // check if route exists
-    const route = await Route.findOne({ routeid: routeid})
+    const route = await Route.findOne({ routeid: routeid })
 
     if (!route) {
-      res.status(404);
+      res.status(404)
       res.json({
         status: '404',
         success: 'false',
@@ -36,24 +33,23 @@ exports.routeTraffic = async (req, res) => {
       return res
     }
 
-    const alreadyExist = await Traffic.find({ routeid: routeid})
-    var traffic = alreadyExist.length
+    const alreadyExist = await Traffic.find({ routeid: routeid })
+    const traffic = alreadyExist.length
 
     // return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
-      data : {
-        traffic : traffic
+      data: {
+        traffic: traffic
       },
       msg: 'Traffic found successfully'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -63,16 +59,12 @@ exports.routeTraffic = async (req, res) => {
   }
 }
 
-
-
 exports.endRoute = async (req, res) => {
+  const { routeid } = req.params
+  const { username } = req.body
 
-  var { routeid } = req.params
-  var { username } = req.body
-
-  if(!routeid || !username)
-  {
-    res.status(400);
+  if (!routeid || !username) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -82,9 +74,8 @@ exports.endRoute = async (req, res) => {
   }
 
   // prevents bypassing auth with another usename
-  if(username != req.header('x-auth-username'))
-  {
-    res.status(400);
+  if (username !== req.header('x-auth-username')) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -95,11 +86,10 @@ exports.endRoute = async (req, res) => {
 
   try {
     // check if route exists
-    const route = await Route.findOne({ routeid: routeid})
-
+    const route = await Route.findOne({ routeid: routeid })
 
     if (!route) {
-      res.status(404);
+      res.status(404)
       res.json({
         status: '404',
         success: 'false',
@@ -108,10 +98,10 @@ exports.endRoute = async (req, res) => {
       return res
     }
 
-    const alreadyExist = await Traffic.findOne({ username: username})
+    const alreadyExist = await Traffic.findOne({ username: username })
 
     if (!alreadyExist) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -120,20 +110,19 @@ exports.endRoute = async (req, res) => {
       return res
     }
 
-    const isdeleted = await Traffic.findOneAndDelete({ username: username})
+    const isdeleted = await Traffic.findOneAndDelete({ username: username })
 
     // return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
       msg: 'Route ended successfully'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -144,13 +133,11 @@ exports.endRoute = async (req, res) => {
 }
 
 exports.startRoute = async (req, res) => {
+  const { routeid } = req.params
+  const { username } = req.body
 
-  var { routeid } = req.params
-  var { username } = req.body
-
-  if(!routeid || !username)
-  {
-    res.status(400);
+  if (!routeid || !username) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -160,9 +147,8 @@ exports.startRoute = async (req, res) => {
   }
 
   // prevents bypassing auth with another usename
-  if(username != req.header('x-auth-username'))
-  {
-    res.status(400);
+  if (username !== req.header('x-auth-username')) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -173,11 +159,10 @@ exports.startRoute = async (req, res) => {
 
   try {
     // check if route exists
-    const route = await Route.findOne({ routeid: routeid})
-
+    const route = await Route.findOne({ routeid: routeid })
 
     if (!route) {
-      res.status(404);
+      res.status(404)
       res.json({
         status: '404',
         success: 'false',
@@ -186,10 +171,10 @@ exports.startRoute = async (req, res) => {
       return res
     }
 
-    const alreadyExist = await Traffic.findOne({ username: username})
+    const alreadyExist = await Traffic.findOne({ username: username })
 
     if (alreadyExist) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -199,24 +184,23 @@ exports.startRoute = async (req, res) => {
       return res
     }
 
-    var trafficid = uuidv4()
-    var starttime = Date.now();
+    const trafficid = uuidv4()
+    const starttime = Date.now()
 
-    const newTrafficInfo = new Traffic({ username, routeid, trafficid, starttime });
-    await newTrafficInfo.save();
+    const newTrafficInfo = new Traffic({ username, routeid, trafficid, starttime })
+    await newTrafficInfo.save()
 
     // return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
       msg: 'Route started successfully'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -227,14 +211,12 @@ exports.startRoute = async (req, res) => {
 }
 
 exports.deleteRoute = async (req, res) => {
-
-  var { routeid } = req.params
-  var { username } = req.body
+  const { routeid } = req.params
+  const { username } = req.body
 
   // prevents bypassing auth with another usename
-  if(!routeid || !username)
-  {
-    res.status(400);
+  if (!routeid || !username) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -244,9 +226,8 @@ exports.deleteRoute = async (req, res) => {
   }
 
   // prevents bypassing auth with another usename
-  if(username != req.header('x-auth-username'))
-  {
-    res.status(400);
+  if (username !== req.header('x-auth-username')) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -257,10 +238,10 @@ exports.deleteRoute = async (req, res) => {
 
   try {
     // check if route exists
-    const route = await Route.findOne({ routeid: routeid})
+    const route = await Route.findOne({ routeid: routeid })
 
     if (!route) {
-      res.status(404);
+      res.status(404)
       res.json({
         status: '404',
         success: 'false',
@@ -269,20 +250,19 @@ exports.deleteRoute = async (req, res) => {
       return res
     }
 
-    const routeDelete = await Route.findOneAndDelete({ routeid: routeid})
+    const routeDelete = await Route.findOneAndDelete({ routeid: routeid })
 
     // return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
       msg: 'Route deleted successfully'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -292,16 +272,12 @@ exports.deleteRoute = async (req, res) => {
   }
 }
 
-
-
 exports.getRoute = async (req, res) => {
-
   const { routeid } = req.params
 
   // prevents bypassing auth with another usename
-  if(!routeid)
-  {
-    res.status(400);
+  if (!routeid) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -312,10 +288,10 @@ exports.getRoute = async (req, res) => {
 
   try {
     // check if route exists
-    const route = await Route.findOne({ routeid: routeid})
+    const route = await Route.findOne({ routeid: routeid })
 
     if (!route) {
-      res.status(404);
+      res.status(404)
       res.json({
         status: '404',
         success: 'false',
@@ -324,7 +300,7 @@ exports.getRoute = async (req, res) => {
       return res
     }
 
-    var data = {
+    const data = {
       routeid: route.routeid,
       routedescription: route.routedescription,
       username: route.username,
@@ -337,7 +313,7 @@ exports.getRoute = async (req, res) => {
     }
 
     // return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
@@ -345,10 +321,9 @@ exports.getRoute = async (req, res) => {
       msg: 'Route retrieved'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -358,13 +333,11 @@ exports.getRoute = async (req, res) => {
   }
 }
 
-
 exports.createRoute = async (req, res) => {
+  const { username, routetitle, routetype, routetime, routedescription, photos, mapdata, routedistance } = req.body
 
-  var { username, routetitle, routetype, routetime, routedescription, photos, mapdata, routedistance } = req.body
-
-  if(!username || !routetitle || !routetype || !routetime || !routedescription || !photos || !mapdata || !routedistance){
-    res.status(400);
+  if (!username || !routetitle || !routetype || !routetime || !routedescription || !photos || !mapdata || !routedistance) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -374,9 +347,8 @@ exports.createRoute = async (req, res) => {
   }
 
   // prevents bypassing auth with another usename
-  if(username != req.header('x-auth-username'))
-  {
-    res.status(400);
+  if (username !== req.header('x-auth-username')) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -386,24 +358,24 @@ exports.createRoute = async (req, res) => {
   }
 
   try {
-    var routeid = uuidv4()
-    const newRouteInfo = new Route({ routeid, username, routetitle, routetype, routetime, routedescription, photos, mapdata, routedistance });
+    const routeid = uuidv4()
+    const newRouteInfo = new Route({ routeid, username, routetitle, routetype, routetime, routedescription, photos, mapdata, routedistance })
 
     // save route information
-    await newRouteInfo.save();
+    await newRouteInfo.save()
 
-    res.status(200);
+    res.status(200)
     return res.json({
       status: '200',
       success: 'true',
       data: {
-        route : newRouteInfo
+        route: newRouteInfo
       },
       msg: 'Route Successfully Created'
     })
   } catch (err) {
-    console.error(err);
-    res.status(500);
+    console.error(err)
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -414,13 +386,11 @@ exports.createRoute = async (req, res) => {
 }
 
 exports.getUserCreatedRoutes = async (req, res) => {
-
   const { username } = req.params
 
   // prevents bypassing auth with another usename
-  if(username != req.header('x-auth-username'))
-  {
-    res.status(400);
+  if (username !== req.header('x-auth-username')) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -434,7 +404,7 @@ exports.getUserCreatedRoutes = async (req, res) => {
     const user = await User.findOne({ username })
 
     if (!user) {
-      res.status(200);
+      res.status(200)
       res.json({
         status: '200',
         success: 'false',
@@ -444,7 +414,7 @@ exports.getUserCreatedRoutes = async (req, res) => {
     }
 
     // retrieve routes created by user
-    const results = await Route.find({ username: username})
+    const results = await Route.find({ username: username })
 
     const routes = results.map((route) => {
       return {
@@ -461,7 +431,7 @@ exports.getUserCreatedRoutes = async (req, res) => {
     })
 
     // return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
@@ -469,10 +439,9 @@ exports.getUserCreatedRoutes = async (req, res) => {
       msg: 'user routes retrieved'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',
@@ -482,11 +451,8 @@ exports.getUserCreatedRoutes = async (req, res) => {
   }
 }
 
-
 exports.getAllRoutes = async (req, res) => {
-
   try {
-
     // retrieve routes created by user
     const results = await Route.find()
 
@@ -506,7 +472,7 @@ exports.getAllRoutes = async (req, res) => {
     })
 
     // return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
@@ -514,10 +480,9 @@ exports.getAllRoutes = async (req, res) => {
       msg: 'routes retrieved'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',

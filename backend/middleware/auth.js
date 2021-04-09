@@ -23,15 +23,13 @@ exports.auth = (req, res, next) => {
   // verify token
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    if (username == decoded.username)
-    {
+    if (username === decoded.username) {
       next()
-    }
-    else {
+    } else {
       res.status(401).json({ msg: 'Token is invalid' })
     }
   } catch (err) {
-    console.log(err);
+    console.log(err)
     res.status(401).json({ msg: 'Token is invalid' })
   }
 }

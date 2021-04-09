@@ -1,16 +1,13 @@
 // import
 const User = require('../models/user')
-const Route = require('../models/route');
-
+const Route = require('../models/route')
 
 exports.vote = async (req, res) => {
+  const { routeid } = req.params
+  const { username, score } = req.body
 
-  var { routeid } = req.params
-  var { username, score } = req.body
-
-  if(!routeid || !username || (!score && score!==0) || !Number.isInteger(score) || score < 0 || score > 5)
-  {
-    res.status(400);
+  if (!routeid || !username || (!score && score !== 0) || !Number.isInteger(score) || score < 0 || score > 5) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -20,9 +17,8 @@ exports.vote = async (req, res) => {
   }
 
   // prevents bypassing auth with another usename
-  if(username != req.header('x-auth-username'))
-  {
-    res.status(400);
+  if (username !== req.header('x-auth-username')) {
+    res.status(400)
     res.json({
       status: '400',
       success: 'false',
@@ -33,11 +29,10 @@ exports.vote = async (req, res) => {
 
   try {
     // check if route exists
-    var route = await Route.findOne({ routeid: routeid})
-
+    const route = await Route.findOne({ routeid: routeid })
 
     if (!route) {
-      res.status(404);
+      res.status(404)
       res.json({
         status: '404',
         success: 'false',
@@ -46,41 +41,36 @@ exports.vote = async (req, res) => {
       return res
     }
 
-
     found = false
-    for(i = 0; i < route.votes.length; i++)
-    {
-      if(route.votes[i]["username"] == username)
-      {
-        route.votes[i]["score"] = score
+    for (i = 0; i < route.votes.length; i++) {
+      if (route.votes[i].username === username) {
+        route.votes[i].score = score
         found = true
         break
       }
     }
 
-    if(!found)
-    {
-      route.votes.push({"username": username, "score": score})
+    if (!found) {
+      route.votes.push({ username: username, score: score })
     }
 
     route.markModified('votes')
-    await route.save();
+    await route.save()
 
     // return the data
-    res.status(200);
+    res.status(200)
     res.json({
       status: '200',
       success: 'true',
       data: {
-        route : route
+        route: route
       },
       msg: 'Vote added successfully'
     })
     return res
-
   } catch (err) {
     console.error(err)
-    res.status(500);
+    res.status(500)
     res.json({
       status: '500',
       success: 'false',

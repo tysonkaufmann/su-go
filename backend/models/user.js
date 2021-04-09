@@ -1,34 +1,34 @@
 // Boilerplate https://github.com/Intro-to-SE-Spring-2020/Chirpr/blob/master/backend/models/user.js
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 const userSchema = new Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        minlength: 3
-    },
-    fullname: {
-        type: String,
-        required: true
-    },
-    profilepic: {
-        type: String
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    minlength: 3
+  },
+  fullname: {
+    type: String,
+    required: true
+  },
+  profilepic: {
+    type: String
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  }
 }, {
-    timestamps: true,
-});
+  timestamps: true
+})
 
 // methods
 userSchema.methods = {
@@ -39,13 +39,13 @@ userSchema.methods = {
     this.password = password
   },
   updateInfo: function (userInfo) {
-      this.fullname = userInfo.fullname
-      this.email = userInfo.email
-      this.profilepic = userInfo.profilepic
+    this.fullname = userInfo.fullname
+    this.email = userInfo.email
+    this.profilepic = userInfo.profilepic
   }
 }
 
 // Makes the user model.
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema)
 
-module.exports = User;
+module.exports = User

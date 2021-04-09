@@ -27,6 +27,11 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "eslint": "^7.23.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
     "jest": "^26.6.3",
     "jest-mock-req-res": "^1.0.2",
     "mock-req-res": "^1.2.0",

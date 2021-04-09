@@ -1,12 +1,12 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 const routeSchema = new Schema({
   routeid: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   routedescription: {
     type: String,
@@ -38,13 +38,13 @@ const routeSchema = new Schema({
   mapdata: {},
   votes: []
 }, {
-    timestamps: true,
-});
+  timestamps: true
+})
 
 // methods
 routeSchema.methods = {}
 
 // Makes the user model.
-const Route = mongoose.model('Route', routeSchema);
+const Route = mongoose.model('Route', routeSchema)
 
-module.exports = Route;
+module.exports = Route
