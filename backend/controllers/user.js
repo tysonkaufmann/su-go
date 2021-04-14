@@ -370,7 +370,7 @@ exports.changepassword = async (req, res) => {
       // check if a previous verification exists
       const userVerify = await Verification.findOne({ username })
 
-      if (!userVerify || verificationcode !== userVerify.code) {
+      if (!userVerify || verificationcode.toString() !== userVerify.code) {
         res.status(200)
         res.json({
           status: '200',
