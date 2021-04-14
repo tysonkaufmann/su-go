@@ -10,6 +10,8 @@ import { Form, FormControl, Button } from 'react-bootstrap/'
 
 import MapContainerComponent from './mapContainer.component'
 import axios from 'axios'
+import OverviewMap from './overviewMap.component'
+import { Link } from 'react-router-dom'
 // Home page components.
 const HomeContainer = styled.div`
     display: flex;
@@ -184,8 +186,7 @@ class Home extends Component {
             <HomeContainer>
                 <JumboDiv>
                     <Form inline>
-                        <FormControl type="text" placeholder="Search Route" size={'lg'}/>
-                        <Button size={'lg'} variant="info">Search</Button>
+                      <Link to={ '/routes' }><Button size={'lg'} variant="info">EXPLORE ROUTES</Button></Link>
                     </Form>
                 </JumboDiv>
                 <JumboDiv image={background1}>

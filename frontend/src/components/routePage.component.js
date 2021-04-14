@@ -40,10 +40,13 @@ const RouteLeft = styled.div`
     background : white;
     overflow: auto; 
     box-shadow: inset -2px 0px 4px 1px #89b6b9;
+    grid-row: 2;
 `
 const RouteRight = styled.div`
     background : white;
     box-shadow: inset -5px 0px 5px 1px #89b6b9;
+    grid-row-start: 1;
+    grid-row: span 2;
 
 `
 const Sort = styled.button`
@@ -339,14 +342,6 @@ class RoutePage extends Component {
                         </Select>
                     </MuiFormControl>
                 </UpperLeft>
-                <UpperRight>
-                    <div>
-                        <Form inline>
-                            <FormControl type="text" placeholder="Search" className="mr-sm-2"/>
-                            <Button variant="outline-info">Search</Button>
-                        </Form>
-                    </div>
-                </UpperRight>
                 <RouteLeft>
                     {this.state.Routes.map((route, i) =>
                         <MapDetailCard
@@ -416,7 +411,7 @@ function mapDispatchToProps (dispatch) {
 // MAP DETAIL CARD COMPONENTS
 const MapDetailCardDiv = styled.div`
     width:100%;
-    height: 300px;
+    height:fit-content;
     box-shadow: inset 0px 0px 10px 6px #89b6b9;
     margin-bottom: 3px;
     display: flex;
@@ -424,6 +419,10 @@ const MapDetailCardDiv = styled.div`
     justify-content: center;
     align-items: flex-start;
     padding: 15px;
+         @media (max-width: 1000px) {
+        height: fit-content;
+
+     }
 `
 const ViewMapButton = styled.button`
       text-align:center;
@@ -432,7 +431,7 @@ const ViewMapButton = styled.button`
       border: white;
       color: white;
       width: 50%;
-      height: 40px;
+      height:100%;
       background: #00cddb;
       align-self: flex-start;
       margin-bottom: 10px;
@@ -448,7 +447,7 @@ const StartRouteButton = styled.button`
       border: white;
       color: white;
       width: 50%;
-      height: 40px;
+      height:100%;
       background: #ed6622;
       align-self: flex-end;
       margin-bottom: 10px;
@@ -473,10 +472,10 @@ const RouteNameText = styled.div`
 `
 
 const RouteInfo = styled.div`
-    height: 25px;
     display: flex;
     justify-content: space-between;
     margin-right: 20px;
+    flex-direction: column;
 `
 
 const RatingValue = styled.span`
@@ -486,8 +485,8 @@ const RatingValue = styled.span`
 `
 const RatingSpan = styled.span`
     display: flex;
-    justify-content: center;
-    align-items: center;
+    // justify-content: center;
+    // align-items: center;
     cursor: pointer;
 `
 
@@ -500,17 +499,23 @@ const RouteTitleText = styled.div`
     margin-top: 10px;
     margin-left: 10px;
     font-size: 25px;
-`
+    @media (max-width: 1000px) {
+    flex-direction: column;
+  }
+  `
 
 const TrailImage = styled.div`
     width:100%;
-    height: 30vh;
+    height: 20vh;
     background-image: url(${(props) => {
     return props.image ? props.image : background3
 }});
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+        @media (max-width: 1000px) {
+        height:0px
+  }
 `
 
 const RouteRatingDiv = styled.div`
@@ -620,13 +625,13 @@ function MapDetailCard (props) {
         </RouteTitleText>
         <RouteNameText>
             <RouteInfo>
-                <span><b>Description:</b> {props.route.routedescription}</span>
                 <RatingSpan onClick={openDialog}>
                     <Rating name="rating-read-only" precision={0.1} value={ratingAvg === -1 ? 0 : ratingAvg} readOnly/>
                     <RatingValue>
                         &nbsp;{ratingAvg === -1 ? 'N/A' : ratingAvg}
                     </RatingValue>
                 </RatingSpan>
+                <span><b>Description:</b> {props.route.routedescription}</span>
                 <RateRouteDialog open={dialogOpen} onClose={closeDialog} route={props.route} rateRoute={rateRoute} />
             </RouteInfo>
             <b>Distance:</b> {props.route.routedistance}{' (km)'}
@@ -643,7 +648,7 @@ function MapDetailCard (props) {
                 }
             </RouteInfo>
         </RouteNameText>
-        <div style={{ width: '100%', display: 'inline-block' }}>
+        <div style={{ width: '100%', display: 'flex' }}>
             <ViewMapButton onClick={() => props.setMapDetails(props.route)}>View Map</ViewMapButton>
             <StartRouteButton
             onClick={() => {
